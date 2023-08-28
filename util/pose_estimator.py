@@ -2,7 +2,7 @@
 import cv2
 import numpy as np
 
-import util.load_config as constants
+import util.constants as constants
 
 
 def solvepnp_singletag(detections):
@@ -18,7 +18,5 @@ def solvepnp_singletag(detections):
 
         _, rvec, tvec = cv2.solvePnP(world_coords, corners, constants.camera_matrix, distCoeffs=constants.dist_coeffs, flags=cv2.SOLVEPNP_IPPE_SQUARE)
         poses[ids[0]] = [rvec, tvec]
-        # print(poses)
 
-    # print(poses)
     return poses

@@ -1,8 +1,8 @@
 {
-  "resolution": {
-    "x": 1600,
-    "y": 1200
-  },
+  "resolution": [
+    1600,
+    1200
+  ],
   "cameraMatrix": [
     [
       907.9999689,

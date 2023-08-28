@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-import util.load_config as config
+import util.constants as config
 # from util.vision_types import TagObservation
 
 aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_APRILTAG_16h5)
