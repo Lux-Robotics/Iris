@@ -1,5 +1,5 @@
 {
-  "calibration": "002-2_1600x1200.json",
+  "calibration": "calibration/002-2_1600x1200.json",
   "aruco": {
     "decimate": 0,
     "aruco3": false,
