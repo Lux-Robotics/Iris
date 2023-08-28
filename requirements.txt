@@ -1,0 +1,3 @@
+apriltag
+numpy
+opencv-contrib-python

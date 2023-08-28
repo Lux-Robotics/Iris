@@ -1,0 +1,14 @@
+{
+  "calibration": "002-2_1600x1200.json",
+  "aruco": {
+    "decimate": 0,
+    "aruco3": false,
+    "corner_refinement": 1
+  },
+  "preview": {
+    "enabled": true,
+    "show_fps": true
+  },
+  "capture": "opencv",
+  "solvepnp_method": "singletag"
+}
