@@ -21,8 +21,12 @@ def draw_detections(image, detections):
     for ids, corners in detections:
         corners = corners.reshape((4, 2))
         corners = corners.astype(int)
-        for corner in corners:
-            cv2.circle(image, tuple(corner), 10, (0, 255, 0), -1)  # Draw a green circle at the corner
+        # for corner in corners:
+            # cv2.circle(image, tuple(corner), 10, (0, 255, 0), -1)  # Draw a green circle at the corner
+        cv2.line(image, corners[0], corners[1], (0, 255, 0), 2)
+        cv2.line(image, corners[1], corners[2], (0, 255, 0), 2)
+        cv2.line(image, corners[2], corners[3], (0, 255, 0), 2)
+        cv2.line(image, corners[3], corners[0], (0, 255, 0), 2)
         cv2.putText(image, "ID:" + str(ids[0]),
                     (corners[2][0], corners[2][1] - 15), cv2.FONT_HERSHEY_SIMPLEX,
                     0.5, (0, 255, 0), 2)
