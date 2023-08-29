@@ -21,9 +21,9 @@ while True:
     # print(frame.shape)
     # image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     image = frame
-    ids, corners = find_corners(image)
-    im = draw_detections(frame, zip(ids, corners))
-    a = solvepnp_singletag(zip(ids, corners))
+    detections = find_corners(image)
+    im = draw_detections(frame, detections)
+    a = solvepnp_singletag(detections)
     # print(a)
     # if 3 in a:
     #     print("y:", a[3][1][0][0].round(2), "z:", a[3][1][1][0].round(2), "x:", a[3][1][2][0].round(2))
@@ -33,10 +33,10 @@ while True:
     print(str(10/(new_frame_time - fps[-10])))
     cv2.imshow("image", im)
 
-    k = cv2.waitKey(1) & 0xff
-    if k == 27:
-        break
-    cv2.waitKey(0)
+    # k = cv2.waitKey(1) & 0xff
+    # if k == 27:
+    #     break
+    # cv2.waitKey(0)
     fps.append(new_frame_time)
     fps = fps[-10:]
 

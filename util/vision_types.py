@@ -5,7 +5,7 @@ import numpy as np
 @dataclass(frozen=True)
 class TagObservation:
     tag_id: int
-    corners: np.typing.NDArray[np.float64]
+    corners: np.ndarray[np.float64]
 
 
 class RobotPose():

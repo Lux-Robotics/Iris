@@ -1,19 +1,18 @@
 import cv2
 import numpy as np
 import util.constants as config
-# from util.vision_types import TagObservation
+from util.vision_types import TagObservation
 
+# Detect tags in the 16h5 family
 aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_APRILTAG_16h5)
-aruco_params = cv2.aruco.DetectorParameters()
-aruco_params.useAruco3Detection = False
-aruco_params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
-aruco_params.cornerRefinementWinSize = 11
+
 
 def find_corners(image):
-    corners, ids, _ = cv2.aruco.detectMarkers(image, aruco_dict, parameters=aruco_params)
-    if len(corners) == 0:
-        return np.array([]), np.array([])
-    return ids, corners
+    detected_corners, ids, _ = cv2.aruco.detectMarkers(image, aruco_dict, parameters=config.detection_params)
+    if len(detected_corners) == 0:
+        return []
+    return [TagObservation(tag_id[0], corners) for corners, tag_id in zip(detected_corners, ids)]
+
 
 
 def draw_detections(image, detections):
