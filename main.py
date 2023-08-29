@@ -12,8 +12,10 @@ camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 1200)
 prev_frame_time = 0
 fps = [0 for x in range(10)]
 
+frame_number = 0
 
 while True:
+    frame_number = frame_number + 1
     new_frame_time = time.time()
     ret, frame = camera.read()
     # print(frame.shape)
@@ -27,6 +29,7 @@ while True:
     #     print("y:", a[3][1][0][0].round(2), "z:", a[3][1][1][0].round(2), "x:", a[3][1][2][0].round(2))
 
     cv2.putText(im, "FPS: " + str(10/(new_frame_time - fps[-10])), (7, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 255, 0), 2, cv2.LINE_AA)
+    cv2.putText(im, "Frame: " + str(frame_number), (7, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 255, 0), 2, cv2.LINE_AA)
     print(str(10/(new_frame_time - fps[-10])))
     cv2.imshow("image", im)
 
