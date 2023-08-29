@@ -36,6 +36,7 @@ while True:
     k = cv2.waitKey(1) & 0xff
     if k == 27:
         break
+    cv2.waitKey(0)
     fps.append(new_frame_time)
     fps = fps[-10:]
 
