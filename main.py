@@ -10,7 +10,7 @@ match constants.settings["detector"]:
     case "apriltag3":
         from detectors.apriltag_detector import find_corners
 
-camera = cv2.VideoCapture("testdata/output.avi")
+camera = cv2.VideoCapture("testdata/field.mp4")
 camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1600)
 camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 1200)
 

@@ -12,7 +12,8 @@ def find_corners(image):
     detections_filtered = []
     for detection in detections:
         margin = getattr(detection, 'decision_margin')
-        if margin > 35:
+        hamming = getattr(detection, 'hamming')
+        if margin > 35 and hamming == 0:
             detections_filtered.append(detection)
     if len(detections) == 0:
         return []
