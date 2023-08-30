@@ -29,4 +29,12 @@ match settings["aruco"]["corner_refinement"]:
         detection_params.cornerRefinementWinSize = 11
 
 
+
+# Preview Window
+preview = settings["preview"]["enabled"]
+preview_fps = settings["preview"]["show_fps"]
+preview_pose = settings["preview"]["show_transform"]
+preview_frame = settings["preview"]["frame_by_frame"]
+
+
 apriltag_size = 0.1524  # meters
