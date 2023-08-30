@@ -7,8 +7,8 @@ import util.constants as constants
 
 def solvepnp_singletag(detections):
     poses = {}
-    for ids, corners in detections:
-        corners = corners.reshape((4, 2))
+    for detection in detections:
+        corners = detection.corners.reshape((4, 2))
         world_coords = np.array([
             [-constants.apriltag_size / 2, constants.apriltag_size / 2, 0],
             [constants.apriltag_size / 2, constants.apriltag_size / 2, 0],
@@ -17,6 +17,6 @@ def solvepnp_singletag(detections):
         ])
 
         _, rvec, tvec = cv2.solvePnP(world_coords, corners, constants.camera_matrix, distCoeffs=constants.dist_coeffs, flags=cv2.SOLVEPNP_IPPE_SQUARE)
-        poses[ids[0]] = [rvec, tvec]
+        poses[detection.tag_id] = [rvec, tvec]
 
     return poses

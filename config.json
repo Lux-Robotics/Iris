@@ -2,7 +2,7 @@
   "calibration": "calibration/002-2_1600x1200.json",
   "aruco": {
     "decimate": 0,
-    "aruco3": false,
+    "aruco3": true,
     "corner_refinement": 1
   },
   "preview": {
