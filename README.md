@@ -9,11 +9,17 @@
 - Detection of Apriltags
 - Tag pose estimation
 - Live preview for detections
+- Modular structure to allow for swapping pipeline components
+- Highly configurable
+- Benchmark script for evaluating performance - `coming soon`
 
 ## Benchmarks
-| Hardware    | Apple M1 | OrangePi 5 |
-|-------------|----------|------------|
-| 1600 x 1200 | 50fps    | N/A        |
+
+Tested on 8/29/2023, commit 1848b684ab03b6615e95902fd4b7b7dd7b8610b2
+
+| Detection Method           | Input Resolution | Apple M1 | Orange Pi 5 |
+|----------------------------|------------------|----------|-------------|
+| Aruco + solvepnp_singletag | 1600x1200        | 120fps   | N/A         |
 
 ## Getting Started
 
