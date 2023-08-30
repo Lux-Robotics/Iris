@@ -14,7 +14,6 @@ def find_corners(image):
     return [TagObservation(tag_id[0], corners) for corners, tag_id in zip(detected_corners, ids)]
 
 
-
 def draw_detections(image, detections):
     # Draw corners on the image
     for detection in detections:

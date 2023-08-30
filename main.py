@@ -1,8 +1,14 @@
 import cv2
 import time
-from detectors.aruco_detector import find_corners, draw_detections
+from detectors.aruco_detector import draw_detections
 from util.pose_estimator import solvepnp_singletag
 import util.constants as constants
+
+match constants.settings["detector"]:
+    case "aruco":
+        from detectors.aruco_detector import find_corners
+    case "apriltag3":
+        from detectors.apriltag_detector import find_corners
 
 camera = cv2.VideoCapture("testdata/output.avi")
 camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1600)
@@ -20,7 +26,7 @@ while True:
         time.sleep(0.02)
         continue
 
-    detections = find_corners(frame)
+    detections = find_corners(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
 
     # Solve for pose
     poses = solvepnp_singletag(detections)

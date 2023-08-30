@@ -1,6 +1,7 @@
 import json
 import numpy as np
 import cv2
+import apriltag
 
 
 f = open("config.json", 'r')
@@ -17,17 +18,29 @@ c.close()
 
 
 # Setup detection params
-detection_params = cv2.aruco.DetectorParameters()
-detection_params.useAruco3Detection = settings["aruco"]["aruco3"]
-detection_params.aprilTagQuadDecimate = settings["aruco"]["decimate"]
+match settings["detector"]:
+    case "aruco":
+        detection_params = cv2.aruco.DetectorParameters()
+        detection_params.useAruco3Detection = settings["aruco"]["aruco3"]
+        detection_params.aprilTagQuadDecimate = settings["aruco"]["decimate"]
 
-match settings["aruco"]["corner_refinement"]:
-    case 0:
-        detection_params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_NONE
-    case 1:
-        detection_params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
-        detection_params.cornerRefinementWinSize = 11
-
+        match settings["aruco"]["corner_refinement"]:
+            case 0:
+                detection_params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_NONE
+            case 1:
+                detection_params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
+                detection_params.cornerRefinementWinSize = 11
+    case "apriltag3":
+        detector_options = apriltag.DetectorOptions(families='tag16h5')
+        detector_options.border = settings["apriltag3"]["border"]
+        detector_options.nthreads = settings["apriltag3"]["threads"]
+        detector_options.quad_decimate = settings["apriltag3"]["quad_decimate"]
+        detector_options.quad_blur = settings["apriltag3"]["quad_blur"]
+        detector_options.refine_edges = settings["apriltag3"]["refine_edges"]
+        detector_options.refine_decode = settings["apriltag3"]["refine_decode"]
+        detector_options.refine_pose = settings["apriltag3"]["refine_pose"]
+        detector_options.debug = settings["apriltag3"]["debug"]
+        detector_options.quad_contours = settings["apriltag3"]["quad_contours"]
 
 
 # Preview Window
