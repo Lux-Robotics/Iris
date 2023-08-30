@@ -6,7 +6,7 @@
     "corner_refinement": 1
   },
   "preview": {
-    "enabled": true,
+    "enabled": false,
     "show_fps": true,
     "show_transform": true,
     "frame_by_frame": false
