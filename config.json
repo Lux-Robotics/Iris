@@ -17,12 +17,12 @@
     "quad_contours": true
   },
   "preview": {
-    "enabled": false,
+    "enabled": true,
     "show_fps": true,
     "show_transform": true,
     "frame_by_frame": false
   },
   "capture": "opencv",
-  "detector": "aruco",
+  "detector": "apriltag3",
   "solvepnp_method": "singletag"
 }
