@@ -20,7 +20,7 @@ Tested on 9/1/2023, commit 87121d18ca9cb0b0bc072eeaff76ab7e99f4b762
 | Detection Method               | Input Resolution | Apple M1 | Orange Pi 5 |
 |--------------------------------|------------------|----------|-------------|
 | Aruco + solvepnp_singletag     | 1600x1200        | 122fps   | 47fps       |
-| Apriltag3 + solvepnp_singletag | 1600             | 96fps    | 35fps       |
+| Apriltag3 + solvepnp_singletag | 1600x1200        | 96fps    | 35fps       |
 
 ## Getting Started
 
