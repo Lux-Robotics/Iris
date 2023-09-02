@@ -37,17 +37,17 @@ pip install -r requirements.txt
 ```shell
 python3 main.py
 ```
-Manually select mode:
+**Manually select mode:**
 ```shell
 python3 main.py --mode 0
 ```
-Modes:
+**Modes:**
 
-0: Normal operation (default)
+`0`: Normal operation (default)
 
-1: Run using test video
+`1`: Run using test video
 
-2: Benchmark Mode
+`2`: Benchmark Mode
 
 ## Configuration
 PeninsulaPerception is configured using `config.json` in the project's root directory. 
