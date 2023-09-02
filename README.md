@@ -11,7 +11,7 @@
 - Live preview for detections
 - Modular structure to allow for swapping pipeline components
 - Highly configurable
-- Benchmark script for evaluating performance - `coming soon`
+- Benchmark mode for evaluating performance
 
 ## Benchmarks
 
@@ -36,6 +36,10 @@ pip install -r requirements.txt
 ### Starting the program
 ```shell
 python3 main.py
+```
+Benchmark mode:
+```shell
+python3 main.py --benchmark True
 ```
 
 ## Configuration

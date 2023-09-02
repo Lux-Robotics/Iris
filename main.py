@@ -3,6 +3,11 @@ import time
 from detectors.aruco_detector import draw_detections
 from util.pose_estimator import solvepnp_singletag
 import util.constants as constants
+import argparse
+
+parser = argparse.ArgumentParser("peninsula_perception")
+parser.add_argument("--benchmark", help="Toggle for benchmark mode", type=bool, default=False, required=False)
+args = parser.parse_args()
 
 match constants.settings["detector"]:
     case "aruco":
@@ -10,9 +15,13 @@ match constants.settings["detector"]:
     case "apriltag3":
         from detectors.apriltag_detector import find_corners
 
-camera = cv2.VideoCapture("testdata/field.mp4")
-camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1600)
-camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 1200)
+if args.benchmark:
+    constants.preview = False
+    camera = cv2.VideoCapture("testdata/output.avi")
+else:
+    camera = cv2.VideoCapture(0)
+    camera.set(cv2.CAP_PROP_FRAME_WIDTH, constants.resx)
+    camera.set(cv2.CAP_PROP_FRAME_HEIGHT, constants.resy)
 
 prev_frame_time = 0
 fps = [0 for x in range(10)]
@@ -22,6 +31,9 @@ while True:
     ret, frame = camera.read()
 
     if frame is None:
+        if args.benchmark:
+            print(1/((fps[-1]-fps[11])/len(fps[10:])))
+            break
         print("video input not detected")
         time.sleep(0.02)
         continue
