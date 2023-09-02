@@ -49,5 +49,6 @@ preview_fps = settings["preview"]["show_fps"]
 preview_pose = settings["preview"]["show_transform"]
 preview_frame = settings["preview"]["frame_by_frame"]
 
+test_video = settings["test_video"]
 
 apriltag_size = 0.1524  # meters

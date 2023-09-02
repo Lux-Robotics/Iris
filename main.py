@@ -6,7 +6,7 @@ import util.constants as constants
 import argparse
 
 parser = argparse.ArgumentParser("peninsula_perception")
-parser.add_argument("--benchmark", help="Toggle for benchmark mode", type=bool, default=False, required=False)
+parser.add_argument("--mode", help="Toggle for operation modes", type=int, default=0, required=False)
 args = parser.parse_args()
 
 match constants.settings["detector"]:
@@ -15,13 +15,17 @@ match constants.settings["detector"]:
     case "apriltag3":
         from detectors.apriltag_detector import find_corners
 
-if args.benchmark:
-    constants.preview = False
-    camera = cv2.VideoCapture("testdata/output.avi")
-else:
-    camera = cv2.VideoCapture(0)
-    camera.set(cv2.CAP_PROP_FRAME_WIDTH, constants.resx)
-    camera.set(cv2.CAP_PROP_FRAME_HEIGHT, constants.resy)
+match args.mode:
+    case 0:
+        camera = cv2.VideoCapture(0)
+        camera.set(cv2.CAP_PROP_FRAME_WIDTH, constants.resx)
+        camera.set(cv2.CAP_PROP_FRAME_HEIGHT, constants.resy)
+    case 1:
+        camera = cv2.VideoCapture(constants.test_video)
+    case 2:
+        camera = cv2.VideoCapture(constants.test_video)
+        constants.preview = False
+
 
 prev_frame_time = 0
 fps = [0 for x in range(10)]
