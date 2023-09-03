@@ -29,13 +29,13 @@ def generate_frames():
                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
 
 
-@app.route('/stream')
+@app.route('/')
 def video():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 def start():
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', port=constants.stream_port)
 
 
 if __name__ == '__main__':

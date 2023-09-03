@@ -25,7 +25,8 @@
     "max_stream_res": [
       1600,
       1200
-    ]
+    ],
+    "stream_port": 80
   },
   "capture": "opencv",
   "detector": "apriltag3",

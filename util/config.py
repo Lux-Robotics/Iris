@@ -49,6 +49,7 @@ preview_fps = settings["preview"]["show_fps"]
 preview_pose = settings["preview"]["show_transform"]
 stream_quality = settings["preview"]["stream_quality"]
 stream_res = settings["preview"]["max_stream_res"]
+stream_port = settings["preview"]["stream_port"]
 
 test_video = settings["test_video"]
 
