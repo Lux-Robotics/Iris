@@ -1,6 +1,5 @@
 import cv2
-import numpy as np
-import util.constants as config
+import util.config as config
 from util.vision_types import TagObservation
 
 # Detect tags in the 16h5 family
@@ -12,10 +11,3 @@ def find_corners(image):
     if len(detected_corners) == 0:
         return []
     return [TagObservation(tag_id[0], corners) for corners, tag_id in zip(detected_corners, ids)]
-
-
-def draw_detections(image, detections):
-    # Draw corners on the image
-    for detection in detections:
-        cv2.aruco.drawDetectedMarkers(image, np.array([detection.corners]), np.array([[detection.tag_id]]))
-    return image

@@ -2,7 +2,7 @@
 import cv2
 import numpy as np
 
-import util.constants as constants
+import util.config as constants
 
 
 def solvepnp_singletag(detections):

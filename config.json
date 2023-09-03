@@ -20,8 +20,7 @@
   "preview": {
     "enabled": true,
     "show_fps": true,
-    "show_transform": true,
-    "frame_by_frame": false
+    "show_transform": true
   },
   "capture": "opencv",
   "detector": "apriltag3",

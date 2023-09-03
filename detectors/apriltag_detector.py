@@ -1,5 +1,5 @@
 import apriltag
-import util.constants as constants
+import util.config as constants
 from util.vision_types import TagObservation
 import numpy as np
 

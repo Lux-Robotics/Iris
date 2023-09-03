@@ -47,8 +47,13 @@ match settings["detector"]:
 preview = settings["preview"]["enabled"]
 preview_fps = settings["preview"]["show_fps"]
 preview_pose = settings["preview"]["show_transform"]
-preview_frame = settings["preview"]["frame_by_frame"]
 
 test_video = settings["test_video"]
+
+# not constants
+last_frame = None
+detections = None
+fps = [0 for x in range(10)]
+poses = None
 
 apriltag_size = 0.1524  # meters
