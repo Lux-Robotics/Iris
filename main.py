@@ -42,7 +42,7 @@ while True:
     ret, frame = camera.read()
 
     if frame is None:
-        if args.mode == 2:
+        if args.mode != 0:
             print("Average FPS: " + str(1/((constants.fps[-1]-constants.fps[11])/len(constants.fps[10:]))))
             break
         print("video input not detected")

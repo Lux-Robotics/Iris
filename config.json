@@ -20,7 +20,12 @@
   "preview": {
     "enabled": true,
     "show_fps": true,
-    "show_transform": true
+    "show_transform": true,
+    "stream_quality": 25,
+    "max_stream_res": [
+      1600,
+      1200
+    ]
   },
   "capture": "opencv",
   "detector": "apriltag3",

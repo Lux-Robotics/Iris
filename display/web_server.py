@@ -2,6 +2,7 @@ import cv2
 from flask import Flask, Response
 import util.config as constants
 import display.pipeline
+import math
 
 app = Flask(__name__)
 
@@ -12,10 +13,11 @@ def generate_frames():
         if frame is None:
             break
         else:
-            scale = frame.shape[0] // 720
+            scale = math.ceil(max(frame.shape[1]/constants.stream_res[0], frame.shape[0]/constants.stream_res[1]))
             frame = cv2.resize(frame, dsize=(int(frame.shape[1] / scale), int(frame.shape[0] / scale)))
             # Encode the frame in JPEG format
-            ret, buffer = cv2.imencode('.jpg', frame)
+            encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), constants.stream_quality]
+            ret, buffer = cv2.imencode('.jpg', frame, encode_param)
             if not ret:
                 break
 
