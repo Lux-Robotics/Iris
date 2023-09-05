@@ -6,7 +6,3 @@ import numpy as np
 class TagObservation:
     tag_id: int
     corners: np.ndarray[np.float64]
-
-
-class RobotPose():
-    pass

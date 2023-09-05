@@ -56,7 +56,7 @@ while True:
 
     constants.last_frame, constants.detections = frame, detections
 
-    if not constants.preview:
+    if not constants.preview and args.mode == 1:
         print("FPS:", 10 / (new_frame_time - constants.fps[-10]))
 
     constants.fps.append(new_frame_time)
