@@ -2,3 +2,4 @@ apriltag
 numpy
 opencv-contrib-python
 flask
+robotpy-wpimath

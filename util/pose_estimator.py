@@ -3,10 +3,11 @@ import cv2
 import numpy as np
 
 import util.config as constants
+from vision_types import Pose
 
 
 def solvepnp_singletag(detections):
-    poses = {}
+    poses = []
     for detection in detections:
         corners = detection.corners.reshape((4, 2))
         world_coords = np.array([
@@ -17,6 +18,6 @@ def solvepnp_singletag(detections):
         ])
 
         _, rvec, tvec = cv2.solvePnP(world_coords, corners, constants.camera_matrix, distCoeffs=constants.dist_coeffs, flags=cv2.SOLVEPNP_IPPE_SQUARE)
-        poses[detection.tag_id] = [rvec, tvec]
+        poses[detection.tag_id] = Pose(rvec, tvec)
 
     return poses

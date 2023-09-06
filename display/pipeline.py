@@ -24,12 +24,12 @@ def process():
                     (100, 255, 0), 2,
                     cv2.LINE_AA)
 
-    if constants.preview_pose:
-        try:
-            pose_text = " y: " + str(constants.poses[3][1][0][0].round(2)) + " z: " + str(
-                constants.poses[3][1][1][0].round(2)) + " x: " + str(constants.poses[3][1][2][0].round(2))
-            cv2.putText(im, pose_text, (7, 120), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 255, 0), 2, cv2.LINE_AA)
-        except:
-            pass
+    # if constants.preview_pose:
+    #     try:
+    #         pose_text = " y: " + str(constants.poses[3][1][0][0].round(2)) + " z: " + str(
+    #             constants.poses[3][1][1][0].round(2)) + " x: " + str(constants.poses[3][1][2][0].round(2))
+    #         cv2.putText(im, pose_text, (7, 120), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 255, 0), 2, cv2.LINE_AA)
+    #     except:
+    #         pass
 
     return im
