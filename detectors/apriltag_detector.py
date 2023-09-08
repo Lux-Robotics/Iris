@@ -1,9 +1,9 @@
 import apriltag
-import util.config as constants
+import util.config as config
 from util.vision_types import TagObservation
 import numpy as np
 
-detector = apriltag.Detector(constants.detector_options)
+detector = apriltag.Detector(config.detector_options)
 
 
 def find_corners(image):

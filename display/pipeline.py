@@ -1,5 +1,5 @@
 import cv2
-import util.config as constants
+import util.config as config
 import numpy as np
 
 
@@ -11,25 +11,17 @@ def draw_detections(image, detections):
 
 
 def process():
-    if constants.detections is None or constants.last_frame is None:
+    if config.detections is None or config.last_frame is None:
         return None
 
-    im = draw_detections(constants.last_frame, constants.detections)
+    im = draw_detections(config.last_frame, config.detections)
 
-    if constants.preview_fps:
-        cv2.putText(im, "FPS: " + str(9 / (constants.fps[-1] - constants.fps[-10])), (7, 40),
+    if config.preview_fps:
+        cv2.putText(im, "FPS: " + str(9 / (config.fps[-1] - config.fps[-10])), (7, 40),
                     cv2.FONT_HERSHEY_SIMPLEX, 1,
                     (100, 255, 0), 2, cv2.LINE_AA)
-        cv2.putText(im, "Frame: " + str(len(constants.fps) - 9), (7, 80), cv2.FONT_HERSHEY_SIMPLEX, 1,
+        cv2.putText(im, "Frame: " + str(len(config.fps) - 9), (7, 80), cv2.FONT_HERSHEY_SIMPLEX, 1,
                     (100, 255, 0), 2,
                     cv2.LINE_AA)
-
-    # if constants.preview_pose:
-    #     try:
-    #         pose_text = " y: " + str(constants.poses[3][1][0][0].round(2)) + " z: " + str(
-    #             constants.poses[3][1][1][0].round(2)) + " x: " + str(constants.poses[3][1][2][0].round(2))
-    #         cv2.putText(im, pose_text, (7, 120), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 255, 0), 2, cv2.LINE_AA)
-    #     except:
-    #         pass
 
     return im

@@ -3,11 +3,11 @@ import cv2
 import numpy as np
 
 import util.config as constants
-from vision_types import Pose
+from util.vision_types import Pose
 
 
 def solvepnp_singletag(detections):
-    poses = []
+    poses = {}
     for detection in detections:
         corners = detection.corners.reshape((4, 2))
         world_coords = np.array([

@@ -16,6 +16,9 @@ dist_coeffs = np.array(calibration["distCoeffs"])
 resx, resy = tuple(calibration["resolution"])
 c.close()
 
+# networktables
+use_nt = settings["use_networktables"]
+device_id = settings["device_id"]
 
 # Setup detection params
 match settings["detector"]:

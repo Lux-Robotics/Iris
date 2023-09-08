@@ -1,6 +1,6 @@
 import cv2
 from flask import Flask, Response
-import util.config as constants
+import util.config as config
 import display.pipeline
 import math
 
@@ -13,10 +13,10 @@ def generate_frames():
         if frame is None:
             break
         else:
-            scale = math.ceil(max(frame.shape[1]/constants.stream_res[0], frame.shape[0]/constants.stream_res[1]))
+            scale = math.ceil(max(frame.shape[1] / config.stream_res[0], frame.shape[0] / config.stream_res[1]))
             frame = cv2.resize(frame, dsize=(int(frame.shape[1] / scale), int(frame.shape[0] / scale)))
             # Encode the frame in JPEG format
-            encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), constants.stream_quality]
+            encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), config.stream_quality]
             ret, buffer = cv2.imencode('.jpg', frame, encode_param)
             if not ret:
                 break
@@ -35,7 +35,7 @@ def video():
 
 
 def start():
-    app.run(host='0.0.0.0', port=constants.stream_port)
+    app.run(host='0.0.0.0', port=config.stream_port)
 
 
 if __name__ == '__main__':
