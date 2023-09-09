@@ -31,6 +31,6 @@
   },
   "use_networktables": true,
   "capture": "opencv",
-  "detector": "apriltag3",
+  "detector": "aruco",
   "solvepnp_method": "singletag"
 }

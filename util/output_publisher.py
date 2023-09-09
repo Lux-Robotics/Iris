@@ -15,9 +15,8 @@ class NTPublisher:
         self.fps_pub = self.output_table.getDoubleTopic("fps").publish()
 
     def publish_data(self, pose: Pose, timestamp):
-        observation_data = [0]
+        observation_data = []
         if pose is not None:
-            observation_data[0] = 1
             observation_data.append(pose.get_wpilib().translation().X())
             observation_data.append(pose.get_wpilib().translation().Y())
             observation_data.append(pose.get_wpilib().translation().Z())
