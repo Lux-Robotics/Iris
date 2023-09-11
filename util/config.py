@@ -2,12 +2,12 @@ import json
 import numpy as np
 import cv2
 import apriltag
-
+from wpimath.geometry import *
+from util.vision_types import TagCoordinates
 
 f = open("config.json", 'r')
 settings = json.load(f)
 f.close()
-
 
 c = open(settings["calibration"], 'r')
 calibration = json.load(c)
@@ -45,7 +45,6 @@ match settings["detector"]:
         detector_options.debug = settings["apriltag3"]["debug"]
         detector_options.quad_contours = settings["apriltag3"]["quad_contours"]
 
-
 # Preview Window
 preview = settings["preview"]["enabled"]
 preview_fps = settings["preview"]["show_fps"]
@@ -62,4 +61,22 @@ detections = None
 fps = [0 for x in range(10)]
 poses = None
 
+# Define apriltag locations
 apriltag_size = 0.1524  # meters
+
+m = open(settings["map"], 'r')
+tags = json.load(m)["tags"]
+print(type(tags))
+m.close()
+
+tag_world_coords = {}
+
+for tag in tags:
+    tag_pose = Pose3d(Translation3d(tag["pose"]["translation"]["x"],
+                                    tag["pose"]["translation"]["y"],
+                                    tag["pose"]["translation"]["z"]),
+                      Rotation3d(Quaternion(tag["pose"]["rotation"]["quaternion"]["W"],
+                                            tag["pose"]["rotation"]["quaternion"]["X"],
+                                            tag["pose"]["rotation"]["quaternion"]["Y"],
+                                            tag["pose"]["rotation"]["quaternion"]["Z"])))
+    tag_world_coords[tag["ID"]] = TagCoordinates(tag_pose, apriltag_size)

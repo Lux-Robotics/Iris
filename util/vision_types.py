@@ -22,3 +22,19 @@ class Pose:
                 np.array([self.rvec[2][0], -self.rvec[0][0], -self.rvec[1][0]]),
                 math.sqrt(math.pow(self.rvec[0][0], 2) + math.pow(self.rvec[1][0], 2) + math.pow(self.rvec[2][0], 2))
             ))
+
+
+class TagCoordinates:
+    def __init__(self, tag_pos: Pose3d, tag_size):
+        transform = Transform3d(Pose3d(), tag_pos)
+        self.corners = [Pose3d(-tag_size / 2, tag_size / 2, 0, Rotation3d()),
+                        Pose3d(tag_size / 2, tag_size / 2, 0, Rotation3d()),
+                        Pose3d(tag_size / 2, -tag_size / 2, 0, Rotation3d()),
+                        Pose3d(-tag_size / 2, -tag_size / 2, 0, Rotation3d())]
+        for corner in self.corners:
+            corner = corner.transformBy(transform)
+
+    def get_corners(self):
+        return np.array([
+            [corner.translation().X(), corner.translation().Y(), corner.translation().Z()] for corner in self.corners
+        ])

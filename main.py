@@ -1,10 +1,11 @@
 import cv2
 import time
-from util.pose_estimator import solvepnp_singletag
+from util.pose_estimator import solvepnp_singletag, solvepnp_multitag
 import util.config as config
 import argparse
 import threading
 import display.web_server
+import display.rerun_server
 from util.output_publisher import NTPublisher
 
 parser = argparse.ArgumentParser("peninsula_perception")
@@ -12,8 +13,8 @@ parser.add_argument("--mode", help="Toggle for operation modes", type=int, defau
 args = parser.parse_args()
 
 
-my_thread = threading.Thread(target=display.web_server.start)
-
+# my_thread = threading.Thread(target=display.web_server.start)
+my_thread = threading.Thread(target=display.rerun_server.start)
 
 match config.settings["detector"]:
     case "aruco":
@@ -36,6 +37,7 @@ nt_instance = NTPublisher("127.0.0.1")
 
 prev_frame_time = 0
 
+# Start web stream thread
 if config.preview:
     my_thread.start()
 
