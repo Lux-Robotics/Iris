@@ -31,16 +31,16 @@ class NTPublisher:
             fps = 9 / (config.fps[-1] - config.fps[-10])
         except:
             fps = 0
-        data_2 = []
+        observation_data_2 = []
         if tag is not None:
-            data_2.append(tag.get_wpilib().translation().X())
-            data_2.append(tag.get_wpilib().translation().Y())
-            data_2.append(tag.get_wpilib().translation().Z())
-            data_2.append(tag.get_wpilib().rotation().getQuaternion().W())
-            data_2.append(tag.get_wpilib().rotation().getQuaternion().X())
-            data_2.append(tag.get_wpilib().rotation().getQuaternion().Y())
-            data_2.append(tag.get_wpilib().rotation().getQuaternion().Z())
+            observation_data_2.append(tag.get_wpilib().translation().X())
+            observation_data_2.append(tag.get_wpilib().translation().Y())
+            observation_data_2.append(tag.get_wpilib().translation().Z())
+            observation_data_2.append(tag.get_wpilib().rotation().getQuaternion().W())
+            observation_data_2.append(tag.get_wpilib().rotation().getQuaternion().X())
+            observation_data_2.append(tag.get_wpilib().rotation().getQuaternion().Y())
+            observation_data_2.append(tag.get_wpilib().rotation().getQuaternion().Z())
 
         self.observations_pub.set(observation_data, math.floor(timestamp * 1000000))
-        self.observations2_pub.set(data_2, math.floor(timestamp * 1000000))
+        self.observations2_pub.set(observation_data_2, math.floor(timestamp * 1000000))
         self.fps_pub.set(fps, math.floor(timestamp * 1000000))

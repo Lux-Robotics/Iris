@@ -66,10 +66,11 @@ apriltag_size = 0.1524  # meters
 
 m = open(settings["map"], 'r')
 tags = json.load(m)["tags"]
-print(type(tags))
 m.close()
 
 tag_world_coords = {}
+
+pose_estimation_mode = settings["solvepnp_method"]
 
 for tag in tags:
     tag_pose = Pose3d(Translation3d(tag["pose"]["translation"]["x"],

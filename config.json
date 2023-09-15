@@ -33,5 +33,5 @@
   "use_networktables": true,
   "capture": "opencv",
   "detector": "apriltag3",
-  "solvepnp_method": "singletag"
+  "solvepnp_method": "multitag"
 }

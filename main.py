@@ -29,8 +29,10 @@ match args.mode:
     case 2:
         camera = cv2.VideoCapture(config.test_video)
         config.preview = False
+        config.use_nt = False
 
-nt_instance = NTPublisher("127.0.0.1")
+if config.use_nt:
+    nt_instance = NTPublisher("127.0.0.1")
 
 prev_frame_time = 0
 
@@ -53,14 +55,14 @@ while True:
     detections = find_corners(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
 
     # Solve for pose
-    # poses = solvepnp_singletag(detections)
-    poses = solvepnp_multitag(detections)
+    if config.pose_estimation_mode == "singletag":
+        poses = solvepnp_singletag(detections)
+    elif config.pose_estimation_mode == "multitag":
+        poses = solvepnp_multitag(detections)
 
-    nt_instance.publish_data(poses[4][0] if len(poses) > 0 else None, poses[4][1] if len(poses) > 0 else None,
-                             new_frame_time)
-    # nt_instance.publish_data(poses[4] if len(poses) > 0 else None, None, new_frame_time)
-    # if len(poses) > 0:
-    #     time.sleep(1)
+    if config.use_nt:
+        nt_instance.publish_data(poses[0] if len(poses) > 0 else None, poses[1] if len(poses) > 1 else None,
+                                 new_frame_time)
 
     config.last_frame, config.detections = frame, detections
 
