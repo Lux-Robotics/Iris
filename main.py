@@ -5,16 +5,13 @@ import util.config as config
 import argparse
 import threading
 import display.web_server
-import display.rerun_server
 from util.output_publisher import NTPublisher
 
 parser = argparse.ArgumentParser("peninsula_perception")
 parser.add_argument("--mode", help="Toggle for operation modes", type=int, default=0, required=False)
 args = parser.parse_args()
 
-
-# my_thread = threading.Thread(target=display.web_server.start)
-my_thread = threading.Thread(target=display.rerun_server.start)
+my_thread = threading.Thread(target=display.web_server.start)
 
 match config.settings["detector"]:
     case "aruco":
@@ -58,7 +55,10 @@ while True:
     # Solve for pose
     poses = solvepnp_singletag(detections)
 
-    nt_instance.publish_data(poses[3] if len(poses) > 0 else None, new_frame_time)
+    nt_instance.publish_data(poses[4] if len(poses) > 0 else None, poses[4] if len(poses) > 0 else None,
+                             new_frame_time)
+    # if len(poses) > 0:
+    #     time.sleep(1)
 
     config.last_frame, config.detections = frame, detections
 
