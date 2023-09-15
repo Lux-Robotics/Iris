@@ -53,10 +53,12 @@ while True:
     detections = find_corners(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
 
     # Solve for pose
-    poses = solvepnp_singletag(detections)
+    # poses = solvepnp_singletag(detections)
+    poses = solvepnp_multitag(detections)
 
-    nt_instance.publish_data(poses[4] if len(poses) > 0 else None, poses[4] if len(poses) > 0 else None,
+    nt_instance.publish_data(poses[4][0] if len(poses) > 0 else None, poses[4][1] if len(poses) > 0 else None,
                              new_frame_time)
+    # nt_instance.publish_data(poses[4] if len(poses) > 0 else None, None, new_frame_time)
     # if len(poses) > 0:
     #     time.sleep(1)
 
