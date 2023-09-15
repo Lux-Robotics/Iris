@@ -9,12 +9,15 @@ class NTPublisher:
     def __init__(self, ip):
         ntcore.NetworkTableInstance.getDefault().setServer(ip)
         ntcore.NetworkTableInstance.getDefault().startClient4("Perception")
-        self.output_table = ntcore.NetworkTableInstance.getDefault().getTable("/Perception/" + config.device_id + "/output")
+        self.output_table = ntcore.NetworkTableInstance.getDefault().getTable(
+            "/Perception/" + config.device_id + "/output")
         self.observations_pub = self.output_table.getDoubleArrayTopic("observations").publish(
+            ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True))
+        self.observations2_pub = self.output_table.getDoubleArrayTopic("observations2").publish(
             ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True))
         self.fps_pub = self.output_table.getDoubleTopic("fps").publish()
 
-    def publish_data(self, pose: Pose, timestamp):
+    def publish_data(self, pose: Pose, tag, timestamp):
         observation_data = []
         if pose is not None:
             observation_data.append(pose.get_wpilib().translation().X())
@@ -28,6 +31,16 @@ class NTPublisher:
             fps = 9 / (config.fps[-1] - config.fps[-10])
         except:
             fps = 0
-        self.observations_pub.set(observation_data, math.floor(timestamp * 1000000))
-        self.fps_pub.set(fps, math.floor(timestamp * 1000000))
+        data_2 = []
+        if tag is not None:
+            data_2.append(tag.get_wpilib().translation().X())
+            data_2.append(tag.get_wpilib().translation().Y())
+            data_2.append(tag.get_wpilib().translation().Z())
+            data_2.append(tag.get_wpilib().rotation().getQuaternion().W())
+            data_2.append(tag.get_wpilib().rotation().getQuaternion().X())
+            data_2.append(tag.get_wpilib().rotation().getQuaternion().Y())
+            data_2.append(tag.get_wpilib().rotation().getQuaternion().Z())
 
+        self.observations_pub.set(observation_data, math.floor(timestamp * 1000000))
+        self.observations2_pub.set(data_2, math.floor(timestamp * 1000000))
+        self.fps_pub.set(fps, math.floor(timestamp * 1000000))
