@@ -21,7 +21,7 @@ class Pose:
             Rotation3d(
                 np.array([self.rvec[2][0], -self.rvec[0][0], -self.rvec[1][0]]),
                 math.sqrt(math.pow(self.rvec[0][0], 2) + math.pow(self.rvec[1][0], 2) + math.pow(self.rvec[2][0], 2))
-            ))
+            )).transformBy(Transform3d(Translation3d(), Rotation3d(Quaternion(0, -1, 0, 0))))
 
 
 class TagCoordinates:

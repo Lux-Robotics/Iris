@@ -7,7 +7,7 @@ from util.vision_types import Pose
 
 
 def solvepnp_singletag(detections):
-    poses = {}
+    poses = []
     for detection in detections:
         corners = detection.corners.reshape((4, 2))
         world_coords = np.array([
@@ -18,7 +18,7 @@ def solvepnp_singletag(detections):
         ])
         _, rvec, tvec = cv2.solvePnP(world_coords, corners, config.camera_matrix, distCoeffs=config.dist_coeffs,
                                      flags=cv2.SOLVEPNP_IPPE_SQUARE)
-        poses = [Pose(rvec, tvec)]
+        poses = (Pose(rvec, tvec),)
         return poses
 
     return poses
@@ -39,13 +39,9 @@ def solvepnp_multitag(detections):
         else:
             world_coords = np.vstack((world_coords, config.tag_world_coords[detection.tag_id].get_corners()))
 
-    # print(corners, world_coords)
-    # print(world_coords)
-
     _, rvec, tvec, error = cv2.solvePnPGeneric(world_coords, corners, config.camera_matrix,
                                                distCoeffs=config.dist_coeffs, flags=cv2.SOLVEPNP_IPPE_SQUARE)
-    # print(rvec, tvec)
     if len(rvec) > 1:
-        return {4: [Pose(rvec[0], tvec[0]), Pose(rvec[1], tvec[1])]}
+        return Pose(rvec[0], tvec[0]), Pose(rvec[1], tvec[1])
     else:
-        return {4: [Pose(rvec[0], tvec[0]), Pose(rvec[0], tvec[0])]}
+        return Pose(rvec[0], tvec[0]), Pose(rvec[0], tvec[0])
