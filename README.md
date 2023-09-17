@@ -26,21 +26,27 @@ Tested on 9/1/2023, commit 87121d18ca9cb0b0bc072eeaff76ab7e99f4b762
 
 ### Prerequisites
 - Python version 3.10 or newer
+- Clang and cmake installed
 - USB camera
 
 ### Install libraries
+
 ```shell
 pip install -r requirements.txt
 ```
 
 ### Starting the program
+
 ```shell
 python3 main.py
 ```
+
 **Manually select mode:**
+
 ```shell
 python3 main.py --mode 0
 ```
+
 **Modes:**
 
 `0`: Normal operation (default)
@@ -50,4 +56,5 @@ python3 main.py --mode 0
 `2`: Benchmark Mode
 
 ## Configuration
+
 PeninsulaPerception is configured using `config.json` in the project's root directory. 
