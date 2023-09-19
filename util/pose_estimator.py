@@ -6,8 +6,9 @@ import util.config as config
 from util.vision_types import Pose
 
 
-def solvepnp_singletag(detections):
-    poses = []
+def solvepnp_apriltag(detections):
+    if len(detections) == 0:
+        return []
     for detection in detections:
         corners = detection.corners.reshape((4, 2))
         world_coords = np.array([
@@ -16,12 +17,26 @@ def solvepnp_singletag(detections):
             [config.apriltag_size / 2, -config.apriltag_size / 2, 0],
             [-config.apriltag_size / 2, -config.apriltag_size / 2, 0]
         ])
+        print(corners)
         _, rvec, tvec = cv2.solvePnP(world_coords, corners, config.camera_matrix, distCoeffs=config.dist_coeffs,
                                      flags=cv2.SOLVEPNP_IPPE_SQUARE)
-        poses = (Pose(rvec, tvec),)
-        return poses
+        return (Pose(rvec, tvec),)
 
-    return poses
+
+def solvepnp_singletag(detections):
+    if len(detections) == 0:
+        return []
+    for detection in detections:
+        corners = detection.corners.reshape((4, 2))
+        world_coords = config.tag_world_coords[detection.tag_id].get_corners()
+        # print(corners)
+        print(world_coords)
+        _, rvec, tvec, error = cv2.solvePnPGeneric(world_coords, corners, config.camera_matrix,
+                                               distCoeffs=config.dist_coeffs, flags=cv2.SOLVEPNP_IPPE)
+        if len(rvec) > 1:
+            return Pose(rvec[0], tvec[0]), Pose(rvec[1], tvec[1])
+        else:
+            return Pose(rvec[0], tvec[0]), Pose(rvec[0], tvec[0])
 
 
 def solvepnp_multitag(detections):
