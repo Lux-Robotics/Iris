@@ -55,9 +55,7 @@ while True:
     detections = find_corners(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
 
     # Solve for pose
-    if config.pose_estimation_mode == "apriltag":
-        poses = solvepnp_apriltag(detections)
-    elif config.pose_estimation_mode == "singletag":
+    if config.pose_estimation_mode == "singletag":
         poses = solvepnp_singletag(detections)
     elif config.pose_estimation_mode == "multitag":
         poses = solvepnp_multitag(detections)

@@ -38,7 +38,6 @@ class TagCoordinates:
                         Pose3d(0, tag_size / 2, tag_size / 2, Rotation3d()),
                         Pose3d(0, -tag_size / 2, tag_size / 2, Rotation3d())]
         self.corners = [corner.transformBy(transform) for corner in self.corners]
-        [print(corner.X(), corner.Y(), corner.Z()) for corner in self.corners]
 
     def get_corners(self):
         return np.array([
