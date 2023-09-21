@@ -11,9 +11,9 @@ class NTPublisher:
         ntcore.NetworkTableInstance.getDefault().startClient4("Perception")
         self.output_table = ntcore.NetworkTableInstance.getDefault().getTable(
             "/Perception/" + config.device_id)
-        self.observations0_pub = self.output_table.getDoubleArrayTopic("observations").publish(
+        self.observations0_pub = self.output_table.getDoubleArrayTopic("observations0").publish(
             ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True))
-        self.observations1_pub = self.output_table.getDoubleArrayTopic("observations2").publish(
+        self.observations1_pub = self.output_table.getDoubleArrayTopic("observations1").publish(
             ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True))
         self.errors_pub = self.output_table.getDoubleArrayTopic("errors").publish(
             ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True))
