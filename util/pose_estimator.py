@@ -6,6 +6,7 @@ import util.config as config
 from util.vision_types import Pose
 
 
+# for testing only
 def solvepnp_apriltag(detections):
     if len(detections) == 0:
         return []
@@ -18,14 +19,14 @@ def solvepnp_apriltag(detections):
             [-config.apriltag_size / 2, -config.apriltag_size / 2, 0]
         ])
 
-        _, rvec, tvec, errors = cv2.solvePnPGeneric(world_coords, corners, config.camera_matrix,
+        _, rvecs, tvecs, errors = cv2.solvePnPGeneric(world_coords, corners, config.camera_matrix,
                                                     distCoeffs=config.dist_coeffs,
                                                     flags=cv2.SOLVEPNP_IPPE_SQUARE)
 
-        if len(rvec) > 1:
-            return Pose(rvec[0], tvec[0]), Pose(rvec[1], tvec[1])
+        if len(rvecs) > 1:
+            return Pose(rvecs[0], tvecs[0], errors[0]), Pose(rvecs[1], tvecs[1], errors[1])
         else:
-            return Pose(rvec[0], tvec[0]), Pose(rvec[0], tvec[0])
+            return (Pose(rvecs[0], tvecs[0], errors[0]), )
 
 
 def solvepnp_singletag(detections):
@@ -35,12 +36,12 @@ def solvepnp_singletag(detections):
         corners = detection.corners.reshape((4, 2))
         world_coords = config.tag_world_coords[detection.tag_id].get_corners()
 
-        _, rvec, tvec, errors = cv2.solvePnPGeneric(world_coords, corners, config.camera_matrix,
+        _, rvecs, tvecs, errors = cv2.solvePnPGeneric(world_coords, corners, config.camera_matrix,
                                                     distCoeffs=config.dist_coeffs, flags=cv2.SOLVEPNP_IPPE)
-        if len(rvec) > 1:
-            return Pose(rvec[0], tvec[0]), Pose(rvec[1], tvec[1])
+        if len(rvecs) > 1:
+            return Pose(rvecs[0], tvecs[0], errors[0]), Pose(rvecs[1], tvecs[1], errors[1])
         else:
-            return Pose(rvec[0], tvec[0]), Pose(rvec[0], tvec[0])
+            return (Pose(rvecs[0], tvecs[0], errors[0]), )
 
 
 def solvepnp_multitag(detections):
@@ -61,6 +62,6 @@ def solvepnp_multitag(detections):
     _, rvecs, tvecs, errors = cv2.solvePnPGeneric(world_coords, corners, config.camera_matrix,
                                                   distCoeffs=config.dist_coeffs, flags=cv2.SOLVEPNP_IPPE_SQUARE)
     if len(rvecs) > 1:
-        return Pose(rvecs[0], tvecs[0]), Pose(rvecs[1], tvecs[1])
+        return Pose(rvecs[0], tvecs[0], errors[0]), Pose(rvecs[1], tvecs[1], errors[1])
     else:
-        return Pose(rvecs[0], tvecs[0]), Pose(rvecs[0], tvecs[0])
+        return (Pose(rvecs[0], tvecs[0], errors[0]), )

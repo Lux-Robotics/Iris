@@ -14,6 +14,7 @@ class TagObservation:
 class Pose:
     rvec: np.ndarray[np.float64]
     tvec: np.ndarray[np.float64]
+    error: float
 
     def get_wpilib(self):
         # shift coordinate system
