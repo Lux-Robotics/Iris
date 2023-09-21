@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser("peninsula_perception")
 parser.add_argument("--mode", help="Toggle for operation modes", type=int, default=0, required=False)
 args = parser.parse_args()
 
-my_thread = threading.Thread(target=display.web_server.start)
+display_thread = threading.Thread(target=display.web_server.start)
 
 match config.settings["detector"]:
     case "aruco":
@@ -38,7 +38,7 @@ prev_frame_time = 0
 
 # Start web stream thread
 if config.preview:
-    my_thread.start()
+    display_thread.start()
 
 while True:
     new_frame_time = time.time()

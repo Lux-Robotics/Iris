@@ -9,6 +9,7 @@ import display.pipeline
 
 rr.init("PeninsulaPerception", spawn=True)
 
+
 def start():
     while True:
         try:
