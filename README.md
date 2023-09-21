@@ -82,3 +82,11 @@ PeninsulaPerception is configured using `config.json` in the project's root dire
 - capture: Capture method `WIP`
 - detector: The detector to use. Valid options are `aruco` and `apriltag3`
 - solvepnp_method: The solvepnp method to use. Valid options are `singletag` and `multitag`
+
+## NetworkTables Output
+
+All NetworkTables outputs will be under /Perception/`device_id`
+
+- fps: The current processing fps
+- observations0, observations1: Field oriented poses
+- errors: The ambiguity present in each of the poses
