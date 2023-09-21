@@ -20,13 +20,13 @@ def solvepnp_apriltag(detections):
         ])
 
         _, rvecs, tvecs, errors = cv2.solvePnPGeneric(world_coords, corners, config.camera_matrix,
-                                                    distCoeffs=config.dist_coeffs,
-                                                    flags=cv2.SOLVEPNP_IPPE_SQUARE)
+                                                      distCoeffs=config.dist_coeffs,
+                                                      flags=cv2.SOLVEPNP_IPPE_SQUARE)
 
         if len(rvecs) > 1:
             return Pose(rvecs[0], tvecs[0], errors[0]), Pose(rvecs[1], tvecs[1], errors[1])
         else:
-            return (Pose(rvecs[0], tvecs[0], errors[0]), )
+            return (Pose(rvecs[0], tvecs[0], errors[0]),)
 
 
 def solvepnp_singletag(detections):
@@ -37,11 +37,11 @@ def solvepnp_singletag(detections):
         world_coords = config.tag_world_coords[detection.tag_id].get_corners()
 
         _, rvecs, tvecs, errors = cv2.solvePnPGeneric(world_coords, corners, config.camera_matrix,
-                                                    distCoeffs=config.dist_coeffs, flags=cv2.SOLVEPNP_IPPE)
+                                                      distCoeffs=config.dist_coeffs, flags=cv2.SOLVEPNP_IPPE)
         if len(rvecs) > 1:
             return Pose(rvecs[0], tvecs[0], errors[0]), Pose(rvecs[1], tvecs[1], errors[1])
         else:
-            return (Pose(rvecs[0], tvecs[0], errors[0]), )
+            return (Pose(rvecs[0], tvecs[0], errors[0]),)
 
 
 def solvepnp_multitag(detections):
@@ -60,8 +60,8 @@ def solvepnp_multitag(detections):
             world_coords = np.vstack((world_coords, config.tag_world_coords[detection.tag_id].get_corners()))
 
     _, rvecs, tvecs, errors = cv2.solvePnPGeneric(world_coords, corners, config.camera_matrix,
-                                                  distCoeffs=config.dist_coeffs, flags=cv2.SOLVEPNP_IPPE_SQUARE)
+                                                  distCoeffs=config.dist_coeffs, flags=cv2.SOLVEPNP_SQPNP)
     if len(rvecs) > 1:
         return Pose(rvecs[0], tvecs[0], errors[0]), Pose(rvecs[1], tvecs[1], errors[1])
     else:
-        return (Pose(rvecs[0], tvecs[0], errors[0]), )
+        return (Pose(rvecs[0], tvecs[0], errors[0]),)
