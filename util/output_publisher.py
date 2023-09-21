@@ -10,7 +10,7 @@ class NTPublisher:
         ntcore.NetworkTableInstance.getDefault().setServer(ip)
         ntcore.NetworkTableInstance.getDefault().startClient4("Perception")
         self.output_table = ntcore.NetworkTableInstance.getDefault().getTable(
-            "/Perception/" + config.device_id + "/output")
+            "/Perception/" + config.device_id)
         self.observations_pub = self.output_table.getDoubleArrayTopic("observations").publish(
             ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True))
         self.observations2_pub = self.output_table.getDoubleArrayTopic("observations2").publish(
