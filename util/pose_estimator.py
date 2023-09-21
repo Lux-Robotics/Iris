@@ -18,9 +18,13 @@ def solvepnp_apriltag(detections):
             [-config.apriltag_size / 2, -config.apriltag_size / 2, 0]
         ])
         print(corners)
-        _, rvec, tvec = cv2.solvePnP(world_coords, corners, config.camera_matrix, distCoeffs=config.dist_coeffs,
+        _, rvec, tvec, errors = cv2.solvePnPGeneric(world_coords, corners, config.camera_matrix, distCoeffs=config.dist_coeffs,
                                      flags=cv2.SOLVEPNP_IPPE_SQUARE)
-        return (Pose(rvec, tvec),)
+
+        if len(rvec) > 1:
+            return Pose(rvec[0], tvec[0]), Pose(rvec[1], tvec[1])
+        else:
+            return Pose(rvec[0], tvec[0]), Pose(rvec[0], tvec[0])
 
 
 def solvepnp_singletag(detections):
