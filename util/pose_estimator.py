@@ -17,7 +17,7 @@ def solvepnp_apriltag(detections):
             [config.apriltag_size / 2, -config.apriltag_size / 2, 0],
             [-config.apriltag_size / 2, -config.apriltag_size / 2, 0]
         ])
-        print(corners)
+
         _, rvec, tvec, errors = cv2.solvePnPGeneric(world_coords, corners, config.camera_matrix, distCoeffs=config.dist_coeffs,
                                      flags=cv2.SOLVEPNP_IPPE_SQUARE)
 
@@ -33,9 +33,8 @@ def solvepnp_singletag(detections):
     for detection in detections:
         corners = detection.corners.reshape((4, 2))
         world_coords = config.tag_world_coords[detection.tag_id].get_corners()
-        # print(corners)
-        print(world_coords)
-        _, rvec, tvec, error = cv2.solvePnPGeneric(world_coords, corners, config.camera_matrix,
+
+        _, rvec, tvec, errors = cv2.solvePnPGeneric(world_coords, corners, config.camera_matrix,
                                                distCoeffs=config.dist_coeffs, flags=cv2.SOLVEPNP_IPPE)
         if len(rvec) > 1:
             return Pose(rvec[0], tvec[0]), Pose(rvec[1], tvec[1])
@@ -58,9 +57,9 @@ def solvepnp_multitag(detections):
         else:
             world_coords = np.vstack((world_coords, config.tag_world_coords[detection.tag_id].get_corners()))
 
-    _, rvec, tvec, error = cv2.solvePnPGeneric(world_coords, corners, config.camera_matrix,
+    _, rvecs, tvecs, errors = cv2.solvePnPGeneric(world_coords, corners, config.camera_matrix,
                                                distCoeffs=config.dist_coeffs, flags=cv2.SOLVEPNP_IPPE_SQUARE)
-    if len(rvec) > 1:
-        return Pose(rvec[0], tvec[0]), Pose(rvec[1], tvec[1])
+    if len(rvecs) > 1:
+        return Pose(rvecs[0], tvecs[0]), Pose(rvecs[1], tvecs[1])
     else:
-        return Pose(rvec[0], tvec[0]), Pose(rvec[0], tvec[0])
+        return Pose(rvecs[0], tvecs[0]), Pose(rvecs[0], tvecs[0])
