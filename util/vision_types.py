@@ -34,14 +34,11 @@ class Pose:
 
 class TagCoordinates:
     def __init__(self, tag_pos: Pose3d, tag_size):
-        transform = Transform3d(
-            tag_pos.translation(),
-            tag_pos.rotation())
-        self.corners = [Pose3d(0, -tag_size / 2, -tag_size / 2, Rotation3d()),
-                        Pose3d(0, tag_size / 2, -tag_size / 2, Rotation3d()),
-                        Pose3d(0, tag_size / 2, tag_size / 2, Rotation3d()),
-                        Pose3d(0, -tag_size / 2, tag_size / 2, Rotation3d())]
-        self.corners = [corner.transformBy(transform) for corner in self.corners]
+        self.corners = [Transform3d(0, -tag_size / 2, -tag_size / 2, Rotation3d()),
+                        Transform3d(0, tag_size / 2, -tag_size / 2, Rotation3d()),
+                        Transform3d(0, tag_size / 2, tag_size / 2, Rotation3d()),
+                        Transform3d(0, -tag_size / 2, tag_size / 2, Rotation3d())]
+        self.corners = [tag_pos.transformBy(corner) for corner in self.corners]
 
     def get_corners(self):
         return np.array([
