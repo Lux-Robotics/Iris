@@ -1,6 +1,6 @@
 {
   "device_id": "test_cam",
-  "calibration": "calibration/011-1_1600x1300.json",
+  "calibration": "calibration/002-2_1600x1200.json",
   "map": "maps/2023-chargedup.json",
   "test_video": "testdata/011_test.avi",
   "aruco": {
@@ -32,6 +32,6 @@
   },
   "use_networktables": true,
   "capture": "opencv",
-  "detector": "apriltag3",
-  "solvepnp_method": "singletag"
+  "detector": "aruco",
+  "solvepnp_method": "multitag"
 }
