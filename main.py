@@ -61,7 +61,7 @@ while True:
         poses = solvepnp_multitag(detections)
 
     if config.use_nt:
-        nt_instance.publish_data(poses[0] if len(poses) > 0 else None, poses[1] if len(poses) > 1 else None,
+        nt_instance.publish_data(poses[0] if len(poses) > 0 else None, poses[1] if len(poses) > 1 else None, len(detections), 
                                  new_frame_time)
 
     config.last_frame, config.detections = frame, detections

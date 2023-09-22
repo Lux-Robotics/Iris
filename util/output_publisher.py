@@ -18,8 +18,9 @@ class NTPublisher:
         self.errors_pub = self.output_table.getDoubleArrayTopic("errors").publish(
             ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True))
         self.fps_pub = self.output_table.getDoubleTopic("fps").publish()
+        self.tags_pub = self.output_table.getIntegerTopic("tags").publish()
 
-    def publish_data(self, pose0: Pose, pose1, timestamp):
+    def publish_data(self, pose0: Pose, pose1, tags, timestamp):
         errors = []
         observation_data = []
         if pose0 is not None:
@@ -52,3 +53,4 @@ class NTPublisher:
         self.observations1_pub.set(observation_data_2, math.floor(timestamp * 1000000))
         self.errors_pub.set(errors, math.floor(timestamp * 1000000))
         self.fps_pub.set(fps, math.floor(timestamp * 1000000))
+        self.tags_pub.set(int(tags), math.floor(timestamp * 1000000))
