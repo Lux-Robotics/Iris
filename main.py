@@ -72,4 +72,3 @@ while True:
     config.fps.append(new_frame_time)
 
 camera.release()
-cv2.destroyAllWindows()
