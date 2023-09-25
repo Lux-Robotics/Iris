@@ -13,7 +13,7 @@ def start():
         if frame is None:
             continue
         else:
-            rr.set_time_sequence("stream", len(config.fps) - 9)
-            rr.log_image("stream", frame)
-            rr.log_scalar("data", 9 / (config.fps[-1] - config.fps[-10]), label="fps")
-            rr.log_line_strips_2d("stream", detections)
+            rr.set_time_sequence(config.device_id, len(config.fps) - 9)
+            rr.log_image(config.device_id, frame)
+            rr.log_scalar(config.device_id, 9 / (config.fps[-1] - config.fps[-10]), label="fps")
+            rr.log_line_strips_2d(config.device_id, detections)
