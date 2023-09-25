@@ -4,14 +4,16 @@ from util.pose_estimator import solvepnp_singletag, solvepnp_multitag, solvepnp_
 import util.config as config
 import argparse
 import threading
-import display.web_server
+import display.rerun_server
 from util.output_publisher import NTPublisher
+import sys
 
 parser = argparse.ArgumentParser("peninsula_perception")
 parser.add_argument("--mode", help="Toggle for operation modes", type=int, default=0, required=False)
 args = parser.parse_args()
 
-display_thread = threading.Thread(target=display.web_server.start)
+display_thread = threading.Thread(target=display.rerun_server.start)
+display_thread.daemon = True
 
 match config.settings["detector"]:
     case "aruco":
@@ -80,3 +82,5 @@ while True:
     config.fps.append(new_frame_time)
 
 camera.release()
+
+sys.exit()
