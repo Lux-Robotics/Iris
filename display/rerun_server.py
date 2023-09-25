@@ -13,4 +13,4 @@ def start():
         if frame is None:
             continue
         else:
-            rr.log_image("stream", frame, jpeg_quality=25)
+            rr.log_image("stream", frame, jpeg_quality=config.stream_quality)

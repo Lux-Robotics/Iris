@@ -15,12 +15,12 @@ def process():
     if config.detections is None or config.last_frame is None:
         return None
 
-    frame = config.last_frame
+    frame, detections = config.last_frame, config.detections
 
     scale = math.ceil(max(frame.shape[1] / config.stream_res[0], frame.shape[0] / config.stream_res[1]))
     frame = cv2.resize(frame, dsize=(int(frame.shape[1] / scale), int(frame.shape[0] / scale)))
 
-    im = draw_detections(frame, config.detections, scale)
+    im = draw_detections(frame, detections, scale)
 
     if config.preview_fps:
         cv2.putText(im, "FPS: " + str(9 / (config.fps[-1] - config.fps[-10])), (7, 40),
