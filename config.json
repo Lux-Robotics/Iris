@@ -1,12 +1,17 @@
 {
   "device_id": "test_cam",
-  "calibration": "calibration/002-2_1600x1200.json",
   "map": "maps/2023-chargedup.json",
   "test_video": "testdata/011_test.avi",
+  "camera": {
+    "calibration": "calibration/002-2_1600x1200.json",
+    "auto_exposure": true, 
+    "manual_exposure": 0, 
+    "gain": 0
+  },
   "aruco": {
     "decimate": 0,
     "aruco3": false,
-    "corner_refinement": 1
+    "corner_refinement": "subpix"
   },
   "apriltag3": {
     "border": 1,

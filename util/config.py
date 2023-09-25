@@ -9,7 +9,12 @@ f = open("config.json", 'r')
 settings = json.load(f)
 f.close()
 
-c = open(settings["calibration"], 'r')
+# Camera config
+camera_auto_exposure = int(settings["camera"]["auto_exposure"])
+camera_exposure = settings["camera"]["manual_exposure"]
+camera_gain = settings["camera"]["gain"]
+
+c = open(settings["camera"]["calibration"], 'r')
 calibration = json.load(c)
 camera_matrix = np.array(calibration["cameraMatrix"])
 dist_coeffs = np.array(calibration["distCoeffs"])
@@ -28,9 +33,9 @@ match settings["detector"]:
         detection_params.aprilTagQuadDecimate = settings["aruco"]["decimate"]
 
         match settings["aruco"]["corner_refinement"]:
-            case 0:
+            case "none":
                 detection_params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_NONE
-            case 1:
+            case "subpix":
                 detection_params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
                 detection_params.cornerRefinementWinSize = 11
     case "apriltag3":
@@ -71,6 +76,8 @@ m.close()
 tag_world_coords = {}
 
 pose_estimation_mode = settings["solvepnp_method"]
+capture_mode = settings["capture"]
+
 
 for tag in tags:
     tag_pose = Pose3d(Translation3d(tag["pose"]["translation"]["x"],
