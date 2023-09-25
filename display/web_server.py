@@ -2,7 +2,6 @@ import cv2
 from flask import Flask, Response
 import util.config as config
 import display.pipeline
-import math
 
 app = Flask(__name__)
 
