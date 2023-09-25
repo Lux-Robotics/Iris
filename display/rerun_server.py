@@ -14,3 +14,4 @@ def start():
             continue
         else:
             rr.log_image("stream", frame)
+            rr.log_scalar("data", 9 / (config.fps[-1] - config.fps[-10]), label="fps")
