@@ -65,6 +65,7 @@ last_frame = None
 detections = None
 fps = [0 for x in range(10)]
 poses = None
+new_data = False
 
 # Define apriltag locations
 apriltag_size = 0.1524  # meters

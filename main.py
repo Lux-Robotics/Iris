@@ -74,7 +74,8 @@ while True:
                                  len(detections),
                                  new_frame_time)
 
-    config.last_frame, config.detections = frame, detections
+    config.last_frame, config.detections, config.poses = frame, detections, poses
+    config.new_data = True
 
     if not config.preview and args.mode == 1:
         print("FPS:", 10 / (new_frame_time - config.fps[-10]))
