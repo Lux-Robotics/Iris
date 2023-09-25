@@ -78,7 +78,6 @@ tag_world_coords = {}
 pose_estimation_mode = settings["solvepnp_method"]
 capture_mode = settings["capture"]
 
-
 for tag in tags:
     tag_pose = Pose3d(Translation3d(tag["pose"]["translation"]["x"],
                                     tag["pose"]["translation"]["y"],
