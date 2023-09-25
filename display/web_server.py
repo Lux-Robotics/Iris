@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 def generate_frames():
     while True:
-        frame = display.pipeline.process()
+        frame, _ = display.pipeline.process()
         if frame is None:
             break
         else:

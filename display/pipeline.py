@@ -16,7 +16,7 @@ def process():
     if not config.new_data or config.detections is None or config.last_frame is None:
         # Timeout so thread doesn't hog CPU
         time.sleep(0.005)
-        return None
+        return None, None
 
     frame, detections = config.last_frame, config.detections
     config.new_data = False
@@ -24,7 +24,10 @@ def process():
     scale = math.ceil(max(frame.shape[1] / config.stream_res[0], frame.shape[0] / config.stream_res[1]))
     frame = cv2.resize(frame, dsize=(int(frame.shape[1] / scale), int(frame.shape[0] / scale)))
 
-    im = draw_detections(frame, detections, scale)
+    detections_array = np.array([np.concatenate((detection.corners.reshape(4, 2) / scale, detection.corners[0,:1] / scale)) for detection in detections])
+
+    # im = draw_detections(frame, detections, scale)
+    im = frame
 
     if config.preview_fps:
         cv2.putText(im, "FPS: " + str(9 / (config.fps[-1] - config.fps[-10])), (7, 40),
@@ -34,4 +37,4 @@ def process():
                     (100, 255, 0), 2,
                     cv2.LINE_AA)
 
-    return im
+    return im, detections_array
