@@ -31,7 +31,7 @@ match args.mode:
             case "gstreamer":
                 camera = cv2.VideoCapture("v4l2src device=/dev/video0 extra_controls=\"c,exposure_auto=" + str(
                     config.camera_auto_exposure) + ",exposure_absolute=" + str(config.camera_exposure) + ",gain=" + str(
-                    config.camera_gain) + ",sharpness=0,brightness=0\" ! video/x-raw ! appsink drop=1",
+                    config.camera_gain) + ",sharpness=0,brightness=0\" ! video/x-raw framerate=" + str(config.camera_fps) + "/1 ! appsink drop=1",
                                           cv2.CAP_GSTREAMER)
     case 1:
         camera = cv2.VideoCapture(config.test_video)
@@ -50,8 +50,11 @@ if config.preview:
     display_thread.start()
 
 while True:
-    new_frame_time = time.time()
     ret, frame = camera.read()
+    new_frame_time = time.time()
+
+    # Latency compensation estimate
+    new_frame_time -= (1/config.camera_fps) / 2
 
     if frame is None:
         if args.mode != 0:

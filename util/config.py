@@ -13,6 +13,7 @@ f.close()
 camera_auto_exposure = int(settings["camera"]["auto_exposure"])
 camera_exposure = settings["camera"]["manual_exposure"]
 camera_gain = settings["camera"]["gain"]
+camera_fps = settings["camera"]["fps"]
 
 c = open(settings["camera"]["calibration"], 'r')
 calibration = json.load(c)

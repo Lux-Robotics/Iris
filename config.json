@@ -6,7 +6,8 @@
     "calibration": "calibration/002-2_1600x1200.json",
     "auto_exposure": true,
     "manual_exposure": 0,
-    "gain": 0
+    "gain": 0, 
+    "fps": 60
   },
   "aruco": {
     "decimate": 0,
