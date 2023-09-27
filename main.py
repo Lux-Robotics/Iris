@@ -4,16 +4,12 @@ from util.pose_estimator import solvepnp_singletag, solvepnp_multitag, solvepnp_
 import util.config as config
 import argparse
 import threading
-import display.rerun_server
 from util.output_publisher import NTPublisher
 import sys
 
 parser = argparse.ArgumentParser("peninsula_perception")
 parser.add_argument("--mode", help="Toggle for operation modes", type=int, default=0, required=False)
 args = parser.parse_args()
-
-display_thread = threading.Thread(target=display.rerun_server.start)
-display_thread.daemon = True
 
 match config.settings["detector"]:
     case "aruco":
@@ -30,7 +26,9 @@ match args.mode:
                 camera.set(cv2.CAP_PROP_FRAME_HEIGHT, config.resy)
             case "gstreamer":
                 camera = cv2.VideoCapture("v4l2src device=/dev/video0 extra_controls=\"c,exposure_time_absolute=" + str(
-                    config.camera_exposure_time) + ",brightness=" + str(config.camera_brightness) + "\" ! video/x-raw framerate=" + str(config.camera_fps) + "/1 ! appsink drop=1",
+                    config.camera_exposure_time) + ",brightness=" + str(
+                    config.camera_brightness) + "\" ! video/x-raw framerate=" + str(
+                    config.camera_fps) + "/1 ! appsink drop=1",
                                           cv2.CAP_GSTREAMER)
     case 1:
         camera = cv2.VideoCapture(config.test_video)
@@ -46,6 +44,10 @@ prev_frame_time = 0
 
 # Start web stream thread
 if config.preview:
+    import display.rerun_server
+
+    display_thread = threading.Thread(target=display.rerun_server.start)
+    display_thread.daemon = True
     display_thread.start()
 
 while True:
@@ -53,7 +55,7 @@ while True:
     new_frame_time = time.time()
 
     # Latency compensation estimate
-    new_frame_time -= (1/config.camera_fps) / 2
+    new_frame_time -= (1 / config.camera_fps) / 2
 
     if frame is None:
         if args.mode != 0:
