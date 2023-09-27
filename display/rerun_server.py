@@ -6,6 +6,7 @@ import display.pipeline
 rr.init("PeninsulaPerception", spawn=False)
 
 rr.save("log.rrd")
+# rr.connect()
 
 def start():
     while True:

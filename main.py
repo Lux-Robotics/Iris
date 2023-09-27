@@ -29,9 +29,8 @@ match args.mode:
                 camera.set(cv2.CAP_PROP_FRAME_WIDTH, config.resx)
                 camera.set(cv2.CAP_PROP_FRAME_HEIGHT, config.resy)
             case "gstreamer":
-                camera = cv2.VideoCapture("v4l2src device=/dev/video0 extra_controls=\"c,exposure_auto=" + str(
-                    config.camera_auto_exposure) + ",exposure_absolute=" + str(config.camera_exposure) + ",gain=" + str(
-                    config.camera_gain) + ",sharpness=0,brightness=0\" ! video/x-raw framerate=" + str(config.camera_fps) + "/1 ! appsink drop=1",
+                camera = cv2.VideoCapture("v4l2src device=/dev/video0 extra_controls=\"c,exposure_time_absolute=" + str(
+                    config.camera_exposure_time) + ",brightness=" + str(config.camera_brightness) + "\" ! video/x-raw framerate=" + str(config.camera_fps) + "/1 ! appsink drop=1",
                                           cv2.CAP_GSTREAMER)
     case 1:
         camera = cv2.VideoCapture(config.test_video)
