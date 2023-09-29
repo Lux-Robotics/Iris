@@ -3,9 +3,9 @@
   "map": "maps/2023-chargedup.json",
   "test_video": "testdata/011_test.avi",
   "camera": {
-    "calibration": "calibration/002-2_1600x1200.json",
-    "exposure_time": 20,
-    "brightness": 240,  
+    "calibration": "calibration/011-1_1600x1300.json",
+    "exposure_time": 156,
+    "brightness": 10,  
     "fps": 60
   },
   "aruco": {
@@ -15,7 +15,7 @@
   },
   "apriltag3": {
     "border": 1,
-    "threads": 4,
+    "threads": 1,
     "quad_decimate": 1.0,
     "quad_blur": 0.0,
     "refine_edges": true,
