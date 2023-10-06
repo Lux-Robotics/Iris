@@ -1,0 +1,1 @@
+gst-launch-1.0 v4l2src ! video/x-raw,format=GREY8,framerate=60/1 ! h264enc bitrate=8096 ! matroskamux ! filesink location=output.mkv
