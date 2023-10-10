@@ -15,6 +15,6 @@ def start():
             continue
         else:
             rr.set_time_sequence(config.device_id, len(config.fps) - 10)
-            rr.log_image(config.device_id, frame)
-            rr.log_scalar(config.device_id, 9 / (config.fps[-1] - config.fps[-10]), label="fps")
-            rr.log_line_strips_2d(config.device_id, detections)
+            rr.log(config.device_id, rr.Image(frame))
+            rr.log(config.device_id, rr.TimeSeriesScalar(9 / (config.fps[-1] - config.fps[-10]), label="fps"))
+            rr.log(config.device_id, rr.LineStrips2D(detections))
