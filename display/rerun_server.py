@@ -4,6 +4,8 @@ import cv2
 import util.config as config
 import display.pipeline
 
+import util.vision_types as vt
+
 import numpy as np
 
 rr.init("PeninsulaPerception", spawn=False)
@@ -41,4 +43,8 @@ def start():
                 label.append("ID: " + str(i))
             rr.log("camera/tag"+str(i), rr.LineStrips3D(tags3d, labels = label), timeless=True)
             if(len(config.poses) > 0):
-                rr.log("camera/image", rr.Transform3D(translation=[config.poses[0].tvec[0][0], config.poses[0].tvec[1][0], config.poses[0].tvec[2][0]], rotation=rr.Quaternion(xyzw=np.array([0, 0, 0, 1], dtype=np.float32)), from_parent=True))
+                a = vt.Pose(config.poses[0].tvec, config.poses[0].rvec, error = 0)
+                q = a.get_wpilib()
+                quat = q.rotation().getQuaternion()
+                trans = q.translation()
+                rr.log("camera/image", rr.Transform3D(translation=[trans.X(), trans.Y(), trans.Z()], rotation=rr.Quaternion(xyzw=np.array([quat.X(), quat.Y(), quat.Z(), quat.W()], dtype=np.float32)), from_parent=True))
