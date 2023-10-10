@@ -3,14 +3,21 @@ import cv2
 
 import util.config as config
 import display.pipeline
+import datetime
 
 import util.vision_types as vt
 
 import numpy as np
 
+import os
+
 rr.init("PeninsulaPerception", spawn=False)
 
-rr.save("log.rrd")
+if not os.path.exists("logs/"):
+    os.makedirs("logs/")
+
+timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+rr.save("logs/log-" + timestamp + ".rrd")
 # rr.connect()
 
 def start():
