@@ -28,7 +28,17 @@ def start():
             rr.log("camera/image", rr.LineStrips2D(detections, labels=ids))
             rr.log("camera/image", rr.Pinhole(focal_length=900, width=1600, height=1300))
             rr.log("camera", rr.ViewCoordinates.RDF, timeless=True)
+            tags3d = []
+            label = []
             for i in range(1, 9):
-                rr.log("camera/tag"+str(i), rr.Points3D(config.tag_world_coords[i].get_corners()), timeless=True)
+                config.tag_world_coords[i].get_corners()
+                a = [config.tag_world_coords[i].get_corners()[0],
+                    config.tag_world_coords[i].get_corners()[1],
+                    config.tag_world_coords[i].get_corners()[2],
+                    config.tag_world_coords[i].get_corners()[3],
+                    config.tag_world_coords[i].get_corners()[0]]
+                tags3d.append(a)
+                label.append("ID: " + str(i))
+            rr.log("camera/tag"+str(i), rr.LineStrips3D(tags3d, labels = label), timeless=True)
             if(len(config.poses) > 0):
                 rr.log("camera/image", rr.Transform3D(translation=[config.poses[0].tvec[0][0], config.poses[0].tvec[1][0], config.poses[0].tvec[2][0]], rotation=rr.Quaternion(xyzw=np.array([0, 0, 0, 1], dtype=np.float32)), from_parent=True))
