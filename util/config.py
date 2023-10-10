@@ -37,7 +37,7 @@ match settings["detector"]:
                 detection_params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_NONE
             case "subpix":
                 detection_params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
-                detection_params.cornerRefinementWinSize = 11
+                detection_params.cornerRefinementWinSize = settings["aruco"]["refinement_window"]
     case "apriltag3":
         detector_options = apriltag.DetectorOptions(families='tag16h5')
         detector_options.border = settings["apriltag3"]["border"]
@@ -88,3 +88,4 @@ for tag in tags:
                                             tag["pose"]["rotation"]["quaternion"]["Y"],
                                             tag["pose"]["rotation"]["quaternion"]["Z"])))
     tag_world_coords[tag["ID"]] = TagCoordinates(tag_pose, apriltag_size)
+    print(tag_world_coords[tag["ID"]].get_corners())
