@@ -11,7 +11,7 @@ rr.save("log.rrd")
 
 def start():
     while True:
-        frame, detections = display.pipeline.process()
+        frame, detections, ids = display.pipeline.process()
         if frame is None:
             continue
         else:
@@ -23,4 +23,4 @@ def start():
             rr.set_time_sequence(config.device_id, len(config.fps) - 10)
             rr.log(config.device_id, rr.ImageEncoded(contents=frame_bytes))
             rr.log(config.device_id, rr.TimeSeriesScalar(9 / (config.fps[-1] - config.fps[-10]), label="fps"))
-            rr.log(config.device_id, rr.LineStrips2D(detections, labels=None))
+            rr.log(config.device_id, rr.LineStrips2D(detections, labels=ids))
