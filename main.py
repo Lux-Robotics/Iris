@@ -67,7 +67,6 @@ while True:
         time.sleep(0.02)
         continue
 
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     detections = find_corners(frame)
 
     # Solve for pose
