@@ -6,8 +6,6 @@ import argparse
 import threading
 from util.output_publisher import NTPublisher
 import sys
-import rerun as rr
-import numpy as np
 
 parser = argparse.ArgumentParser("peninsula_perception")
 parser.add_argument("--mode", help="Toggle for operation modes", type=int, default=0, required=False)
