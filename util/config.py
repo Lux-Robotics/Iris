@@ -1,8 +1,10 @@
 import json
-import numpy as np
-import cv2
+
 import apriltag
+import cv2
+import numpy as np
 from wpimath.geometry import *
+
 from util.vision_types import TagCoordinates
 
 f = open("config.json", 'r')

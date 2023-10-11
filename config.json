@@ -5,13 +5,13 @@
   "camera": {
     "calibration": "calibration/011-1_1600x1300.json",
     "exposure_time": 156,
-    "brightness": 10,  
+    "brightness": 10,
     "fps": 60
   },
   "aruco": {
     "decimate": 0,
     "aruco3": false,
-    "corner_refinement": "subpix", 
+    "corner_refinement": "subpix",
     "refinement_window": 5
   },
   "apriltag3": {

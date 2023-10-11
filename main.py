@@ -1,11 +1,13 @@
-import cv2
-import time
-from util.pose_estimator import solvepnp_singletag, solvepnp_multitag, solvepnp_apriltag
-import util.config as config
 import argparse
-import threading
-from util.output_publisher import NTPublisher
 import sys
+import threading
+import time
+
+import cv2
+
+import util.config as config
+from util.output_publisher import NTPublisher
+from util.pose_estimator import solvepnp_singletag, solvepnp_multitag
 
 parser = argparse.ArgumentParser("peninsula_perception")
 parser.add_argument("--mode", help="Toggle for operation modes", type=int, default=0, required=False)
@@ -25,6 +27,7 @@ match args.mode:
                 camera.set(cv2.CAP_PROP_FRAME_WIDTH, config.resx)
                 camera.set(cv2.CAP_PROP_FRAME_HEIGHT, config.resy)
             case "gstreamer":
+                # Specific for 011
                 camera = cv2.VideoCapture("v4l2src device=/dev/video0 extra_controls=\"c,exposure_time_absolute=" + str(
                     config.camera_exposure_time) + ",brightness=" + str(
                     config.camera_brightness) + "\" ! video/x-raw framerate=" + str(

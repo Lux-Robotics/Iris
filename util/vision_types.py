@@ -1,5 +1,6 @@
 import math
 from dataclasses import dataclass
+
 import numpy as np
 from wpimath.geometry import *
 
@@ -16,15 +17,18 @@ class Pose:
     tvec: np.ndarray[np.float64]
     error: float
 
-    def get_wpilib(self):
+    def get_object_pose(self):
         # shift coordinate system
         tvec = np.array([self.tvec[2], -self.tvec[0], -self.tvec[1]])
 
-        pose = Pose3d(
+        return Pose3d(
             Translation3d(tvec[0][0], tvec[1][0], tvec[2][0]),
             Rotation3d(np.array([self.rvec[2][0], -self.rvec[0][0], -self.rvec[1][0]]),
                        math.sqrt(
                            math.pow(self.rvec[0][0], 2) + math.pow(self.rvec[1][0], 2) + math.pow(self.rvec[2][0], 2))))
+
+    def get_wpilib(self):
+        pose = self.get_object_pose()
 
         # solvepnp returns pose to object, invert to get camera pose
         target_pose = Transform3d(pose.translation(), pose.rotation())

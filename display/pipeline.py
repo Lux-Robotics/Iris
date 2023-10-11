@@ -1,8 +1,10 @@
-import cv2
-import util.config as config
-import numpy as np
 import math
 import time
+
+import cv2
+import numpy as np
+
+import util.config as config
 
 
 def draw_detections(image, detections, scale):
@@ -24,7 +26,9 @@ def process():
     scale = math.ceil(max(frame.shape[1] / config.stream_res[0], frame.shape[0] / config.stream_res[1]))
     frame = cv2.resize(frame, dsize=(int(frame.shape[1] / scale), int(frame.shape[0] / scale)))
 
-    detections_array = np.array([np.concatenate((detection.corners.reshape(4, 2) / scale, detection.corners[0,:1] / scale)) for detection in detections])
+    detections_array = np.array(
+        [np.concatenate((detection.corners.reshape(4, 2) / scale, detection.corners[0, :1] / scale)) for detection in
+         detections])
     detection_ids = ["ID: " + str(detection.tag_id) for detection in detections]
 
     # im = draw_detections(frame, detections, scale)

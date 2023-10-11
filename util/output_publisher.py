@@ -1,7 +1,9 @@
+import math
+
 import ntcore
+
 import util.config as config
 from util.vision_types import Pose
-import math
 
 
 class NTPublisher:
