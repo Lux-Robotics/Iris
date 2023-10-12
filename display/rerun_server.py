@@ -36,23 +36,32 @@ def start():
             # Encode frame
             encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), config.stream_quality]
             ret, buffer = cv2.imencode('.jpg', frame, encode_param)
+
             # Convert the frame to bytes
             frame_bytes = buffer.tobytes()
+
+            # Log fps
             rr.set_time_sequence("world/" + config.device_id, len(config.fps) - 10)
-            rr.log("world/" + config.device_id, rr.ImageEncoded(contents=frame_bytes))
             rr.log("world/" + config.device_id,
                    rr.TimeSeriesScalar(9 / (config.fps[-1] - config.fps[-10]), label="fps"))
+
+            # Log image
+            rr.log("world/" + config.device_id, rr.ImageEncoded(contents=frame_bytes))
+
+            # Log detections
             rr.log("world/" + config.device_id, rr.LineStrips2D(detections, labels=ids))
-            # rr.log("world/" + config.device_id, rr.Pinhole(focal_length=900, width=1600, height=1300))
-            rr.log("world/" + config.device_id, rr.Pinhole(image_from_camera=[[1445.350726,0,803.8430844 ],[0,1441.443109,637.7936243],[0,0,1]], width=1600, height=1300))
-            # rr.Pinhole(image_from_camera=[[1445.350726,0,803.8430844 ],[0,1441.443109,637.7936243],[0,0,1]])
-            if (len(config.poses) > 0):
-                a = config.poses[0]
-                q = a.get_object_pose()
-                quat = q.rotation().getQuaternion()
-                trans = q.translation()
-                rr.log("world/" + config.device_id, rr.Transform3D(translation=[trans.X(), trans.Y(), trans.Z()],
-                                                                   rotation=rr.Quaternion(xyzw=np.array(
-                                                                       [quat.X(), quat.Y(), quat.Z(), quat.W()],
-                                                                       dtype=np.float32)),
-                                                                   from_parent=True))  # Not correct, need to flip 90 degrees down
+
+            # Log camera pose
+            rr.log("world/" + config.device_id,
+                   rr.Pinhole(image_from_camera=config.camera_matrix, width=config.resx, height=config.resy))
+
+            if len(config.poses) > 0:
+                camera_pose = config.poses[0].get_object_pose()
+                pose_quaternion = camera_pose.rotation().getQuaternion()
+                pose_translation = camera_pose.translation()
+
+                rr.log("world/" + config.device_id,
+                       rr.Transform3D(translation=[pose_translation.X(), pose_translation.Y(), pose_translation.Z()],
+                                      rotation=rr.Quaternion(xyzw=np.array(
+                                          [pose_quaternion.X(), pose_quaternion.Y(), pose_quaternion.Z(),
+                                           pose_quaternion.W()], dtype=np.float32)), from_parent=True))
