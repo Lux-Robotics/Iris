@@ -43,7 +43,9 @@ def start():
             rr.log("world/" + config.device_id,
                    rr.TimeSeriesScalar(9 / (config.fps[-1] - config.fps[-10]), label="fps"))
             rr.log("world/" + config.device_id, rr.LineStrips2D(detections, labels=ids))
-            rr.log("world/" + config.device_id, rr.Pinhole(focal_length=900, width=1600, height=1300))
+            # rr.log("world/" + config.device_id, rr.Pinhole(focal_length=900, width=1600, height=1300))
+            rr.log("world/" + config.device_id, rr.Pinhole(image_from_camera=[[1445.350726,0,803.8430844 ],[0,1441.443109,637.7936243],[0,0,1]], width=1600, height=1300))
+            # rr.Pinhole(image_from_camera=[[1445.350726,0,803.8430844 ],[0,1441.443109,637.7936243],[0,0,1]])
             if (len(config.poses) > 0):
                 a = config.poses[0]
                 q = a.get_object_pose()
