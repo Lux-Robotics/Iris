@@ -12,9 +12,14 @@ settings = json.load(f)
 f.close()
 
 # Camera config
-camera_exposure_time = settings["camera"]["exposure_time"]
-camera_brightness = settings["camera"]["brightness"]
 camera_fps = settings["camera"]["fps"]
+
+camera_config_list = []
+for parameter in settings["camera"]["capture_settings"]:
+    camera_config_list.append(parameter + "=" + str(settings["camera"]["capture_settings"][parameter]))
+
+gstreamer_config = ",".join(camera_config_list)
+print(gstreamer_config)
 
 c = open(settings["camera"]["calibration"], 'r')
 calibration = json.load(c)
@@ -38,6 +43,7 @@ if settings["detector"] == "aruco":
     elif settings["aruco"]["corner_refinement"] == "subpix":
         detection_params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
         detection_params.cornerRefinementWinSize = settings["aruco"]["refinement_window"]
+
 elif settings["detector"] == "apriltag3":
     detector_options = apriltag.DetectorOptions(families='tag16h5')
     detector_options.border = settings["apriltag3"]["border"]

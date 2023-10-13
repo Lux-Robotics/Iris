@@ -5,8 +5,10 @@
   "test_video": "testdata/output3.mkv",
   "camera": {
     "calibration": "calibration/011-1_1600x1300.json",
-    "exposure_time": 156,
-    "brightness": 10,
+    "capture_settings": {
+      "exposure_time_absolute": 156,
+      "brightness": 10
+    },
     "fps": 60
   },
   "aruco": {

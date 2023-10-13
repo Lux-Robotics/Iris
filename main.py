@@ -29,11 +29,9 @@ if args.mode == 0:
         camera.set(cv2.CAP_PROP_FRAME_HEIGHT, config.resy)
     elif config.capture_mode == "gstreamer":
         # Specific for 011
-        camera = cv2.VideoCapture("v4l2src device=/dev/video0 extra_controls=\"c,exposure_time_absolute=" + str(
-            config.camera_exposure_time) + ",brightness=" + str(
-            config.camera_brightness) + "\" ! video/x-raw framerate=" + str(
-            config.camera_fps) + "/1 ! appsink drop=1",
-                                  cv2.CAP_GSTREAMER)
+        camera = cv2.VideoCapture(
+            "v4l2src device=/dev/video0 extra_controls=\"c," + config.gstreamer_config + "\" ! video/x-raw framerate=" + str(
+                config.camera_fps) + "/1 ! appsink drop=1", cv2.CAP_GSTREAMER)
 elif args.mode == 1:
     camera = cv2.VideoCapture(config.test_video)
 elif args.mode == 2:
