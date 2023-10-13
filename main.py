@@ -13,32 +13,33 @@ parser = argparse.ArgumentParser("peninsula_perception")
 parser.add_argument("--mode", help="Toggle for operation modes", type=int, default=0, required=False)
 args = parser.parse_args()
 
-match config.settings["detector"]:
-    case "aruco":
-        from detectors.aruco_detector import find_corners
-    case "apriltag3":
-        from detectors.apriltag_detector import find_corners
+# Import apriltag detector
+try:
+    module = __import__("detectors." + config.settings["detector"] + "_detector", fromlist=[''])
+    find_corners = getattr(module, 'find_corners')
+except ImportError:
+    print("The specified detector does not exist")
+    sys.exit()
 
-match args.mode:
-    case 0:
-        match config.capture_mode:
-            case "opencv":
-                camera = cv2.VideoCapture(0)
-                camera.set(cv2.CAP_PROP_FRAME_WIDTH, config.resx)
-                camera.set(cv2.CAP_PROP_FRAME_HEIGHT, config.resy)
-            case "gstreamer":
-                # Specific for 011
-                camera = cv2.VideoCapture("v4l2src device=/dev/video0 extra_controls=\"c,exposure_time_absolute=" + str(
-                    config.camera_exposure_time) + ",brightness=" + str(
-                    config.camera_brightness) + "\" ! video/x-raw framerate=" + str(
-                    config.camera_fps) + "/1 ! appsink drop=1",
-                                          cv2.CAP_GSTREAMER)
-    case 1:
-        camera = cv2.VideoCapture(config.test_video)
-    case 2:
-        camera = cv2.VideoCapture(config.test_video)
-        config.preview = False
-        config.use_nt = False
+# Initialize video capture
+if args.mode == 0:
+    if config.capture_mode == "opencv":
+        camera = cv2.VideoCapture(0)
+        camera.set(cv2.CAP_PROP_FRAME_WIDTH, config.resx)
+        camera.set(cv2.CAP_PROP_FRAME_HEIGHT, config.resy)
+    elif config.capture_mode == "gstreamer":
+        # Specific for 011
+        camera = cv2.VideoCapture("v4l2src device=/dev/video0 extra_controls=\"c,exposure_time_absolute=" + str(
+            config.camera_exposure_time) + ",brightness=" + str(
+            config.camera_brightness) + "\" ! video/x-raw framerate=" + str(
+            config.camera_fps) + "/1 ! appsink drop=1",
+                                  cv2.CAP_GSTREAMER)
+elif args.mode == 1:
+    camera = cv2.VideoCapture(config.test_video)
+elif args.mode == 2:
+    camera = cv2.VideoCapture(config.test_video)
+    config.preview = False
+    config.use_nt = False
 
 if config.use_nt:
     nt_instance = NTPublisher("127.0.0.1")

@@ -93,7 +93,7 @@ PeninsulaPerception is configured using `config.json` in the project's root dire
     - stream_port: The port that the stream is served under
 - use_networktables: Toggle for NetworkTables support
 - capture: Capture method `WIP`
-- detector: The detector to use. Valid options are `aruco` and `apriltag3`
+- detector: The detector to use. Valid options are `aruco` and `apriltag`
 - solvepnp_method: The solvepnp method to use. Valid options are `singletag` and `multitag`
 
 ## NetworkTables Output
