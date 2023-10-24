@@ -13,6 +13,7 @@ f.close()
 
 # Camera config
 camera_fps = settings["camera"]["fps"]
+camera_id = settings["camera"]["id"]
 
 camera_config_list = []
 for parameter in settings["camera"]["capture_settings"]:

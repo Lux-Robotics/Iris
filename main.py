@@ -30,8 +30,9 @@ if args.mode == 0:
     elif config.capture_mode == "gstreamer":
         # Specific for 011
         camera = cv2.VideoCapture(
-            "v4l2src device=/dev/video0 extra_controls=\"c," + config.gstreamer_config + "\" ! video/x-raw framerate=" + str(
-                config.camera_fps) + "/1 ! appsink drop=1", cv2.CAP_GSTREAMER)
+            "v4l2src device=/dev/video" + str(
+                config.camera_id) + " extra_controls=\"c," + config.gstreamer_config + "\" ! image/jpeg,format=MJPG,width=" + str(
+                config.resx) + ",height=" + str(config.resy) + " ! jpegdec ! appsink drop=1", cv2.CAP_GSTREAMER)
 elif args.mode == 1:
     camera = cv2.VideoCapture(config.test_video)
 elif args.mode == 2:
