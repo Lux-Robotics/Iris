@@ -1,7 +1,7 @@
 {
   "device_id": "test_cam",
   "map": "maps/2023-chargedup.json",
-  "server_ip": "10.60.36.2",
+  "server_ip": "127.0.0.1",
   "test_video": "testdata/output3.mkv",
   "camera": {
     "calibration": "calibration/011-1_1600x1300.json",

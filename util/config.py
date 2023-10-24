@@ -31,6 +31,7 @@ c.close()
 
 # networktables
 use_nt = settings["use_networktables"]
+server_ip = settings["server_ip"]
 device_id = settings["device_id"]
 
 # Setup detection params

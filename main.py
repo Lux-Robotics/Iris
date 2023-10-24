@@ -39,9 +39,13 @@ elif args.mode == 2:
     camera = cv2.VideoCapture(config.test_video)
     config.preview = False
     config.use_nt = False
+else:
+    # Mode parameter not valid
+    print("Program mode invalid, Exiting")
+    sys.exit()
 
 if config.use_nt:
-    nt_instance = NTPublisher("127.0.0.1")
+    nt_instance = NTPublisher(config.server_ip)
 
 prev_frame_time = 0
 
