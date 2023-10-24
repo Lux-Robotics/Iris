@@ -11,6 +11,8 @@ def solvepnp_apriltag(detections):
     if len(detections) == 0:
         return []
     for detection in detections:
+        if detection.tag_id not in config.tag_world_coords:
+            continue
         corners = detection.corners.reshape((4, 2))
         world_coords = np.array([
             [-config.apriltag_size / 2, config.apriltag_size / 2, 0],
@@ -33,6 +35,8 @@ def solvepnp_singletag(detections):
     if len(detections) == 0:
         return []
     for detection in detections:
+        if detection.tag_id not in config.tag_world_coords:
+            continue
         corners = detection.corners.reshape((4, 2))
         world_coords = config.tag_world_coords[detection.tag_id].get_corners()
 
@@ -50,6 +54,8 @@ def solvepnp_multitag(detections):
     corners = None
     world_coords = None
     for detection in detections:
+        if detection.tag_id not in config.tag_world_coords:
+            continue
         if corners is None:
             corners = detection.corners.reshape((4, 2))
         else:
