@@ -14,7 +14,7 @@ args = parser.parse_args()
 try:
     model = mrcal.cameramodel(args.filename)
 except:
-    print("Error loading calibration file:", args.filename)
+    print("Error loading calibration file:", args.filepath)
     sys.exit()
 
 id_num = input("Input camera identification number (ex. 002-1): ")
