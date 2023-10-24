@@ -4,13 +4,12 @@
   "server_ip": "127.0.0.1",
   "test_video": "testdata/output3.mkv",
   "camera": {
-    "calibration": "calibration/011-1_1600x1300.json",
+    "calibration": "calibration/003-4_1280x720.json",
     "capture_settings": {
-      "exposure_time_absolute": 156,
-      "brightness": 10
+      "exposure_dynamic_framerate": 1
     },
     "fps": 60,
-    "id": 0
+    "id": 2
   },
   "aruco": {
     "decimate": 0,
