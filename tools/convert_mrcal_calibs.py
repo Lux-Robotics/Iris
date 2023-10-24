@@ -4,6 +4,7 @@ import argparse
 import sys
 
 import mrcal
+import json
 
 parser = argparse.ArgumentParser("mrcal_converter")
 
@@ -15,3 +16,24 @@ try:
 except:
     print("Error loading calibration file:", args.filename)
     sys.exit()
+
+id_num = input("Input camera identification number (ex. 002-1): ")
+
+model_type, intrinsics_mrcal = model.intrinsics()
+
+x_res, y_res = model.imagersize()
+
+intrinsic_matrix_opencv = [
+    [intrinsics_mrcal[0], 0, intrinsics_mrcal[2]],
+    [0, intrinsics_mrcal[1], intrinsics_mrcal[3]],
+    [0, 0, 1]
+]
+
+distortions_opencv = intrinsics_mrcal[4:].tolist()
+
+calibration_out = {"resolution": [x_res, y_res], "cameraMatrix": intrinsic_matrix_opencv,
+                   "distCoeffs": distortions_opencv}
+
+out = open("calibration/" + id_num + "_" + x_res + "x" + y_res + ".json", "w")
+out.write(json.dumps(calibration_out, indent=2))
+out.close()
