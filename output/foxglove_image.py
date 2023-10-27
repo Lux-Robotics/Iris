@@ -3,6 +3,8 @@ from mcap_protobuf.writer import Writer
 from foxglove_schemas_protobuf.CameraCalibration_pb2 import CameraCalibration
 from foxglove_schemas_protobuf.ImageAnnotations_pb2 import ImageAnnotations
 from foxglove_schemas_protobuf.CompressedImage_pb2 import CompressedImage
+from output.float_message_pb2 import FloatMessage
+
 import util.config as config
 
 from output.foxglove_utils import timestamp, points
@@ -47,4 +49,11 @@ def write_frame(writer: Writer, now: int, buffer: bytes, points_array, ids):
         log_time=now,
         message=ann,
         publish_time=now,
+    )
+    # /camera/fps
+    writer.write_message(
+        topic="/camera/fps",
+        log_time=now,
+        message=FloatMessage(number=9 / (config.fps[-1] - config.fps[-10])),
+        publish_time=now
     )
