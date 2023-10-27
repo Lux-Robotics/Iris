@@ -1,6 +1,7 @@
 # This example writes a single point cloud message.
-import sys
 import time
+import os
+import datetime
 
 from mcap_protobuf.writer import Writer
 
@@ -12,7 +13,12 @@ from output.foxglove_image import write_frame
 
 
 def main():
-    with open("out.mcap", "wb") as f, Writer(f) as writer:
+    # Create logs director if doesn't exist
+    if not os.path.exists("logs/"):
+        os.makedirs("logs/")
+
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+    with open("logs/log-" + timestamp + ".mcap", "wb") as f, Writer(f) as writer:
         # start = time.time_ns()
         while True:
             now = time.time_ns()
