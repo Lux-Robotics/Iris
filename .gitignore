@@ -167,3 +167,5 @@ __pycache__
 *.mkv
 
 *.rrd
+*.mcap
+profiler.out

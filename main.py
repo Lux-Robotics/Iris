@@ -57,7 +57,7 @@ prev_frame_time = 0
 
 # Start web stream thread
 if config.preview:
-    import output.rerun_server as out
+    import output.foxglove_server as out
 
     display_thread = threading.Thread(target=out.start)
     display_thread.daemon = True

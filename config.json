@@ -32,9 +32,9 @@
     "enabled": true,
     "show_fps": false,
     "show_transform": false,
-    "stream_quality": 90,
+    "stream_quality": 25,
     "max_stream_res": [
-      1600,
+      800,
       1600
     ],
     "stream_port": 8000
