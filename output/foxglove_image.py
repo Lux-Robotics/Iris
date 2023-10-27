@@ -1,16 +1,7 @@
 from mcap_protobuf.writer import Writer
 
-from io import BytesIO
-from random import random
-from typing import List
-import struct
-
 from foxglove_schemas_protobuf.CameraCalibration_pb2 import CameraCalibration
-from foxglove_schemas_protobuf.CircleAnnotation_pb2 import CircleAnnotation
-from foxglove_schemas_protobuf.PointsAnnotation_pb2 import PointsAnnotation
-from foxglove_schemas_protobuf.Color_pb2 import Color
 from foxglove_schemas_protobuf.ImageAnnotations_pb2 import ImageAnnotations
-from foxglove_schemas_protobuf.Point2_pb2 import Point2
 from foxglove_schemas_protobuf.CompressedImage_pb2 import CompressedImage
 import util.config as config
 
@@ -38,7 +29,7 @@ def write_frame(writer: Writer, now: int, buffer: bytes, points_array, ids):
         frame_id="camera",
         width=config.resx,
         height=config.resy,
-        distortion_model="plumb_bob",
+        distortion_model="rational_polynomial",
         D=config.dist_coeffs,
         K=config.camera_matrix,
     )
