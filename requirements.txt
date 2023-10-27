@@ -5,3 +5,8 @@ flask
 robotpy-wpimath
 pyntcore
 rerun-sdk
+
+mcap
+protobuf3
+mcap-protobuf-support
+foxglove-schemas-protobuf
