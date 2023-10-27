@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 import rerun as rr
 
-import display.pipeline
+import output.pipeline
 import util.config as config
 
 rr.init("PeninsulaPerception", spawn=False)
@@ -29,7 +29,7 @@ def start():
              config.tag_world_coords[tag].corners]), timeless=True)
 
     while True:
-        frame, detections, ids = display.pipeline.process()
+        frame, detections, ids = output.pipeline.process()
         if frame is None:
             continue
         else:

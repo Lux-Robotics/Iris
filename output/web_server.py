@@ -1,14 +1,14 @@
 import cv2
 from flask import Flask, Response
 import util.config as config
-import display.pipeline
+import output.pipeline
 
 app = Flask(__name__)
 
 
 def generate_frames():
     while True:
-        frame, _, _ = display.pipeline.process()
+        frame, _, _ = output.pipeline.process()
         if frame is None:
             break
         else:

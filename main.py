@@ -51,9 +51,9 @@ prev_frame_time = 0
 
 # Start web stream thread
 if config.preview:
-    import display.rerun_server
+    import output.rerun_server as out
 
-    display_thread = threading.Thread(target=display.rerun_server.start)
+    display_thread = threading.Thread(target=out.start)
     display_thread.daemon = True
     display_thread.start()
 
