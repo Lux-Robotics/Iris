@@ -28,7 +28,7 @@ def main():
 
             # Convert the frame to bytes
             data = buffer.tobytes()
-            write_frame(writer, now, data, points)
+            write_frame(writer, now, data, points, ids)
 
 
 def start():

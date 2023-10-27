@@ -17,7 +17,7 @@ import util.config as config
 from output.foxglove_utils import timestamp, points
 
 
-def write_frame(writer: Writer, now: int, buffer: bytes, points_array):
+def write_frame(writer: Writer, now: int, buffer: bytes, points_array, ids):
     # /camera/image
     img = CompressedImage(
         timestamp=timestamp(now),
@@ -49,7 +49,8 @@ def write_frame(writer: Writer, now: int, buffer: bytes, points_array):
         publish_time=now,
     )
     # /camera/annotations
-    ann = ImageAnnotations(points=points(points_array, now))
+    point, id = points(points_array, ids, now)
+    ann = ImageAnnotations(points=point, texts=id)
     writer.write_message(
         topic="/camera/annotations",
         log_time=now,
