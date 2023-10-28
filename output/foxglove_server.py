@@ -10,6 +10,7 @@ import cv2
 import util.config as config
 
 from output.foxglove_image import write_frame
+from output.foxglove_pose import write_pose
 
 
 def main():
@@ -35,6 +36,8 @@ def main():
             # Convert the frame to bytes
             data = buffer.tobytes()
             write_frame(writer, now, data, points, ids)
+            if len(config.poses) > 0:
+                write_pose(writer, now, config.poses[0])
 
 
 def start():

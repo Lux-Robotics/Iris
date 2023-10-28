@@ -26,21 +26,24 @@ def write_frame(writer: Writer, now: int, buffer: bytes, points_array, ids):
     )
 
     # /camera/calibration
-    # cal = CameraCalibration(
-    #     timestamp=timestamp(now),
-    #     frame_id="camera",
-    #     width=config.resx,
-    #     height=config.resy,
-    #     distortion_model="rational_polynomial",
-    #     D=config.dist_coeffs,
-    #     K=config.camera_matrix
-    # )
-    # writer.write_message(
-    #     topic="/camera/calibration",
-    #     log_time=now,
-    #     message=cal,
-    #     publish_time=now,
-    # )
+    fx, cx, fy, cy = config.camera_matrix[0][0], config.camera_matrix[0][2], config.camera_matrix[1][1], config.camera_matrix[1][2]
+    cal = CameraCalibration(
+        timestamp=timestamp(now),
+        frame_id="camera",
+        width=config.resx,
+        height=config.resy,
+        distortion_model="rational_polynomial",
+        D=config.dist_coeffs.tolist(),
+        K=config.camera_matrix.reshape(9).tolist(),
+        R=[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0],
+        P=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+    )
+    writer.write_message(
+        topic="/camera/calibration",
+        log_time=now,
+        message=cal,
+        publish_time=now,
+    )
 
     # /camera/annotations
     point, id = points(points_array, ids, now)
