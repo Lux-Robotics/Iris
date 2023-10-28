@@ -3,7 +3,6 @@ from mcap_protobuf.writer import Writer
 from foxglove_schemas_protobuf.Vector3_pb2 import Vector3
 from foxglove_schemas_protobuf.Quaternion_pb2 import Quaternion
 from foxglove_schemas_protobuf.Pose_pb2 import Pose
-from foxglove_schemas_protobuf.PoseInFrame_pb2 import PoseInFrame
 from foxglove_schemas_protobuf.FrameTransform_pb2 import FrameTransform
 from foxglove_schemas_protobuf.SceneEntity_pb2 import SceneEntity
 from foxglove_schemas_protobuf.SceneUpdate_pb2 import SceneUpdate
@@ -44,13 +43,14 @@ def write_pose(writer: Writer, now: int, pose: PerceptionPose):
 
 
 def setup_field(writer: Writer, now: int):
-    with open("maps/2023_chargedup.glb", mode='rb') as f:  # b is important -> binary
+    with open("assets/2023_chargedup.glb", mode='rb') as f:  # b is important -> binary
         field_model = f.read()
+
     field = ModelPrimitive(
         pose=Pose(position=Vector3(x=8.270875, y=4.00685, z=0), orientation=Quaternion(w=0, x=0, y=0, z=1)),
         scale=Vector3(x=1, y=1, z=1),
         override_color=True,
-        color=Color(r=1, g=1, b=1, a=0.4),
+        color=Color(r=1, g=1, b=1, a=0.3),
         data=field_model,
         media_type="model/gltf-binary"
     )

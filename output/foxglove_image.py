@@ -26,7 +26,6 @@ def write_frame(writer: Writer, now: int, buffer: bytes, points_array, ids):
     )
 
     # /camera/calibration
-    fx, cx, fy, cy = config.camera_matrix[0][0], config.camera_matrix[0][2], config.camera_matrix[1][1], config.camera_matrix[1][2]
     cal = CameraCalibration(
         timestamp=timestamp(now),
         frame_id="camera",

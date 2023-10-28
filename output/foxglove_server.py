@@ -20,9 +20,8 @@ def main():
 
     timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     with open("logs/log-" + timestamp + ".mcap", "wb") as f, Writer(f) as writer:
-        now = time.time_ns()
-        setup_field(writer, now)
-        # start = time.time_ns()
+        start = time.time_ns()
+        setup_field(writer, start)
         while True:
             now = time.time_ns()
             frame, points, ids = output.pipeline.process()
