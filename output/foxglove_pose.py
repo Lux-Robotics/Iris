@@ -62,7 +62,7 @@ def setup_field(writer: Writer, now: int):
     )
     update = SceneUpdate(entities=[entities])
     writer.write_message(
-        topic="camera/field",
+        topic="/world/field",
         log_time=now,
         message=update,
         publish_time=now
