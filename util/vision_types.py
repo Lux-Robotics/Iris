@@ -22,7 +22,6 @@ class Pose:
         pose = pose.transformBy(Transform3d(Translation3d(), Rotation3d(Quaternion(-0.5, 0.5, -0.5, 0.5))))
         world_pose = Transform3d(pose.translation(), pose.rotation())
         target_pose = world_pose.inverse()
-        Rotation3d
         return Pose3d(target_pose.translation(), target_pose.rotation())
 
     def get_wpilib(self):

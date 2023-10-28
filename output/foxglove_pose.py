@@ -15,7 +15,8 @@ def write_pose(writer: Writer, now: int, pose: PerceptionPose):
     position = Vector3(
         x=object_pose.translation().X(),
         y=object_pose.translation().Y(),
-        z=object_pose.translation().Z())
+        z=object_pose.translation().Z()
+    )
     orientation = Quaternion(
         w=object_pose.rotation().getQuaternion().W(),
         x=object_pose.rotation().getQuaternion().X(),
