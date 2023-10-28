@@ -10,7 +10,7 @@ import cv2
 import util.config as config
 
 from output.foxglove_image import write_frame
-from output.foxglove_pose import write_pose
+from output.foxglove_pose import write_pose, setup_field
 
 
 def main():
@@ -20,6 +20,8 @@ def main():
 
     timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     with open("logs/log-" + timestamp + ".mcap", "wb") as f, Writer(f) as writer:
+        now = time.time_ns()
+        setup_field(writer, now)
         # start = time.time_ns()
         while True:
             now = time.time_ns()
