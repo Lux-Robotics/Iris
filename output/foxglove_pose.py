@@ -44,10 +44,10 @@ def write_pose(writer: Writer, now: int, pose: PerceptionPose):
 
 
 def setup_field(writer: Writer, now: int):
-    with open("templates.2023.glb", mode='rb') as f:  # b is important -> binary
+    with open("maps/2023_chargedup.glb", mode='rb') as f:  # b is important -> binary
         field_model = f.read()
     field = ModelPrimitive(
-        pose=Pose(position=Vector3(x=0, y=0, z=0), orientation=Quaternion(w=0, x=0, y=0, z=0)),
+        pose=Pose(position=Vector3(x=8.270875, y=4.00685, z=0), orientation=Quaternion(w=0, x=0, y=0, z=1)),
         scale=Vector3(x=1, y=1, z=1),
         override_color=True,
         color=Color(r=1, g=1, b=1, a=0.4),
