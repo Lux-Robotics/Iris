@@ -4,7 +4,7 @@
   "server_ip": "127.0.0.1",
   "test_video": "testdata/output3.mkv",
   "camera": {
-    "calibration": "calibration/003-4_1280x720.json",
+    "calibration": "calibration/011-1_1600x1300.json",
     "capture_settings": {
       "exposure_dynamic_framerate": 1
     },
@@ -32,7 +32,7 @@
     "enabled": true,
     "show_fps": false,
     "show_transform": false,
-    "stream_quality": 90,
+    "stream_quality": 25,
     "max_stream_res": [
       1600,
       1600

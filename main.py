@@ -33,6 +33,10 @@ if args.mode == 0:
             "v4l2src device=/dev/video" + str(
                 config.camera_id) + " extra_controls=\"c," + config.gstreamer_config + "\" ! image/jpeg,format=MJPG,width=" + str(
                 config.resx) + ",height=" + str(config.resy) + " ! jpegdec ! appsink drop=1", cv2.CAP_GSTREAMER)
+    else:
+        # Mode parameter not valid
+        print("Program mode invalid, Exiting")
+        sys.exit()
 elif args.mode == 1:
     camera = cv2.VideoCapture(config.test_video)
 elif args.mode == 2:
@@ -44,6 +48,8 @@ else:
     print("Program mode invalid, Exiting")
     sys.exit()
 
+nt_instance = None
+
 if config.use_nt:
     nt_instance = NTPublisher(config.server_ip)
 
@@ -51,9 +57,9 @@ prev_frame_time = 0
 
 # Start web stream thread
 if config.preview:
-    import display.rerun_server
+    import output.foxglove_server as out
 
-    display_thread = threading.Thread(target=display.rerun_server.start)
+    display_thread = threading.Thread(target=out.start)
     display_thread.daemon = True
     display_thread.start()
 
@@ -79,8 +85,10 @@ while True:
         poses = solvepnp_singletag(detections)
     elif config.pose_estimation_mode == "multitag":
         poses = solvepnp_multitag(detections)
+    else:
+        sys.exit(-1)  # TODO: make proper error
 
-    if config.use_nt:
+    if nt_instance is not None:
         nt_instance.publish_data(poses[0] if len(poses) > 0 else None, poses[1] if len(poses) > 1 else None,
                                  len(detections),
                                  new_frame_time)
