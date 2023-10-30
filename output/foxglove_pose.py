@@ -14,7 +14,7 @@ from util.vision_types import Pose as PerceptionPose
 from output.foxglove_utils import timestamp
 
 
-def write_pose(writer: Writer, now: int, pose: PerceptionPose):
+def write_pose(writer: Writer, now: int, pose: PerceptionPose, frame_id: str):
     object_pose = pose.get_object_pose()
     position = Vector3(
         x=object_pose.translation().X(),
@@ -30,12 +30,12 @@ def write_pose(writer: Writer, now: int, pose: PerceptionPose):
     frame_reference = FrameTransform(
         timestamp=timestamp(now),
         parent_frame_id="base_link",
-        child_frame_id="camera",
+        child_frame_id=frame_id,
         translation=position,
         rotation=orientation
     )
     writer.write_message(
-        topic="/camera/pose",
+        topic="/" + frame_id + "/pose",
         log_time=now,
         message=frame_reference,
         publish_time=now,

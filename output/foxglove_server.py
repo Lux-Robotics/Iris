@@ -38,7 +38,9 @@ def main():
             data = buffer.tobytes()
             write_frame(writer, now, data, points, ids)
             if len(config.poses) > 0:
-                write_pose(writer, now, config.poses[0])
+                write_pose(writer, now, config.poses[0], "camera")
+            if len(config.poses) > 1:
+                write_pose(writer, now, config.poses[1], "ambiguity")
 
 
 def start():
