@@ -5,6 +5,8 @@ import ntcore
 import util.config as config
 from util.vision_types import Pose
 
+from util.config import version
+
 
 class NTPublisher:
     # Initiate Connection
@@ -21,6 +23,8 @@ class NTPublisher:
             ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True))
         self.fps_pub = self.output_table.getDoubleTopic("fps").publish()
         self.tags_pub = self.output_table.getIntegerTopic("tags").publish()
+        self.version_pub = self.output_table.getStringTopic("version").publish()
+        self.version_pub.set(version)
 
     def publish_data(self, pose0: Pose, pose1, tags, timestamp):
         errors = []

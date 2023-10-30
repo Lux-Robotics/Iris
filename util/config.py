@@ -7,6 +7,10 @@ from wpimath.geometry import *
 
 from util.vision_types import TagCoordinates
 
+v = open("package.json", 'r')
+version = json.load(v)["version"]
+v.close()
+
 f = open("config.json", 'r')
 settings = json.load(f)
 f.close()
