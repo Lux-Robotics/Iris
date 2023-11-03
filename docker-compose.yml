@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  perception:
+    image: perception
+    build:
+      context: .
+      dockerfile: ./Dockerfile

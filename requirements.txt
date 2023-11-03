@@ -1,10 +1,10 @@
 apriltag
 numpy
-opencv-contrib-python
+# opencv-contrib-python
 flask
-robotpy-wpimath
-pyntcore
-rerun-sdk
+# robotpy-wpimath
+# pyntcore
+# rerun-sdk
 
 mcap
 protobuf3
