@@ -20,6 +20,7 @@ import output.pipeline
 from google.protobuf.descriptor_pb2 import FileDescriptorSet
 from google.protobuf.descriptor import FileDescriptor
 import google.protobuf.message
+import asyncio
 
 from foxglove_websocket import run_cancellable
 from foxglove_websocket.server import FoxgloveServer, FoxgloveServerListener
@@ -114,6 +115,7 @@ async def main():
             }
         )
         while True:
+            await asyncio.sleep(0.05)
             now = time.time_ns()
 
             frame, points, ids = output.pipeline.process()
