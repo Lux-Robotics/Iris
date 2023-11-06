@@ -14,7 +14,7 @@ from util.vision_types import Pose as PerceptionPose
 from output.foxglove_utils import timestamp
 
 
-def write_pose(now: int, pose: PerceptionPose, frame_id: str, writer: Writer):
+def write_pose(now: int, pose: PerceptionPose, frame_id: str, writer: Writer = None):
     object_pose = pose.get_object_pose()
     position = Vector3(
         x=object_pose.translation().X(),
