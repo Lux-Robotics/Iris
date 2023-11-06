@@ -14,7 +14,7 @@ from util.vision_types import Pose as PerceptionPose
 from output.foxglove_utils import timestamp
 
 
-def write_pose(writer: Writer, now: int, pose: PerceptionPose, frame_id: str):
+def write_pose(now: int, pose: PerceptionPose, frame_id: str, writer: Writer):
     object_pose = pose.get_object_pose()
     position = Vector3(
         x=object_pose.translation().X(),
@@ -34,12 +34,15 @@ def write_pose(writer: Writer, now: int, pose: PerceptionPose, frame_id: str):
         translation=position,
         rotation=orientation
     )
-    writer.write_message(
-        topic="/" + frame_id + "/pose",
-        log_time=now,
-        message=frame_reference,
-        publish_time=now,
-    )
+    if writer is not None:
+        writer.write_message(
+            topic="/" + frame_id + "/pose",
+            log_time=now,
+            message=frame_reference,
+            publish_time=now,
+        )
+    else:
+        return frame_reference
 
 
 def setup_field(writer: Writer, now: int):
