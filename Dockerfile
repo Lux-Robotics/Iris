@@ -39,4 +39,4 @@ RUN CI=1 python3 -m pip install --upgrade --find-links=https://tortall.net/~robo
 
 ADD . .
 
-CMD ["python3", "main.py", "--mode=1"]
+CMD ["python3", "main.py"]

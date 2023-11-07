@@ -1,15 +1,15 @@
 {
   "device_id": "rio",
   "map": "maps/2023-chargedup.json",
-  "server_ip": "192.168.1.66",
+  "server_ip": "10.60.36.2",
   "test_video": "testdata/output3.mkv",
   "camera": {
-    "calibration": "calibration/011-1_1600x1300.json",
+    "calibration": "calibration/003-4_1280x720.json",
     "capture_settings": {
       "exposure_dynamic_framerate": 1
     },
-    "fps": 60,
-    "id": 2
+    "fps": 120,
+    "id": 0
   },
   "aruco": {
     "decimate": 0,
@@ -34,13 +34,13 @@
     "show_transform": false,
     "stream_quality": 25,
     "max_stream_res": [
-      800,
+      1280,
       800
     ],
     "stream_port": 8000
   },
   "use_networktables": true,
-  "capture": "opencv",
+  "capture": "gstreamer",
   "detector": "aruco",
   "solvepnp_method": "multitag"
 }
