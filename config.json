@@ -29,7 +29,7 @@
     "quad_contours": true
   },
   "preview": {
-    "enabled": true,
+    "enabled": false,
     "show_fps": false,
     "show_transform": false,
     "stream_quality": 25,

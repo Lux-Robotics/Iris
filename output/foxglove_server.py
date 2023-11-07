@@ -22,7 +22,7 @@ from google.protobuf.descriptor import FileDescriptor
 import google.protobuf.message
 import asyncio
 
-from foxglove_websocket import run_cancellable
+from output.foxglove_utils import run_cancellable
 from foxglove_websocket.server import FoxgloveServer, FoxgloveServerListener
 
 
@@ -120,8 +120,10 @@ async def main():
 
             frame, points, ids = output.pipeline.process()
             if frame is None:
+                print('a')
                 continue
             else:
+                print('b')
                 # Encode the frame in JPEG format
                 encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), config.stream_quality]
                 ret, buffer = cv2.imencode('.jpg', frame, encode_param)
@@ -133,18 +135,16 @@ async def main():
             img, cal, ann, fps = write_frame(now, data, points, ids)
             if len(config.poses) > 0:
                 pose = write_pose(now, config.poses[0], "camera")
+                await server.send_message(pose_pub, now, pose.SerializeToString())
             if len(config.poses) > 1:
                 ambiguity = write_pose(now, config.poses[1], "ambiguity")
-            else:
-                ambiguity = None
+                await server.send_message(ambiguity_pose_pub, now, ambiguity.SerializeToString())
 
             await server.send_message(image_pub, now, img.SerializeToString())
             await server.send_message(calibration_pub, now, cal.SerializeToString())
             await server.send_message(annotations_pub, now, ann.SerializeToString())
             await server.send_message(fps_pub, now, fps.SerializeToString())
-            await server.send_message(pose_pub, now, pose.SerializeToString())
-            if ambiguity is not None:
-                await server.send_message(ambiguity_pose_pub, now, ambiguity.SerializeToString())
+
 
 
 def start():

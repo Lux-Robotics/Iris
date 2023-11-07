@@ -36,11 +36,11 @@ def main():
 
             # Convert the frame to bytes
             data = buffer.tobytes()
-            write_frame(writer, now, data, points, ids)
+            write_frame(now, data, points, id, writer)
             if len(config.poses) > 0:
-                write_pose(writer, now, config.poses[0], "camera")
+                write_pose(now, config.poses[0], "camera", writer)
             if len(config.poses) > 1:
-                write_pose(writer, now, config.poses[1], "ambiguity")
+                write_pose(now, config.poses[1], "ambiguity", writer)
 
 
 def start():

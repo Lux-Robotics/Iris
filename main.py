@@ -64,7 +64,9 @@ if config.preview:
     display_thread.daemon = True
     display_thread.start()
 
-output.foxglove_server.start()
+server_thread = threading.Thread(target=output.foxglove_server.start)
+server_thread.daemon = True
+server_thread.start()
 
 while True:
     ret, frame = camera.read()
