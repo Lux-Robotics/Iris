@@ -5,6 +5,7 @@ import time
 
 import cv2
 
+import output.foxglove_server
 import util.config as config
 from util.output_publisher import NTPublisher
 from util.pose_estimator import solvepnp_singletag, solvepnp_multitag
@@ -57,11 +58,15 @@ prev_frame_time = 0
 
 # Start web stream thread
 if config.preview:
-    import output.foxglove_server as out
+    import output.foxglove_logger as out
 
     display_thread = threading.Thread(target=out.start)
     display_thread.daemon = True
     display_thread.start()
+
+server_thread = threading.Thread(target=output.foxglove_server.start)
+server_thread.daemon = True
+server_thread.start()
 
 while True:
     ret, frame = camera.read()
