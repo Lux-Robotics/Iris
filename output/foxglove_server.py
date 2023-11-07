@@ -12,7 +12,7 @@ from foxglove_schemas_protobuf.CompressedImage_pb2 import CompressedImage
 from foxglove_schemas_protobuf.FrameTransform_pb2 import FrameTransform
 from foxglove_schemas_protobuf.SceneUpdate_pb2 import SceneUpdate
 from output.float_message_pb2 import FloatMessage
-from output.foxglove_pose import write_pose
+from output.foxglove_pose import write_pose, setup_field
 from output.foxglove_image import write_frame
 import util.config as config
 import output.pipeline
@@ -24,6 +24,7 @@ import asyncio
 
 from output.foxglove_utils import run_cancellable
 from foxglove_websocket.server import FoxgloveServer, FoxgloveServerListener
+from foxglove_websocket.types import ChannelId
 
 
 def build_file_descriptor_set(
@@ -46,8 +47,24 @@ def build_file_descriptor_set(
     return file_descriptor_set
 
 
+reset = False
+
+
 async def main():
+    global reset
+
+    class Listener(FoxgloveServerListener):
+        async def on_subscribe(self, server: FoxgloveServer, channel_id: ChannelId):
+            global reset
+            print("First client subscribed to", channel_id)
+            if str(channel_id) == "6":
+                reset = True
+
+        async def on_unsubscribe(self, server: FoxgloveServer, channel_id: ChannelId):
+            print("Last client unsubscribed from", channel_id)
+
     async with FoxgloveServer("0.0.0.0", 8765, "example server") as server:
+        server.set_listener(Listener())
         ambiguity_pose_pub = await server.add_channel(
             {
                 "topic": "/ambiguity/pose",
@@ -114,16 +131,26 @@ async def main():
                 "schemaEncoding": "protobuf",
             }
         )
+        field_pub = await server.add_channel(
+            {
+                "topic": "/world/field",
+                "encoding": "protobuf",
+                "schemaName": SceneUpdate.DESCRIPTOR.full_name,
+                "schema": b64encode(
+                    build_file_descriptor_set(SceneUpdate).SerializeToString()
+                ).decode("ascii"),
+                "schemaEncoding": "protobuf",
+            }
+        )
+
         while True:
             await asyncio.sleep(0.05)
             now = time.time_ns()
 
-            frame, points, ids = output.pipeline.process()
+            frame, points, ids = output.pipeline.process(force_new_data=False)
             if frame is None:
-                print('a')
                 continue
             else:
-                print('b')
                 # Encode the frame in JPEG format
                 encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), config.stream_quality]
                 ret, buffer = cv2.imencode('.jpg', frame, encode_param)
@@ -140,11 +167,13 @@ async def main():
                 ambiguity = write_pose(now, config.poses[1], "ambiguity")
                 await server.send_message(ambiguity_pose_pub, now, ambiguity.SerializeToString())
 
+            if reset:
+                await server.send_message(field_pub, now, setup_field(now).SerializeToString())
+                reset = False
             await server.send_message(image_pub, now, img.SerializeToString())
             await server.send_message(calibration_pub, now, cal.SerializeToString())
             await server.send_message(annotations_pub, now, ann.SerializeToString())
             await server.send_message(fps_pub, now, fps.SerializeToString())
-
 
 
 def start():

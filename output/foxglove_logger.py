@@ -20,8 +20,8 @@ def main():
 
     timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     with open("logs/log-" + timestamp + ".mcap", "wb") as f, Writer(f) as writer:
-        start = time.time_ns()
-        setup_field(writer, start)
+        start_time = time.time_ns()
+        setup_field(start_time, writer)
         while True:
             now = time.time_ns()
             frame, points, ids = output.pipeline.process()
@@ -36,7 +36,7 @@ def main():
 
             # Convert the frame to bytes
             data = buffer.tobytes()
-            write_frame(now, data, points, id, writer)
+            write_frame(now, data, points, ids, writer)
             if len(config.poses) > 0:
                 write_pose(now, config.poses[0], "camera", writer)
             if len(config.poses) > 1:
