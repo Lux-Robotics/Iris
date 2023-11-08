@@ -3,9 +3,12 @@ import util.config as config
 from util.vision_types import TagObservation
 import numpy as np
 
+detector_options = apriltag.AprilTagDetector.Config()
+detector_options.quadDecimate = 1.0
+
 detector = apriltag.AprilTagDetector()
+detector.setConfig(detector_options)
 detector.addFamily("tag16h5")
-detector.getConfig().quadDecimate = 1.0
 
 
 def find_corners(image):
