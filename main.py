@@ -83,7 +83,7 @@ while True:
         time.sleep(0.02)
         continue
 
-    detections = find_corners(frame)
+    detections = find_corners(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
 
     # Solve for pose
     if config.pose_estimation_mode == "singletag":

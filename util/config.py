@@ -65,6 +65,9 @@ elif settings["detector"] == "apriltag3":
     detector_options.debug = settings["apriltag3"]["debug"]
     detector_options.quad_contours = settings["apriltag3"]["quad_contours"]
 
+elif settings["detector"] == "wpilib":
+    pass
+
 # Preview Window
 preview = settings["preview"]["enabled"]
 preview_fps = settings["preview"]["show_fps"]
