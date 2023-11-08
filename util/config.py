@@ -1,4 +1,5 @@
 import json
+import os
 
 import apriltag
 import cv2
@@ -26,7 +27,9 @@ for parameter in settings["camera"]["capture_settings"]:
 gstreamer_config = ",".join(camera_config_list)
 print(gstreamer_config)
 
-c = open(settings["camera"]["calibration"], 'r')
+calibration_path = os.environ.get("CALIBRATION_FILE", settings["camera"]["calibration"])
+
+c = open(calibration_path, 'r')
 calibration = json.load(c)
 camera_matrix = np.array(calibration["cameraMatrix"])
 dist_coeffs = np.array(calibration["distCoeffs"])
@@ -35,8 +38,8 @@ c.close()
 
 # networktables
 use_nt = settings["use_networktables"]
-server_ip = settings["server_ip"]
-device_id = settings["device_id"]
+server_ip = os.environ.get("SERVER_IP", settings["server_ip"])
+device_id = os.environ.get("DEVICE_ID", settings["device_id"])
 
 # Setup detection params
 if settings["detector"] == "aruco":
@@ -66,7 +69,8 @@ elif settings["detector"] == "apriltag3":
 preview = settings["preview"]["enabled"]
 preview_fps = settings["preview"]["show_fps"]
 preview_pose = settings["preview"]["show_transform"]
-stream_quality = settings["preview"]["stream_quality"]
+stream_quality = int(os.environ.get("STREAM_QUALITY", settings["preview"]["stream_quality"]))
+log_quality = int(os.environ.get("LOG_QUALITY", settings["preview"]["log_quality"]))
 stream_res = settings["preview"]["max_stream_res"]
 stream_port = settings["preview"]["stream_port"]
 
@@ -89,7 +93,7 @@ m.close()
 tag_world_coords = {}
 
 pose_estimation_mode = settings["solvepnp_method"]
-capture_mode = settings["capture"]
+capture_mode = os.environ.get("CAPTURE_METHOD", settings["capture"])
 
 for tag in tags:
     tag_pose = Pose3d(Translation3d(tag["pose"]["translation"]["x"],

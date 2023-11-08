@@ -4,12 +4,12 @@ services:
     image: peninsula/perception:v0.1.0
     container_name: perception
     privileged: true
-    network_mode: host
-    devices:
-      - "/dev/video0:/dev/video0"
     volumes:
       - "/logs:/logs"
       - "/testdata:/testdata"
     command: ["python3", "main.py", "--mode=2"]
     stdin_open: true
     tty: true
+    environment:
+      - DEVICE_ID=test
+      - CALIBRATION_FILE=logs/011-1_1600x1300.json

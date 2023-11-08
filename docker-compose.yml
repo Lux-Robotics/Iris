@@ -10,3 +10,7 @@ services:
     volumes:
       - "/logs:/logs"
     restart: always
+    environment:
+      - DEVICE_ID=test
+      - CALIBRATION_FILE=logs/003-4_1280x720.json
+      - CAPTURE_METHOD=gstreamer

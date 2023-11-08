@@ -29,7 +29,7 @@ def main():
                 continue
             else:
                 # Encode the frame in JPEG format
-                encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), config.stream_quality]
+                encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), config.log_quality]
                 ret, buffer = cv2.imencode('.jpg', frame, encode_param)
                 if not ret:
                     continue
