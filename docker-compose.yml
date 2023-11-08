@@ -1,8 +1,12 @@
-version: '3.4'
-
+version: '3.8'
 services:
   perception:
-    image: perception
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+    image: peninsula/perception:v0.1.0
+    container_name: perception
+    privileged: true
+    network_mode: host
+    devices:
+      - "/dev/video0:/dev/video0"
+    volumes:
+      - "/logs:/logs"
+    restart: always
