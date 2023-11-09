@@ -12,14 +12,23 @@ from util.pose_estimator import solvepnp_singletag, solvepnp_multitag
 
 parser = argparse.ArgumentParser("peninsula_perception")
 parser.add_argument("--mode", help="Toggle for operation modes", type=int, default=0, required=False)
+# parser.add_argument("--log-level", help="Set log level (DEBUG, INFO, WARNING, ERROR)", type=str, default="INFO")
 args = parser.parse_args()
+
+# Start logging thread
+if config.preview:
+    import output.foxglove_logger as out
+
+    display_thread = threading.Thread(target=out.start)
+    display_thread.daemon = True
+    display_thread.start()
 
 # Import apriltag detector
 try:
     module = __import__("detectors." + config.settings["detector"] + "_detector", fromlist=[''])
     find_corners = getattr(module, 'find_corners')
 except ImportError:
-    print("The specified detector does not exist")
+    config.logger.error("The specified detector does not exist")
     sys.exit()
 
 # Initialize video capture
@@ -36,7 +45,7 @@ if args.mode == 0:
                 config.resx) + ",height=" + str(config.resy) + " ! jpegdec ! appsink drop=1", cv2.CAP_GSTREAMER)
     else:
         # Mode parameter not valid
-        print("Program mode invalid, Exiting")
+        config.logger.error("Program mode invalid")
         sys.exit()
 elif args.mode == 1:
     camera = cv2.VideoCapture(config.test_video)
@@ -46,7 +55,7 @@ elif args.mode == 2:
     config.use_nt = False
 else:
     # Mode parameter not valid
-    print("Program mode invalid, Exiting")
+    config.logger.error("Program mode invalid")
     sys.exit()
 
 nt_instance = None
@@ -55,14 +64,6 @@ if config.use_nt:
     nt_instance = NTPublisher(config.server_ip)
 
 prev_frame_time = 0
-
-# Start web stream thread
-if config.preview:
-    import output.foxglove_logger as out
-
-    display_thread = threading.Thread(target=out.start)
-    display_thread.daemon = True
-    display_thread.start()
 
 server_thread = threading.Thread(target=output.foxglove_server.start)
 server_thread.daemon = True
@@ -77,9 +78,10 @@ while True:
 
     if frame is None:
         if args.mode != 0:
-            print("Average FPS: " + str(1 / ((config.fps[-1] - config.fps[11]) / len(config.fps[10:]))))
+            info = config.logger.info(
+                "Average FPS: " + str(1 / ((config.fps[-1] - config.fps[11]) / len(config.fps[10:]))))
             break
-        print("video input not detected")
+        config.logger.warning("video input not detected")
         time.sleep(0.02)
         continue
 
@@ -91,6 +93,7 @@ while True:
     elif config.pose_estimation_mode == "multitag":
         poses = solvepnp_multitag(detections)
     else:
+        config.logger.error("Pose estimation mode invalid")
         sys.exit(-1)  # TODO: make proper error
 
     if nt_instance is not None:

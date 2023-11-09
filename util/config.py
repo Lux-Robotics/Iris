@@ -1,5 +1,6 @@
 import json
 import os
+import logging
 
 import apriltag
 import cv2
@@ -7,6 +8,10 @@ import numpy as np
 from wpimath.geometry import *
 
 from util.vision_types import TagCoordinates
+
+logging.basicConfig(level="INFO", format='%(asctime)s: [%(levelname)s] %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S')
+logger = logging.getLogger(__name__)
 
 v = open("package.json", 'r')
 version = json.load(v)["version"]
@@ -25,7 +30,7 @@ for parameter in settings["camera"]["capture_settings"]:
     camera_config_list.append(parameter + "=" + str(settings["camera"]["capture_settings"][parameter]))
 
 gstreamer_config = ",".join(camera_config_list)
-print(gstreamer_config)
+logger.info(gstreamer_config)
 
 calibration_path = os.environ.get("CALIBRATION_FILE", settings["camera"]["calibration"])
 
@@ -107,4 +112,3 @@ for tag in tags:
                                             tag["pose"]["rotation"]["quaternion"]["Y"],
                                             tag["pose"]["rotation"]["quaternion"]["Z"])))
     tag_world_coords[tag["ID"]] = TagCoordinates(tag_pose, apriltag_size)
-    print(tag_world_coords[tag["ID"]].get_corners())
