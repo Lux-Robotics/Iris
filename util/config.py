@@ -100,7 +100,7 @@ m.close()
 
 tag_world_coords = {}
 
-pose_estimation_mode = settings["solvepnp_method"]
+pose_estimation_mode = os.environ.get("SOLVEPNP_MODE", settings["solvepnp_method"])
 capture_mode = os.environ.get("CAPTURE_METHOD", settings["capture"])
 
 for tag in tags:

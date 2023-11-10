@@ -14,3 +14,4 @@ services:
       - DEVICE_ID=test
       - CALIBRATION_FILE=logs/003-4_1280x720.json
       - CAPTURE_METHOD=gstreamer
+      - SOLVEPNP_MODE=ransac

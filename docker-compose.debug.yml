@@ -13,3 +13,4 @@ services:
     environment:
       - DEVICE_ID=test
       - CALIBRATION_FILE=logs/011-1_1600x1300.json
+      - SOLVEPNP_MODE=ransac
