@@ -123,7 +123,7 @@ while True:
 
     config.fps.append(new_frame_time)
 
-    if config.preview and not logging_thread.isAlive():
+    if config.preview and not logging_thread.is_alive():
         config.logger.error("Logging thread is not alive")  # Do not exit since logging does not affect primary function
 
 camera.release()
