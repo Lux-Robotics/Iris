@@ -2,6 +2,7 @@
 import cv2
 import numpy as np
 
+import util.config
 import util.config as config
 from util.vision_types import Pose
 
@@ -71,3 +72,29 @@ def solvepnp_multitag(detections):
         return Pose(rvecs[0], tvecs[0], errors[0]), Pose(rvecs[1], tvecs[1], errors[1])
     else:
         return (Pose(rvecs[0], tvecs[0], errors[0]),)
+
+
+def solvepnp_ransac(detections):
+    if len(detections) == 0:
+        return {}
+    corners = None
+    world_coords = None
+    for detection in detections:
+        if detection.tag_id not in config.tag_world_coords:
+            continue
+        if corners is None:
+            corners = detection.corners.reshape((4, 2))
+        else:
+            corners = np.vstack((corners, detection.corners.reshape((4, 2))))
+        if world_coords is None:
+            world_coords = config.tag_world_coords[detection.tag_id].get_corners()
+        else:
+            world_coords = np.vstack((world_coords, config.tag_world_coords[detection.tag_id].get_corners()))
+
+    retval, rvec, tvec, inliers = cv2.solvePnPRansac(world_coords, corners, config.camera_matrix,
+                                                  distCoeffs=config.dist_coeffs, flags=cv2.SOLVEPNP_SQPNP)
+    util.config.logger.info(retval)
+    if retval:
+        return (Pose(rvec, tvec, 0),)
+    else:
+        return ()

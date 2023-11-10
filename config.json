@@ -43,5 +43,5 @@
   "use_networktables": true,
   "capture": "opencv",
   "detector": "aruco",
-  "solvepnp_method": "multitag"
+  "solvepnp_method": "ransac"
 }
