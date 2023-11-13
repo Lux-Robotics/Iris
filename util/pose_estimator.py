@@ -42,7 +42,7 @@ def solvepnp_singletag(detections):
         world_coords = config.tag_world_coords[detection.tag_id].get_corners()
 
         _, rvecs, tvecs, errors = cv2.solvePnPGeneric(world_coords, corners, config.camera_matrix,
-                                                      distCoeffs=config.dist_coeffs, flags=cv2.SOLVEPNP_IPPE)
+                                                      distCoeffs=config.dist_coeffs, flags=cv2.SOLVEPNP_IPPE_SQUARE)
         if len(rvecs) > 1:
             return Pose(rvecs[0], tvecs[0], errors[0]), Pose(rvecs[1], tvecs[1], errors[1])
         else:
@@ -77,6 +77,8 @@ def solvepnp_multitag(detections):
 def solvepnp_ransac(detections):
     if len(detections) == 0:
         return {}
+    if len(detections) == 1:
+        return solvepnp_singletag(detections)
     corners = None
     world_coords = None
     for detection in detections:
@@ -92,7 +94,7 @@ def solvepnp_ransac(detections):
             world_coords = np.vstack((world_coords, config.tag_world_coords[detection.tag_id].get_corners()))
 
     retval, rvec, tvec, inliers = cv2.solvePnPRansac(world_coords, corners, config.camera_matrix,
-                                                  distCoeffs=config.dist_coeffs, flags=cv2.SOLVEPNP_SQPNP)
+                                                     distCoeffs=config.dist_coeffs, flags=cv2.SOLVEPNP_SQPNP)
     util.config.logger.info(retval)
     if retval:
         return (Pose(rvec, tvec, 0),)
