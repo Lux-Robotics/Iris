@@ -15,9 +15,6 @@ RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/4.x.zip \
     && unzip opencv.zip \
     && unzip opencv_contrib.zip
 
-RUN cd /opencv_contrib-4.x/modules \
-    && rm -rf alphamat bgsegm bioinspired ccalib cnn_3dobj cudaarithm cudabgsegm cudacodec cudafeatures2d cudafilters cudaimgproc cudalegacy cudaobjdetect cudaoptflow cudastereo cudawarping cudev cvv datasets dnn_objdetect dnn_superres dnns_easily_fooled dpm face freetype fuzzy hdf hfs img_hash intensity_transform julia line_descriptor matlab mcc optflow ovis phase_unwrapping plot quality rapid reg rgbd saliency sim shape stereo structured_light superres surface_matching text tracking videostab viz wechat_qrcode features2d ximgproc xobjdetect xphoto
-
 RUN cd opencv-4.x/ \
     && mkdir build \
     && cd build \
@@ -29,7 +26,7 @@ RUN cd opencv-4.x/ \
     -D PYTHON3_LIBRARY=$(python3 -c "import distutils.sysconfig as sysconfig; import os; print(os.path.join(sysconfig.get_config_var('LIBDIR'), sysconfig.get_config_var('LDLIBRARY')))") \
     -D PYTHON3_INCLUDE_DIR=$(python3 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
     -D PYTHON3_PACKAGES_PATH=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
-    -D OPENCV_EXTRA_MODULES_PATH="../../opencv_contrib-4.x/modules" \
+    -D OPENCV_EXTRA_MODULES_PATH="../../opencv_contrib-4.x/modules/aruco" \
     -D WITH_GSTREAMER=ON \
     -D BUILD_TESTS=OFF \
     -D BUILD_PERF_TESTS=OFF \
