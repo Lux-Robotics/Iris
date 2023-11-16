@@ -2,7 +2,11 @@ FROM ubuntu:22.04
 
 RUN apt update && apt -y upgrade
 
-RUN apt install -y --no-install-recommends libpython3.10-dev cmake build-essential gstreamer1.0* ubuntu-restricted-extras libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev pip g++ wget unzip
+RUN apt install -y --no-install-recommends libpython3.10-dev cmake build-essential
+
+RUN apt install -y --no-install-recommends gstreamer1.0* ubuntu-restricted-extras libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+
+RUN apt install -y --no-install-recommends pip g++ wget unzip
 
 RUN python3 -m pip install numpy
 
@@ -11,12 +15,13 @@ RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/4.x.zip \
     && unzip opencv.zip \
     && unzip opencv_contrib.zip
 
+RUN cd /opencv_contrib-4.x/modules \
+    && rm -rf alphamat bgsegm bioinspired ccalib cnn_3dobj cudaarithm cudabgsegm cudacodec cudafeatures2d cudafilters cudaimgproc cudalegacy cudaobjdetect cudaoptflow cudastereo cudawarping cudev cvv datasets dnn_objdetect dnn_superres dnns_easily_fooled dpm face freetype fuzzy hdf hfs img_hash intensity_transform julia line_descriptor matlab mcc optflow ovis phase_unwrapping plot quality rapid reg rgbd saliency sim shape stereo structured_light superres surface_matching text tracking videostab viz wechat_qrcode features2d ximgproc xobjdetect xphoto
+
 RUN cd opencv-4.x/ \
     && mkdir build \
     && cd build \
     && cmake -D CMAKE_BUILD_TYPE=RELEASE \
-    -D INSTALL_PYTHON_EXAMPLES=ON \
-    -D INSTALL_C_EXAMPLES=OFF \
     -D PYTHON_EXECUTABLE=$(which python3) \
     -D BUILD_opencv_python2=OFF \
     -D CMAKE_INSTALL_PREFIX=$(python3 -c "import sys; print(sys.prefix)") \
@@ -26,7 +31,10 @@ RUN cd opencv-4.x/ \
     -D PYTHON3_PACKAGES_PATH=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
     -D OPENCV_EXTRA_MODULES_PATH="../../opencv_contrib-4.x/modules" \
     -D WITH_GSTREAMER=ON \
-    -D BUILD_EXAMPLES=ON .. \
+    -D BUILD_TESTS=OFF \
+    -D BUILD_PERF_TESTS=OFF \
+    -D BUILD_EXAMPLES=OFF \
+    -D BUILD_opencv_apps=OFF .. \
     && make -j$(nproc) \
     && make install \
     && ldconfig
