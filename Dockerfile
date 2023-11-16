@@ -36,6 +36,8 @@ RUN cd opencv-4.x/ \
     && make install \
     && ldconfig
 
+RUN rm -rf opencv-4.x/ opencv_contrib-4.x/
+
 ADD requirements.txt .
 
 RUN python3 -m pip install -r requirements.txt
