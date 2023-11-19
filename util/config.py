@@ -82,7 +82,7 @@ log_quality = int(os.environ.get("LOG_QUALITY", settings["preview"]["log_quality
 stream_res = settings["preview"]["max_stream_res"]
 stream_port = settings["preview"]["stream_port"]
 
-test_video = settings["test_video"]
+test_video = os.environ.get("TEST_VIDEO", settings["test_video"])
 
 # not constants
 last_frame = None
