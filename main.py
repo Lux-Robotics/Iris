@@ -38,11 +38,7 @@ try:
             camera.set(cv2.CAP_PROP_FRAME_WIDTH, config.resx)
             camera.set(cv2.CAP_PROP_FRAME_HEIGHT, config.resy)
         elif config.capture_mode == "gstreamer":
-            # Specific for 002
-            camera = cv2.VideoCapture(
-                "v4l2src device=/dev/video" + str(
-                    config.camera_id) + " extra_controls=\"c," + config.gstreamer_config + "\" ! image/jpeg,format=MJPG,width=" + str(
-                    config.resx) + ",height=" + str(config.resy) + " ! jpegdec ! appsink drop=1", cv2.CAP_GSTREAMER)
+            camera = cv2.VideoCapture(config.gstreamer_pipeline, cv2.CAP_GSTREAMER)
         else:
             # Mode parameter not valid
             config.logger.error("Program mode invalid")

@@ -77,10 +77,13 @@ def solvepnp_multitag(detections):
 def solvepnp_ransac(detections):
     if len(detections) == 0:
         return {}
+
     if len(detections) == 1:
         return solvepnp_singletag(detections)
+
     corners = None
     world_coords = None
+
     for detection in detections:
         if detection.tag_id not in config.tag_world_coords:
             continue
@@ -95,7 +98,7 @@ def solvepnp_ransac(detections):
 
     retval, rvec, tvec, inliers = cv2.solvePnPRansac(world_coords, corners, config.camera_matrix,
                                                      distCoeffs=config.dist_coeffs, flags=cv2.SOLVEPNP_SQPNP)
-    util.config.logger.info(retval)
+
     if retval:
         return (Pose(rvec, tvec, 0),)
     else:

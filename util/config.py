@@ -21,16 +21,13 @@ f = open("config.json", 'r')
 settings = json.load(f)
 f.close()
 
+logger.info(settings)
+
 # Camera config
 camera_fps = settings["camera"]["fps"]
-camera_id = settings["camera"]["id"]
 
-camera_config_list = []
-for parameter in settings["camera"]["capture_settings"]:
-    camera_config_list.append(parameter + "=" + str(settings["camera"]["capture_settings"][parameter]))
-
-gstreamer_config = ",".join(camera_config_list)
-logger.info(gstreamer_config)
+gstreamer_pipeline = os.environ.get("GSTREAMER_PIPELINE", settings["camera"]["pipeline"])
+logger.info(gstreamer_pipeline)
 
 calibration_path = os.environ.get("CALIBRATION_FILE", settings["camera"]["calibration"])
 
