@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   perception:
-    image: peninsula/perception:v0.1.2
+    image: peninsula/perception:v0.1.3
     container_name: perception
     privileged: true
     network_mode: host
@@ -12,5 +12,5 @@ services:
     restart: always
     environment:
       - DEVICE_ID=test
-      - CALIBRATION_FILE=logs/003-4_1280x720.json
+      - CALIBRATION_FILE=calibration/003-4_1280x720.json
       - CAPTURE_METHOD=gstreamer

@@ -14,7 +14,7 @@
   "aruco": {
     "decimate": 0,
     "aruco3": false,
-    "corner_refinement": "none",
+    "corner_refinement": "subpix",
     "refinement_window": 5
   },
   "apriltag3": {
