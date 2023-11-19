@@ -88,7 +88,7 @@ while True:
         time.sleep(0.02)
         continue
 
-    detections = find_corners(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
+    detections = find_corners(frame)
 
     poses = tuple()
     # Solve for pose
