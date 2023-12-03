@@ -22,6 +22,9 @@ if config.preview:
     logging_thread.daemon = True
     logging_thread.start()
 
+# make sure logging thread has started
+time.sleep(1)
+
 # Import apriltag detector
 try:
     module = __import__("detectors." + config.settings["detector"] + "_detector", fromlist=[''])

@@ -57,6 +57,7 @@ def main():
         foxglove_handler.setLevel(logging.DEBUG)
         config.logger.addHandler(foxglove_handler)
         setup_field(start_time, writer)
+        config.logger.info(config.json_string)
         while True:
             now = time.time_ns()
             frame, points, ids = output.pipeline.process()
