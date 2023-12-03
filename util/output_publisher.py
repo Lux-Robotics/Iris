@@ -10,7 +10,7 @@ from util.config import version
 
 class NTPublisher:
     # Initiate Connection
-    def __init__(self, ip):
+    def __init__(self, ip: str) -> None:
         ntcore.NetworkTableInstance.getDefault().setServer(ip)
         ntcore.NetworkTableInstance.getDefault().startClient4("Perception")
         self.output_table = ntcore.NetworkTableInstance.getDefault().getTable(
@@ -26,7 +26,7 @@ class NTPublisher:
         self.version_pub = self.output_table.getStringTopic("version").publish()
         self.version_pub.set(version)
 
-    def publish_data(self, pose0: Pose, pose1, tags, timestamp):
+    def publish_data(self, pose0: Pose, pose1: Pose, tags: int, timestamp: float) -> None:
         errors = []
         observation_data = []
         if pose0 is not None:

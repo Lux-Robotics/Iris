@@ -1,5 +1,6 @@
 import time
 from base64 import b64encode
+import json
 
 import cv2
 
@@ -46,18 +47,21 @@ def build_file_descriptor_set(
     return file_descriptor_set
 
 
-reset = False
+field_reset = False
+config_reset = False
 
 
 async def main():
-    global reset
+    global field_reset, config_reset
 
     class Listener(FoxgloveServerListener):
         async def on_subscribe(self, server: FoxgloveServer, channel_id: ChannelId):
-            global reset
+            global field_reset, config_reset
             print("First client subscribed to", channel_id)
             if str(channel_id) == "6":
-                reset = True
+                field_reset = True
+            elif str(channel_id) == "7":
+                config_reset = True
 
         async def on_unsubscribe(self, server: FoxgloveServer, channel_id: ChannelId):
             print("Last client unsubscribed from", channel_id)
@@ -141,6 +145,23 @@ async def main():
                 "schemaEncoding": "protobuf",
             }
         )
+        config_pub = await server.add_channel(
+            {
+                "topic": "/config",
+                "encoding": "json",
+                "schemaName": "Configuration",
+                "schema": json.dumps(
+                    {
+                        "type": "object",
+                        "properties": {
+                            "msg": {"type": "string"},
+                            "count": {"type": "number"},
+                        },
+                    }
+                ),
+                "schemaEncoding": "jsonschema",
+            }
+        )
 
         while True:
             await asyncio.sleep(0.05)
@@ -166,9 +187,11 @@ async def main():
                 ambiguity = write_pose(now, config.poses[1], "ambiguity")
                 await server.send_message(ambiguity_pose_pub, now, ambiguity.SerializeToString())
 
-            if reset:
+            if field_reset:
                 await server.send_message(field_pub, now, setup_field(now).SerializeToString())
-                reset = False
+                field_reset = False
+            if config_reset:
+                await server.send_message(config_pub, now, config.json_string.encode("utf8"))
             await server.send_message(image_pub, now, img.SerializeToString())
             await server.send_message(calibration_pub, now, cal.SerializeToString())
             await server.send_message(annotations_pub, now, ann.SerializeToString())

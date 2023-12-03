@@ -21,13 +21,10 @@ f = open("config.json", 'r')
 settings = json.load(f)
 f.close()
 
-logger.info(settings)
-
 # Camera config
 camera_fps = settings["camera"]["fps"]
 
 gstreamer_pipeline = os.environ.get("GSTREAMER_PIPELINE", settings["camera"]["pipeline"])
-logger.info(gstreamer_pipeline)
 
 calibration_path = os.environ.get("CALIBRATION_FILE", settings["camera"]["calibration"])
 
@@ -44,7 +41,8 @@ server_ip = os.environ.get("SERVER_IP", settings["server_ip"])
 device_id = os.environ.get("DEVICE_ID", settings["device_id"])
 
 # Setup detection params
-if settings["detector"] == "aruco":
+detector = settings["detector"]
+if detector == "aruco":
     detection_params = cv2.aruco.DetectorParameters()
     detection_params.useAruco3Detection = settings["aruco"]["aruco3"]
     detection_params.aprilTagQuadDecimate = settings["aruco"]["decimate"]
@@ -55,7 +53,7 @@ if settings["detector"] == "aruco":
         detection_params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
         detection_params.cornerRefinementWinSize = settings["aruco"]["refinement_window"]
 
-elif settings["detector"] == "apriltag3":
+elif detector == "apriltag3":
     detector_options = apriltag.DetectorOptions(families='tag16h5')
     detector_options.border = settings["apriltag3"]["border"]
     detector_options.nthreads = settings["apriltag3"]["threads"]
@@ -67,7 +65,7 @@ elif settings["detector"] == "apriltag3":
     detector_options.debug = settings["apriltag3"]["debug"]
     detector_options.quad_contours = settings["apriltag3"]["quad_contours"]
 
-elif settings["detector"] == "wpilib":
+elif detector == "wpilib":
     pass
 
 # Preview Window
@@ -109,3 +107,21 @@ for tag in tags:
                                             tag["pose"]["rotation"]["quaternion"]["Y"],
                                             tag["pose"]["rotation"]["quaternion"]["Z"])))
     tag_world_coords[tag["ID"]] = TagCoordinates(tag_pose, apriltag_size)
+
+
+# condense config variables into a json
+def is_serializable(v):
+    try:
+        json.dumps(v)
+        return True
+    except (TypeError, OverflowError):
+        return False
+
+
+# Filter out non-serializable items, functions, built-ins, and modules
+log_exclude = ["settings", "tag", "last_frame", "detections", "poses", "new_data", "log_exclude"]
+module_vars = {
+    k: v for k, v in globals().items()
+    if k not in log_exclude and not k.startswith('__') and not callable(v) and is_serializable(v)
+}
+json_string = json.dumps(module_vars, indent=4)

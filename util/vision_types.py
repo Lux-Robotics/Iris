@@ -17,12 +17,12 @@ class Pose:
     tvec: np.ndarray[np.float64]
     error: float
 
-    def get_object_pose(self):
+    def get_object_pose(self) -> Pose3d:
         pose = self.get_wpilib()
         pose = pose.transformBy(Transform3d(Translation3d(), Rotation3d(Quaternion(-0.5, 0.5, -0.5, 0.5))))
         return pose
 
-    def get_wpilib(self):
+    def get_wpilib(self) -> Pose3d:
         # shift coordinate system
         tvec = np.array([self.tvec[2], -self.tvec[0], -self.tvec[1]])
 
@@ -46,7 +46,7 @@ class TagCoordinates:
                         Transform3d(Translation3d(0, tag_size / 2, tag_size / 2), Rotation3d())]
         self.corners = [tag_pos.transformBy(corner) for corner in self.corners]
 
-    def get_corners(self):
+    def get_corners(self) -> np.ndarray[np.float64]:
         return np.array([
             [-corner.translation().Y(), -corner.translation().Z(), corner.translation().X()] for corner in self.corners
         ])
