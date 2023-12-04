@@ -14,7 +14,7 @@ from util.vision_types import Pose as PerceptionPose
 from output.foxglove_utils import timestamp
 
 
-def write_pose(now: int, pose: PerceptionPose, frame_id: str, writer: Writer = None):
+def get_pose(now: int, pose: PerceptionPose, frame_id: str) -> FrameTransform:
     object_pose = pose.get_object_pose()
     position = Vector3(
         x=object_pose.translation().X(),
@@ -27,25 +27,25 @@ def write_pose(now: int, pose: PerceptionPose, frame_id: str, writer: Writer = N
         y=object_pose.rotation().getQuaternion().Y(),
         z=object_pose.rotation().getQuaternion().Z(),
     )
-    frame_reference = FrameTransform(
+    return FrameTransform(
         timestamp=timestamp(now),
         parent_frame_id="base_link",
         child_frame_id=frame_id,
         translation=position,
         rotation=orientation
     )
-    if writer is not None:
-        writer.write_message(
-            topic="/" + frame_id + "/pose",
-            log_time=now,
-            message=frame_reference,
-            publish_time=now,
-        )
-    else:
-        return frame_reference
 
 
-def setup_field(now: int, writer: Writer = None):
+def write_pose(now: int, pose: PerceptionPose, frame_id: str, writer: Writer) -> None:
+    writer.write_message(
+        topic="/" + frame_id + "/pose",
+        log_time=now,
+        message=get_pose(now, pose, frame_id),
+        publish_time=now,
+    )
+
+
+def get_field(now:int) -> SceneUpdate: 
     with open("assets/2023_chargedup.glb", mode='rb') as f:  # b is important -> binary
         field_model = f.read()
 
@@ -63,13 +63,15 @@ def setup_field(now: int, writer: Writer = None):
         frame_id="base_link",
         models=[field]
     )
-    update = SceneUpdate(entities=[entities])
-    if writer is not None:
-        writer.write_message(
+    return SceneUpdate(entities=[entities])
+
+
+def setup_field(now: int, writer: Writer) -> None:
+    update = get_field(now)
+    writer.write_message(
             topic="/world/field",
             log_time=now,
             message=update,
             publish_time=now
-        )
-    else:
-        return update
+            )
+

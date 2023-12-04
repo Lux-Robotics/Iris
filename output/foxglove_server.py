@@ -12,8 +12,8 @@ from foxglove_schemas_protobuf.CompressedImage_pb2 import CompressedImage
 from foxglove_schemas_protobuf.FrameTransform_pb2 import FrameTransform
 from foxglove_schemas_protobuf.SceneUpdate_pb2 import SceneUpdate
 from output.float_message_pb2 import FloatMessage
-from output.foxglove_pose import write_pose, setup_field
-from output.foxglove_image import write_frame
+from output.foxglove_pose import get_pose, get_field
+from output.foxglove_image import get_frame
 import util.config as config
 import output.pipeline
 
@@ -179,16 +179,16 @@ async def main():
 
             # Convert the frame to bytes
             data = buffer.tobytes()
-            img, cal, ann, fps = write_frame(now, data, points, ids)
+            img, cal, ann, fps = get_frame(now, data, points, ids)
             if len(config.poses) > 0:
-                pose = write_pose(now, config.poses[0], "camera")
+                pose = get_pose(now, config.poses[0], "camera")
                 await server.send_message(pose_pub, now, pose.SerializeToString())
             if len(config.poses) > 1:
-                ambiguity = write_pose(now, config.poses[1], "ambiguity")
+                ambiguity = get_pose(now, config.poses[1], "ambiguity")
                 await server.send_message(ambiguity_pose_pub, now, ambiguity.SerializeToString())
 
             if field_reset:
-                await server.send_message(field_pub, now, setup_field(now).SerializeToString())
+                await server.send_message(field_pub, now, get_field(now).SerializeToString())
                 field_reset = False
             if config_reset:
                 await server.send_message(config_pub, now, config.json_string.encode("utf8"))

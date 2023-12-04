@@ -9,8 +9,7 @@ import util.config as config
 
 from output.foxglove_utils import timestamp, points
 
-
-def write_frame(now: int, buffer: bytes, points_array, ids, writer: Writer = None):
+def get_frame(now: int, buffer: bytes, points_array, ids) -> (CompressedImage, CameraCalibration, ImageAnnotations, FloatMessage):
     # /camera/image
     img = CompressedImage(
         timestamp=timestamp(now),
@@ -35,31 +34,33 @@ def write_frame(now: int, buffer: bytes, points_array, ids, writer: Writer = Non
     # /camera/annotations
     point, id = points(points_array, ids, now)
     ann = ImageAnnotations(points=point, texts=id)
-    if writer is not None:
-        writer.write_message(
+    return img, cal, ann, FloatMessage(number=9 / (config.fps[-1] - config.fps[-10]))
+
+
+def write_frame(now: int, buffer: bytes, points_array, ids, writer: Writer) -> None:
+    img, cal, ann, fps = get_frame(now, buffer, points_array, ids)
+    writer.write_message(
             topic="/camera/image",
             log_time=now,
             message=img,
             publish_time=now,
-        )
-        writer.write_message(
+            )
+    writer.write_message(
             topic="/camera/calibration",
             log_time=now,
             message=cal,
             publish_time=now,
-        )
-        writer.write_message(
+            )
+    writer.write_message(
             topic="/camera/annotations",
             log_time=now,
             message=ann,
             publish_time=now,
-        )
-        # /camera/fps
-        writer.write_message(
-            topic="/camera/fps",
-            log_time=now,
-            message=FloatMessage(number=9 / (config.fps[-1] - config.fps[-10])),
-            publish_time=now
-        )
-    else:
-        return img, cal, ann, FloatMessage(number=9 / (config.fps[-1] - config.fps[-10]))
+            )
+    # /camera/fps
+    writer.write_message(
+                topic="/camera/fps",
+                log_time=now,
+                message=fps, 
+                publish_time=now
+                )
