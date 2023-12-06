@@ -164,38 +164,41 @@ async def main():
         )
 
         while True:
-            await asyncio.sleep(0.05)
-            now = time.time_ns()
+            try:
+                await asyncio.sleep(0.05)
+                now = time.time_ns()
 
-            frame, points, ids = output.pipeline.process(force_new_data=False)
-            if frame is None:
-                continue
-            else:
-                # Encode the frame in JPEG format
-                encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), config.stream_quality]
-                ret, buffer = cv2.imencode('.jpg', frame, encode_param)
-                if not ret:
+                frame, points, ids = output.pipeline.process(force_new_data=False)
+                if frame is None:
                     continue
+                else:
+                    # Encode the frame in JPEG format
+                    encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), config.stream_quality]
+                    ret, buffer = cv2.imencode('.jpg', frame, encode_param)
+                    if not ret:
+                        continue
 
-            # Convert the frame to bytes
-            data = buffer.tobytes()
-            img, cal, ann, fps = get_frame(now, data, points, ids)
-            if len(config.poses) > 0:
-                pose = get_pose(now, config.poses[0], "camera")
-                await server.send_message(pose_pub, now, pose.SerializeToString())
-            if len(config.poses) > 1:
-                ambiguity = get_pose(now, config.poses[1], "ambiguity")
-                await server.send_message(ambiguity_pose_pub, now, ambiguity.SerializeToString())
+                # Convert the frame to bytes
+                data = buffer.tobytes()
+                img, cal, ann, fps = get_frame(now, data, points, ids)
+                if len(config.poses) > 0:
+                    pose = get_pose(now, config.poses[0], "camera")
+                    await server.send_message(pose_pub, now, pose.SerializeToString())
+                if len(config.poses) > 1:
+                    ambiguity = get_pose(now, config.poses[1], "ambiguity")
+                    await server.send_message(ambiguity_pose_pub, now, ambiguity.SerializeToString())
 
-            if field_reset:
-                await server.send_message(field_pub, now, get_field(now).SerializeToString())
-                field_reset = False
-            if config_reset:
-                await server.send_message(config_pub, now, config.json_string.encode("utf8"))
-            await server.send_message(image_pub, now, img.SerializeToString())
-            await server.send_message(calibration_pub, now, cal.SerializeToString())
-            await server.send_message(annotations_pub, now, ann.SerializeToString())
-            await server.send_message(fps_pub, now, fps.SerializeToString())
+                if field_reset:
+                    await server.send_message(field_pub, now, get_field(now).SerializeToString())
+                    field_reset = False
+                if config_reset:
+                    await server.send_message(config_pub, now, config.json_string.encode("utf8"))
+                await server.send_message(image_pub, now, img.SerializeToString())
+                await server.send_message(calibration_pub, now, cal.SerializeToString())
+                await server.send_message(annotations_pub, now, ann.SerializeToString())
+                await server.send_message(fps_pub, now, fps.SerializeToString())
+            except Exception as e:
+                config.logger.exception(e)
 
 
 def start():

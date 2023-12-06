@@ -60,23 +60,29 @@ def main():
         config.logger.info(config.json_string)
         while True:
             now = time.time_ns()
-            frame, points, ids = output.pipeline.process()
-            if frame is None:
-                continue
-            else:
-                # Encode the frame in JPEG format
-                encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), config.log_quality]
-                ret, buffer = cv2.imencode('.jpg', frame, encode_param)
-                if not ret:
+            try:
+                frame, points, ids = output.pipeline.process()
+                if frame is None:
                     continue
+                else:
+                    # Encode the frame in JPEG format
+                    encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), config.log_quality]
+                    ret, buffer = cv2.imencode('.jpg', frame, encode_param)
+                    if not ret:
+                        continue
+            except Exception as e:
+                config.logger.exception(e)
 
             # Convert the frame to bytes
-            data = buffer.tobytes()
-            write_frame(now, data, points, ids, writer)
-            if len(config.poses) > 0:
-                write_pose(now, config.poses[0], "camera", writer)
-            if len(config.poses) > 1:
-                write_pose(now, config.poses[1], "ambiguity", writer)
+            try:
+                data = buffer.tobytes()
+                write_frame(now, data, points, ids, writer)
+                if len(config.poses) > 0:
+                    write_pose(now, config.poses[0], "camera", writer)
+                if len(config.poses) > 1:
+                    write_pose(now, config.poses[1], "ambiguity", writer)
+            except Exception as e:
+                config.logger.exception(e)
 
 
 def start():
