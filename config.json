@@ -9,7 +9,7 @@
     "fps": 120
   },
   "aruco": {
-    "decimate": 0,
+    "decimate": 1,
     "aruco3": false,
     "corner_refinement": "subpix",
     "refinement_window": 5

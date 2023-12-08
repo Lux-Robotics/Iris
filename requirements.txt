@@ -11,3 +11,5 @@ protobuf3
 mcap-protobuf-support
 foxglove-schemas-protobuf
 foxglove-websocket
+typing
+asyncio

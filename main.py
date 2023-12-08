@@ -78,7 +78,7 @@ while True:
     # Latency compensation estimate
     new_frame_time -= (1 / config.camera_fps) / 2
 
-    if frame is None:
+    if not ret:
         if args.mode != 0:
             info = config.logger.info(
                 "Average FPS: " + str(1 / ((config.fps[-1] - config.fps[11]) / len(config.fps[10:]))))
@@ -90,6 +90,7 @@ while True:
     detections = find_corners(frame)
 
     poses = tuple()
+
     # Solve for pose
     try:
         if config.pose_estimation_mode == "singletag":

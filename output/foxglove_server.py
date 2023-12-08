@@ -1,6 +1,7 @@
 import time
 from base64 import b64encode
 import json
+import logging
 
 import cv2
 
@@ -11,7 +12,9 @@ from foxglove_schemas_protobuf.ImageAnnotations_pb2 import ImageAnnotations
 from foxglove_schemas_protobuf.CompressedImage_pb2 import CompressedImage
 from foxglove_schemas_protobuf.FrameTransform_pb2 import FrameTransform
 from foxglove_schemas_protobuf.SceneUpdate_pb2 import SceneUpdate
+from foxglove_schemas_protobuf.Log_pb2 import Log
 from output.float_message_pb2 import FloatMessage
+from output.foxglove_utils import timestamp
 from output.foxglove_pose import get_pose, get_field
 from output.foxglove_image import get_frame
 import util.config as config
@@ -46,13 +49,41 @@ def build_file_descriptor_set(
     append_file_descriptor(message_class.DESCRIPTOR.file)
     return file_descriptor_set
 
+log: Log = None
+
+
+class FoxgloveWSHandler(logging.Handler):
+    def __init__(self, server: FoxgloveServer):
+        super().__init__()
+        self.server = server 
+        
+    @staticmethod
+    def record_to_log(record: logging.LogRecord):
+        return Log(
+            timestamp=timestamp(int(record.created * 1e9)),
+            level=record.levelname,
+            message=record.getMessage()
+        )
+
+    def emit(self, record):
+        global log
+        try:
+            now = time.time_ns()
+            log_entry = self.record_to_log(record)
+
+            log = log_entry
+
+        except Exception as e:
+            # Handle any errors that occur during logging
+            self.handleError(record)
+
 
 field_reset = False
 config_reset = False
 
 
 async def main():
-    global field_reset, config_reset
+    global field_reset, config_reset, log
 
     class Listener(FoxgloveServerListener):
         async def on_subscribe(self, server: FoxgloveServer, channel_id: ChannelId):
@@ -162,6 +193,22 @@ async def main():
                 "schemaEncoding": "jsonschema",
             }
         )
+        log_pub = await server.add_channel(
+            {
+                "topic": "/log",
+                "encoding": "protobuf",
+                "schemaName": Log.DESCRIPTOR.full_name,
+                "schema": b64encode(
+                    build_file_descriptor_set(Log).SerializeToString()
+                ).decode("ascii"),
+                "schemaEncoding": "protobuf",
+            }
+        )
+
+
+        ws_handler = FoxgloveWSHandler(server)
+        ws_handler.setLevel(logging.DEBUG)
+        config.logger.addHandler(ws_handler)
 
         while True:
             try:
@@ -197,6 +244,10 @@ async def main():
                 await server.send_message(calibration_pub, now, cal.SerializeToString())
                 await server.send_message(annotations_pub, now, ann.SerializeToString())
                 await server.send_message(fps_pub, now, fps.SerializeToString())
+                if log is not None:
+                    await server.send_message(log_pub, now, log.SerializeToString())
+                    log = None
+
             except Exception as e:
                 config.logger.exception(e)
 
