@@ -83,9 +83,10 @@ while True:
             info = config.logger.info(
                 "Average FPS: " + str(1 / ((config.fps[-1] - config.fps[11]) / len(config.fps[10:]))))
             break
-        config.logger.warning("video input not detected")
-        time.sleep(0.02)
-        continue
+        else:
+            config.logger.warning("video input not detected")
+            time.sleep(1)
+            break
 
     detections = find_corners(frame)
 
