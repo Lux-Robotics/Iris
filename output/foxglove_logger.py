@@ -45,13 +45,13 @@ class FoxgloveLoggingHandler(logging.Handler):
             self.handleError(record)
 
 
-def main():
+def main(log_dir: str):
     # Create logs director if doesn't exist
-    if not os.path.exists("logs/"):
-        os.makedirs("logs/")
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
 
     timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-    with open("logs/log-" + timestamp + ".mcap", "wb") as f, Writer(f) as writer:
+    with open(log_dir + "log-" + timestamp + ".mcap", "wb") as f, Writer(f) as writer:
         start_time = time.time_ns()
         foxglove_handler = FoxgloveLoggingHandler(writer)
         foxglove_handler.setLevel(logging.DEBUG)
@@ -85,9 +85,9 @@ def main():
                 config.logger.exception(e)
 
 
-def start():
-    main()
+def start(log_dir: str = "logs/"):
+    main(log_dir)
 
 
 if __name__ == "__main__":
-    main()
+    main("logs/")
