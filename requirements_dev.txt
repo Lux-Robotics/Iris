@@ -1,6 +1,9 @@
 apriltag
 numpy
+opencv-contrib-python
 flask
+robotpy-wpimath
+pyntcore
 
 mcap
 protobuf3

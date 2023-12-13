@@ -1,12 +1,12 @@
 version: '3.8'
 services:
   perception:
-    image: peninsula/perception:v0.1.5
+    image: peninsula/perception:v0.1.6
     container_name: perception
     privileged: true
     volumes:
-      - "/logs:/logs"
-      - "/testdata:/testdata"
+      - "/app/logs:/logs"
+      - "/app/testdata:/testdata"
     command: ["python3", "main.py", "--mode=2"]
     stdin_open: true
     tty: true
