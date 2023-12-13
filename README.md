@@ -34,14 +34,14 @@ Tested on 9/1/2023, commit 87121d18ca9cb0b0bc072eeaff76ab7e99f4b762
 ### Install libraries
 
 ```shell
-pip install -r requirements.txt
+pip install -r requirements_dev.txt
 ```
 
 **Notes**
 
 - If using gstreamer capture, you should not install `opencv-contrib-python` with pip. Instead, you need to compile
   opencv from source.
-  Instructions are here: https://preview.peninsula.pages.dev/docs/vision/compile-opencv
+  Instructions are here: https://peninsula.pages.dev/docs/vision/compile-opencv
 
 - `robotpy` does not provide prebuilt binaries for linux arm and installing with pip will result in an error.
   Install with this command instead:
