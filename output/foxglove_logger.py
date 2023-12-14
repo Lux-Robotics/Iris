@@ -57,7 +57,7 @@ def main(log_dir: str):
         foxglove_handler.setLevel(logging.DEBUG)
         config.logger.addHandler(foxglove_handler)
         setup_field(start_time, writer)
-        config.logger.info(config.json_string)
+        config.logger.info(config.config_json)
         while True:
             now = time.time_ns()
             try:

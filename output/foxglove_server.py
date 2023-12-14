@@ -239,7 +239,7 @@ async def main():
                     await server.send_message(field_pub, now, get_field(now).SerializeToString())
                     field_reset = False
                 if config_reset:
-                    await server.send_message(config_pub, now, config.json_string.encode("utf8"))
+                    await server.send_message(config_pub, now, config.config_json.encode("utf8"))
                 await server.send_message(image_pub, now, img.SerializeToString())
                 await server.send_message(calibration_pub, now, cal.SerializeToString())
                 await server.send_message(annotations_pub, now, ann.SerializeToString())

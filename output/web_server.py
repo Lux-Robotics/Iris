@@ -32,7 +32,7 @@ def video():
 
 
 def start():
-    app.run(host='0.0.0.0', port=config.stream_port)
+    app.run(host='0.0.0.0', port=8000)
 
 
 if __name__ == '__main__':

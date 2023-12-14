@@ -9,7 +9,7 @@
 
 - Detection of Apriltags
 - Tag pose estimation
-- Live preview for detections
+- Logging and Live preview using Foxglove
 - Modular structure to allow for swapping pipeline components
 - Highly configurable
 - Benchmark mode for evaluating performance
@@ -40,8 +40,7 @@ pip install -r requirements_dev.txt
 **Notes**
 
 - If using gstreamer capture, you should not install `opencv-contrib-python` with pip. Instead, you need to compile
-  opencv from source.
-  Instructions are here: https://peninsula.pages.dev/docs/vision/compile-opencv
+  opencv from source. Instructions are here: https://eninsula.pages.dev/docs/vision/compile-opencv
 
 - `robotpy` does not provide prebuilt binaries for linux arm and installing with pip will result in an error.
   Install with this command instead:
@@ -74,27 +73,81 @@ python3 main.py --mode 0
 
 PeninsulaPerception is configured using `config.json` in the project's root directory.
 
-### Parameters Overview
+### Configuration Fields
 
-- device_id: The identifier for the camera. This will also be the name under which detection results will be sent over
-  in NetworkTables
-- calibration: Path to the calibration file. Reference the existing calibrations for formatting
-- map: Path to the json file containing the locations of all the apriltags.
-- test_video: Path to the test video for operational modes 1 and 2
-- aruco: Settings for the aruco detector
-- apriltag3: Settings for the apriltag3 detector
-- preview: Settings for the web preview
-    - enabled: Whether the preview is enabled
-    - show_fps: Whether a fps counter is overlayed onto the preview stream
-    - show_transform: Whether to overlay the tvec of the apriltag onto the stream. **Currently Deprecated**
-    - stream_quality: The jpeg compression quality of each frame. Lower means more compression and less bandwidth
-    - max_stream_res: The maximum streaming resolution. If the image is larger than this resolution, it will be scaled
-      down by integer increments until it is under the maximum resolution
-    - stream_port: The port that the stream is served under
-- use_networktables: Toggle for NetworkTables support
-- capture: Capture method `WIP`
-- detector: The detector to use. Valid options are `aruco` and `apriltag`
-- solvepnp_method: The solvepnp method to use. Valid options are `singletag` and `multitag`
+`device_id`
+
+- Type: `string`
+- Description: Identifier for the device.
+
+`map`
+
+- Type: `string`
+- Description: Path to the field layout file. It should contain the location of every apriltag on the field.
+
+`server_ip`
+
+- Type: `string`
+- Description: IP address of the server NT4 instance.
+
+`test_video`
+
+- Type: `string`
+- Description: Path to a test video file.
+
+`camera`
+
+- Type: `object`
+    - `calibration`: Calibration file for the camera.
+    - `pipeline`: GStreamer pipeline string for video capture (Only valid if `"capture": "gstreamer"`).
+    - `fps`: Frames per second for the camera capture. This is used for latency compensation
+
+`aruco`
+
+- `decimate`: Image decimation factor.
+- `aruco3`: Use ArUco 3.x version boolean flag.
+- `corner_refinement`: Method used for corner refinement (`"subpix"`, `"none"`).
+- `refinement_window`: Window size for corner refinement.
+
+`apriltag3`
+
+- `border`: Border size of the tag.
+- `threads`: Number of threads to use for detection.
+- `quad_decimate`: Image decimation factor.
+- `quad_blur`: Blur applied to image before detection.
+- `refine_edges`: Refine tag edges boolean flag.
+- `refine_decode`: Refine tag decode boolean flag.
+- `refine_pose`: Refine tag pose boolean flag.
+- `debug`: Enable debug mode boolean flag.
+- `quad_contours`: Use contours for quad detection boolean flag.
+
+`preview`
+
+- `enabled`: Enable foxglove logging.
+- `show_fps`: Display FPS in the video stream.
+- `stream_quality`: Stream quality (0-100).
+- `log_quality`: Logging quality (0-100).
+- `max_stream_res`: Maximum resolution for the stream `[width, height]`.
+
+`use_networktables`
+
+- Type: `boolean`
+- Description: Use NetworkTables for sending data.
+
+`capture`
+
+- Type: `string`
+- Description: Capture method (`"opencv"`, `"gstreamer"`).
+
+`detector`
+
+- Type: `string`
+- Description: Type of marker detector to use (`"apriltag"`, `"aruco"`, `"wpilib"`).
+
+`solvepnp_method`
+
+- Type: `string`
+- Description: Method used for solvePnP operations (`"singletag"`, `"multitag"`, `"ransac"`).
 
 ## NetworkTables Output
 

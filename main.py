@@ -15,7 +15,7 @@ parser.add_argument("--mode", help="Toggle for operation modes", type=int, defau
 args = parser.parse_args()
 
 # Start logging thread
-if config.preview:
+if config.logger_enabled:
     import output.foxglove_logger as out
 
     logging_thread = threading.Thread(target=out.start)
@@ -50,7 +50,7 @@ try:
         camera = cv2.VideoCapture(config.test_video)
     elif args.mode == 2:
         camera = cv2.VideoCapture(config.test_video)
-        config.preview = False
+        config.logger_enabled = False
         config.use_nt = False
     else:
         # Mode parameter not valid
@@ -119,14 +119,14 @@ while True:
     config.last_frame, config.detections, config.poses = frame, detections, poses
     config.new_data = True
 
-    if not config.preview and args.mode == 1:
+    if not config.logger_enabled and args.mode == 1:
         print("FPS:", 10 / (new_frame_time - config.fps[-10]))
 
     config.fps.append(new_frame_time)
 
-    if config.preview and not logging_thread.is_alive():
+    if config.logger_enabled and not logging_thread.is_alive():
         config.logger.error("Logging thread unalived")
-        config.preview = False  # Do not exit since logging does not affect primary function
+        config.logger_enabled = False  # Do not exit since logging does not affect primary function
 
 camera.release()
 

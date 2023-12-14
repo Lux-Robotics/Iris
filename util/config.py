@@ -69,13 +69,11 @@ elif detector == "wpilib":
     pass
 
 # Preview Window
-preview = settings["preview"]["enabled"]
-preview_fps = settings["preview"]["show_fps"]
-preview_pose = settings["preview"]["show_transform"]
+logger_enabled = settings["preview"]["enabled"]
+video_display_fps = settings["preview"]["show_fps"]
 stream_quality = int(os.environ.get("STREAM_QUALITY", settings["preview"]["stream_quality"]))
 log_quality = int(os.environ.get("LOG_QUALITY", settings["preview"]["log_quality"]))
 stream_res = settings["preview"]["max_stream_res"]
-stream_port = settings["preview"]["stream_port"]
 
 test_video = os.environ.get("TEST_VIDEO", settings["test_video"])
 
@@ -124,4 +122,5 @@ module_vars = {
     k: v for k, v in globals().items()
     if k not in log_exclude and not k.startswith('__') and not callable(v) and is_serializable(v)
 }
-json_string = json.dumps(module_vars, indent=4)
+
+config_json = json.dumps(module_vars, indent=4)

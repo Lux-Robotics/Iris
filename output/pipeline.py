@@ -32,7 +32,7 @@ def process(force_new_data=True):
     # im = draw_detections(frame, detections, scale)
     im = frame
 
-    if config.preview_fps:
+    if config.video_display_fps:
         cv2.putText(im, "FPS: " + str(9 / (config.fps[-1] - config.fps[-10])), (7, 40),
                     cv2.FONT_HERSHEY_SIMPLEX, 1,
                     (100, 255, 0), 2, cv2.LINE_AA)
