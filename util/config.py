@@ -11,7 +11,7 @@ from util.vision_types import TagCoordinates
 
 logging.basicConfig(level="INFO", format='%(asctime)s: [%(levelname)s] %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("perception")
 
 v = open("package.json", 'r')
 version = json.load(v)["version"]
