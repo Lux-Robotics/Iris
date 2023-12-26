@@ -117,7 +117,7 @@ def is_serializable(v):
 
 
 # Filter out non-serializable items, functions, built-ins, and modules
-log_exclude = ["settings", "tag", "last_frame", "detections", "poses", "new_data", "log_exclude"]
+log_exclude = ["settings", "tag", "last_frame", "detections", "poses", "new_data", "log_exclude", "fps", "tags"]
 module_vars = {
     k: v for k, v in globals().items()
     if k not in log_exclude and not k.startswith('__') and not callable(v) and is_serializable(v)
