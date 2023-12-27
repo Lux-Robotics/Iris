@@ -37,14 +37,15 @@ def get_frame(now: int, buffer: bytes, points_array, ids) -> (CompressedImage, C
     return img, cal, ann, FloatMessage(number=9 / (config.fps[-1] - config.fps[-10]))
 
 
-def write_frame(now: int, buffer: bytes, points_array, ids, writer: Writer) -> None:
+def write_frame(now: int, buffer: bytes, points_array, ids, writer: Writer, disk_full: bool=False) -> None:
     img, cal, ann, fps = get_frame(now, buffer, points_array, ids)
-    writer.write_message(
-            topic="/camera/image",
-            log_time=now,
-            message=img,
-            publish_time=now,
-            )
+    if not disk_full:
+        writer.write_message(
+                topic="/camera/image",
+                log_time=now,
+                message=img,
+                publish_time=now,
+                )
     writer.write_message(
             topic="/camera/calibration",
             log_time=now,

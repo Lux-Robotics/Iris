@@ -2,6 +2,7 @@ import time
 import os
 import datetime
 import logging
+import shutil
 
 from mcap_protobuf.writer import Writer
 
@@ -52,12 +53,20 @@ def main(log_dir: str):
 
     timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     with open(log_dir + "log-" + timestamp + ".mcap", "wb") as f, Writer(f) as writer:
+
+        # check if disk is too full 
+        _, _, free_bytes = shutil.disk_usage(log_dir)
+        safety_margin = 1 * 1024 * 1024 * 1024  # 1GB
+
         start_time = time.time_ns()
         foxglove_handler = FoxgloveLoggingHandler(writer)
         foxglove_handler.setLevel(logging.DEBUG)
         config.logger.addHandler(foxglove_handler)
         setup_field(start_time, writer)
         config.logger.info(config.config_json)
+        if free_bytes < safety_margin:
+            config.logger.error("Disk too full, video logging disabled")
+
         while True:
             now = time.time_ns()
             try:
@@ -76,7 +85,7 @@ def main(log_dir: str):
             # Convert the frame to bytes
             try:
                 data = buffer.tobytes()
-                write_frame(now, data, points, ids, writer)
+                write_frame(now, data, points, ids, writer, free_bytes < safety_margin)
                 if len(config.poses) > 0:
                     write_pose(now, config.poses[0], "camera", writer)
                 if len(config.poses) > 1:
