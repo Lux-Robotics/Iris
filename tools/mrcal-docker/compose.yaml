@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  mrcal:
+    image: docker-mrcal
+    container_name: mrcal
+    privileged: true
+    network_mode: host
+    volumes:
+      - "/Users/benson/Documents:/root/Documents"
