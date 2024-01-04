@@ -52,8 +52,9 @@ if detector == "aruco":
     elif settings["aruco"]["corner_refinement"] == "subpix":
         detection_params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
         detection_params.cornerRefinementWinSize = settings["aruco"]["refinement_window"]
+        # detection_params.relativeCornerRefinmentWinSize = 0.3
 
-elif detector == "apriltag3":
+elif detector == "apriltag":
     detector_options = apriltag.DetectorOptions(families='tag16h5')
     detector_options.border = settings["apriltag3"]["border"]
     detector_options.nthreads = settings["apriltag3"]["threads"]

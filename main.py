@@ -88,7 +88,10 @@ while True:
             time.sleep(1)
             break
 
-    detections = find_corners(frame)
+    if config.detector == "aruco":
+        detections = find_corners(frame)
+    else:
+        detections = find_corners(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
 
     poses = tuple()
 
