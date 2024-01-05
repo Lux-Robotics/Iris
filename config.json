@@ -12,7 +12,8 @@
     "decimate": 1,
     "aruco3": false,
     "corner_refinement": "subpix",
-    "refinement_window": 5
+    "relative_refinement_window": 0.3,
+    "max_refinement_window": 5
   },
   "apriltag3": {
     "border": 1,
