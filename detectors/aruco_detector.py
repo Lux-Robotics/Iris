@@ -1,4 +1,5 @@
 import cv2
+
 import util.config as config
 from util.vision_types import TagObservation
 

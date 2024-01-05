@@ -3,9 +3,8 @@ import math
 import ntcore
 
 import util.config as config
-from util.vision_types import Pose
-
 from util.config import version
+from util.vision_types import Pose
 
 
 class NTPublisher:

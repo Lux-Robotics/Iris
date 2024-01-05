@@ -1,13 +1,12 @@
-from google.protobuf import timestamp_pb2
-
-from foxglove_schemas_protobuf.PointsAnnotation_pb2 import PointsAnnotation
-from foxglove_schemas_protobuf.TextAnnotation_pb2 import TextAnnotation
-from foxglove_schemas_protobuf.Color_pb2 import Color
-from foxglove_schemas_protobuf.Point2_pb2 import Point2
-
 import asyncio
 import signal
 from typing import Any, Coroutine
+
+from foxglove_schemas_protobuf.Color_pb2 import Color
+from foxglove_schemas_protobuf.Point2_pb2 import Point2
+from foxglove_schemas_protobuf.PointsAnnotation_pb2 import PointsAnnotation
+from foxglove_schemas_protobuf.TextAnnotation_pb2 import TextAnnotation
+from google.protobuf import timestamp_pb2
 
 
 def timestamp(time_ns: int) -> timestamp_pb2.Timestamp:

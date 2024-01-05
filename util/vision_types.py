@@ -1,7 +1,9 @@
 import math
 from dataclasses import dataclass
+from typing import Any
 
 import numpy as np
+from numpy import ndarray, dtype
 from wpimath.geometry import *
 
 
@@ -46,7 +48,7 @@ class TagCoordinates:
                         Transform3d(Translation3d(0, tag_size / 2, tag_size / 2), Rotation3d())]
         self.corners = [tag_pos.transformBy(corner) for corner in self.corners]
 
-    def get_corners(self) -> np.ndarray[np.float64]:
+    def get_corners(self) -> ndarray[Any, dtype[Any]]:
         return np.array([
             [-corner.translation().Y(), -corner.translation().Z(), corner.translation().X()] for corner in self.corners
         ])

@@ -1,19 +1,18 @@
-import time
-import os
 import datetime
 import logging
+import os
 import shutil
+import time
 
+import cv2
+from foxglove_schemas_protobuf.Log_pb2 import Log
 from mcap_protobuf.writer import Writer
 
 import output.pipeline
-import cv2
 import util.config as config
-
 from output.foxglove_image import write_frame
 from output.foxglove_pose import write_pose, setup_field
 from output.foxglove_utils import timestamp
-from foxglove_schemas_protobuf.Log_pb2 import Log
 
 
 class FoxgloveLoggingHandler(logging.Handler):
@@ -70,7 +69,7 @@ def main(log_dir: str):
         while True:
             now = time.time_ns()
             try:
-                frame, points, ids = output.pipeline.process()
+                frame, points, ids = output.pipeline.process(config.log_res)
                 if frame is None:
                     continue
                 else:

@@ -1,33 +1,30 @@
-import time
-from base64 import b64encode
+import asyncio
 import json
 import logging
-
-import cv2
-
+import time
+from base64 import b64encode
 from typing import Set, Type
 
+import cv2
+import google.protobuf.message
 from foxglove_schemas_protobuf.CameraCalibration_pb2 import CameraCalibration
-from foxglove_schemas_protobuf.ImageAnnotations_pb2 import ImageAnnotations
 from foxglove_schemas_protobuf.CompressedImage_pb2 import CompressedImage
 from foxglove_schemas_protobuf.FrameTransform_pb2 import FrameTransform
-from foxglove_schemas_protobuf.SceneUpdate_pb2 import SceneUpdate
+from foxglove_schemas_protobuf.ImageAnnotations_pb2 import ImageAnnotations
 from foxglove_schemas_protobuf.Log_pb2 import Log
-from output.float_message_pb2 import FloatMessage
-from output.foxglove_utils import timestamp
-from output.foxglove_pose import get_pose, get_field
-from output.foxglove_image import get_frame
-import util.config as config
-import output.pipeline
-
-from google.protobuf.descriptor_pb2 import FileDescriptorSet
-from google.protobuf.descriptor import FileDescriptor
-import google.protobuf.message
-import asyncio
-
-from output.foxglove_utils import run_cancellable
+from foxglove_schemas_protobuf.SceneUpdate_pb2 import SceneUpdate
 from foxglove_websocket.server import FoxgloveServer, FoxgloveServerListener
 from foxglove_websocket.types import ChannelId
+from google.protobuf.descriptor import FileDescriptor
+from google.protobuf.descriptor_pb2 import FileDescriptorSet
+
+import output.pipeline
+import util.config as config
+from output.float_message_pb2 import FloatMessage
+from output.foxglove_image import get_frame
+from output.foxglove_pose import get_pose, get_field
+from output.foxglove_utils import run_cancellable
+from output.foxglove_utils import timestamp
 
 
 def build_file_descriptor_set(
@@ -49,14 +46,15 @@ def build_file_descriptor_set(
     append_file_descriptor(message_class.DESCRIPTOR.file)
     return file_descriptor_set
 
+
 log: Log = None
 
 
 class FoxgloveWSHandler(logging.Handler):
     def __init__(self, server: FoxgloveServer):
         super().__init__()
-        self.server = server 
-        
+        self.server = server
+
     @staticmethod
     def record_to_log(record: logging.LogRecord):
         return Log(
@@ -205,7 +203,6 @@ async def main():
             }
         )
 
-
         ws_handler = FoxgloveWSHandler(server)
         ws_handler.setLevel(logging.DEBUG)
         config.logger.addHandler(ws_handler)
@@ -215,7 +212,7 @@ async def main():
                 await asyncio.sleep(0.05)
                 now = time.time_ns()
 
-                frame, points, ids = output.pipeline.process(force_new_data=False)
+                frame, points, ids = output.pipeline.process(config.stream_res, force_new_data=False)
                 if frame is None:
                     continue
                 else:

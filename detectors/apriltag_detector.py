@@ -1,7 +1,8 @@
 import apriltag
+import numpy as np
+
 import util.config as config
 from util.vision_types import TagObservation
-import numpy as np
 
 detector = apriltag.Detector(config.detector_options)
 

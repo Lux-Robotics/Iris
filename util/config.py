@@ -1,6 +1,6 @@
 import json
-import os
 import logging
+import os
 
 import apriltag
 import cv2
@@ -69,12 +69,15 @@ elif detector == "apriltag":
 elif detector == "wpilib":
     pass
 
-# Preview Window
-logger_enabled = settings["preview"]["enabled"]
-video_display_fps = settings["preview"]["show_fps"]
-stream_quality = int(os.environ.get("STREAM_QUALITY", settings["preview"]["stream_quality"]))
-log_quality = int(os.environ.get("LOG_QUALITY", settings["preview"]["log_quality"]))
-stream_res = settings["preview"]["max_stream_res"]
+# Foxglove
+logger_enabled = settings["logging"]["enabled"]
+stream_enabled = settings["websockets"]["enabled"]
+
+log_quality = int(os.environ.get("LOG_QUALITY", settings["logging"]["quality"]))
+stream_quality = int(os.environ.get("STREAM_QUALITY", settings["websockets"]["quality"]))
+
+stream_res = settings["websockets"]["max_res"]
+log_res = settings["logging"]["max_res"]
 
 test_video = os.environ.get("TEST_VIDEO", settings["test_video"])
 

@@ -26,12 +26,18 @@
     "debug": false,
     "quad_contours": true
   },
-  "preview": {
+  "logging": {
     "enabled": true,
-    "show_fps": false,
-    "stream_quality": 25,
-    "log_quality": 25,
-    "max_stream_res": [
+    "quality": 25
+    "max_res": [
+      1280,
+      800
+    ]
+  },
+  "websockets": {
+    "enabled": true,
+    "quality": 25
+    "max_res": [
       1280,
       800
     ]

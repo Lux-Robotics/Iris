@@ -67,9 +67,10 @@ if config.use_nt:
 
 prev_frame_time = 0
 
-server_thread = threading.Thread(target=output.foxglove_server.start)
-server_thread.daemon = True
-server_thread.start()
+if config.stream_enabled:
+    server_thread = threading.Thread(target=output.foxglove_server.start)
+    server_thread.daemon = True
+    server_thread.start()
 
 while True:
     ret, frame = camera.read()

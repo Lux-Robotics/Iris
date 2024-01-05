@@ -1,17 +1,16 @@
-from mcap_protobuf.writer import Writer
-
-from foxglove_schemas_protobuf.Vector3_pb2 import Vector3
-from foxglove_schemas_protobuf.Quaternion_pb2 import Quaternion
-from foxglove_schemas_protobuf.Pose_pb2 import Pose
+from foxglove_schemas_protobuf.Color_pb2 import Color
 from foxglove_schemas_protobuf.FrameTransform_pb2 import FrameTransform
+from foxglove_schemas_protobuf.ModelPrimitive_pb2 import ModelPrimitive
+from foxglove_schemas_protobuf.Pose_pb2 import Pose
+from foxglove_schemas_protobuf.Quaternion_pb2 import Quaternion
 from foxglove_schemas_protobuf.SceneEntity_pb2 import SceneEntity
 from foxglove_schemas_protobuf.SceneUpdate_pb2 import SceneUpdate
-from foxglove_schemas_protobuf.ModelPrimitive_pb2 import ModelPrimitive
-from foxglove_schemas_protobuf.Color_pb2 import Color
+from foxglove_schemas_protobuf.Vector3_pb2 import Vector3
 from google.protobuf.duration_pb2 import Duration
+from mcap_protobuf.writer import Writer
 
-from util.vision_types import Pose as PerceptionPose
 from output.foxglove_utils import timestamp
+from util.vision_types import Pose as PerceptionPose
 
 
 def get_pose(now: int, pose: PerceptionPose, frame_id: str) -> FrameTransform:
@@ -45,7 +44,7 @@ def write_pose(now: int, pose: PerceptionPose, frame_id: str, writer: Writer) ->
     )
 
 
-def get_field(now:int) -> SceneUpdate: 
+def get_field(now: int) -> SceneUpdate:
     with open("assets/2023_chargedup.glb", mode='rb') as f:  # b is important -> binary
         field_model = f.read()
 
@@ -69,9 +68,8 @@ def get_field(now:int) -> SceneUpdate:
 def setup_field(now: int, writer: Writer) -> None:
     update = get_field(now)
     writer.write_message(
-            topic="/world/field",
-            log_time=now,
-            message=update,
-            publish_time=now
-            )
-
+        topic="/world/field",
+        log_time=now,
+        message=update,
+        publish_time=now
+    )

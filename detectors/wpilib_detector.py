@@ -1,7 +1,7 @@
-import robotpy_apriltag as apriltag
-import util.config as config
-from util.vision_types import TagObservation
 import numpy as np
+import robotpy_apriltag as apriltag
+
+from util.vision_types import TagObservation
 
 detector_options = apriltag.AprilTagDetector.Config()
 detector_options.quadDecimate = 1.0

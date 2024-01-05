@@ -2,7 +2,6 @@
 import cv2
 import numpy as np
 
-import util.config
 import util.config as config
 from util.vision_types import Pose
 
