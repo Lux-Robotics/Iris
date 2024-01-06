@@ -45,7 +45,7 @@ def write_pose(now: int, pose: PerceptionPose, frame_id: str, writer: Writer) ->
 
 
 def get_field(now: int) -> SceneUpdate:
-    with open("assets/2023_chargedup.glb", mode='rb') as f:  # b is important -> binary
+    with open("assets/2024_crescendo.glb", mode='rb') as f:  # b is important -> binary
         field_model = f.read()
 
     field = ModelPrimitive(

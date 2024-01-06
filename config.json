@@ -1,8 +1,8 @@
 {
   "device_id": "test",
-  "map": "maps/2023-chargedup.json",
+  "map": "maps/2024-crescendo.json",
   "server_ip": "10.60.36.2",
-  "test_video": "testdata/output3.mkv",
+  "test_video": "testdata/2024speaker.webm",
   "camera": {
     "calibration": "calibration/011-1_1600x1300.json",
     "pipeline": "v4l2src device=/dev/video0 extra_controls=\"c,exposure_dynamic_framerate=1\" ! image/jpeg,format=MJPG,width=1280,height=720 ! jpegdec ! appsink drop=1",
@@ -28,7 +28,7 @@
   },
   "logging": {
     "enabled": true,
-    "quality": 25
+    "quality": 25, 
     "max_res": [
       1280,
       800
@@ -36,7 +36,7 @@
   },
   "websockets": {
     "enabled": true,
-    "quality": 25
+    "quality": 25, 
     "max_res": [
       1280,
       800

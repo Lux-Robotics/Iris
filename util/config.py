@@ -85,7 +85,7 @@ test_video = os.environ.get("TEST_VIDEO", settings["test_video"])
 last_frame = None
 detections = None
 fps = [0 for x in range(10)]
-poses = None
+poses = []
 new_data = False
 
 # Define apriltag locations

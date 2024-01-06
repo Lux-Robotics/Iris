@@ -167,6 +167,7 @@ __pycache__
 
 *.avi
 *.mkv
+*.webm
 
 *.rrd
 *.mcap

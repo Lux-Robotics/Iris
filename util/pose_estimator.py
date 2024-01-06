@@ -9,7 +9,7 @@ from util.vision_types import Pose
 # for testing only
 def solvepnp_apriltag(detections):
     if len(detections) == 0:
-        return []
+        return ()
     for detection in detections:
         if detection.tag_id not in config.tag_world_coords:
             continue
@@ -33,7 +33,7 @@ def solvepnp_apriltag(detections):
 
 def solvepnp_singletag(detections):
     if len(detections) == 0:
-        return []
+        return ()
     for detection in detections:
         if detection.tag_id not in config.tag_world_coords:
             continue
@@ -50,7 +50,7 @@ def solvepnp_singletag(detections):
 
 def solvepnp_multitag(detections):
     if len(detections) == 0:
-        return {}
+        return ()
     corners = None
     world_coords = None
     for detection in detections:
@@ -75,7 +75,7 @@ def solvepnp_multitag(detections):
 
 def solvepnp_ransac(detections):
     if len(detections) == 0:
-        return {}
+        return ()
 
     if len(detections) == 1:
         return solvepnp_singletag(detections)
