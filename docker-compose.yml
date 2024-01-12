@@ -8,7 +8,7 @@ services:
     devices:
       - "/dev/video0:/dev/video0"
     volumes:
-      - "/app/logs:/logs"
+      - "/logs:/app/logs"
     restart: always
     environment:
       - DEVICE_ID=test

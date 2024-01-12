@@ -89,7 +89,7 @@ poses = []
 new_data = False
 
 # Define apriltag locations
-apriltag_size = 0.1524  # meters
+apriltag_size = 0.1651  # 36h11
 
 m = open(settings["map"], 'r')
 tags = json.load(m)["tags"]

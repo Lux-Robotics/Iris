@@ -5,7 +5,7 @@ services:
     container_name: perception
     privileged: true
     volumes:
-      - "/app/logs:/logs"
+      - "/logs:/app/logs"
       - "/app/testdata:/testdata"
     command: ["python3", "main.py", "--mode=2"]
     stdin_open: true
