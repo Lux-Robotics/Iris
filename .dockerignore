@@ -31,3 +31,4 @@ README.md
 **/.DS_Store
 **/testdata
 **/requirements_dev.txt
+**/build
