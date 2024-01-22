@@ -4,15 +4,15 @@
   "server_ip": "10.60.36.2",
   "test_video": "testdata/2024speaker.webm",
   "camera": {
-    "calibration": "calibration/011-1_1600x1300.json",
+    "calibration": "calibration/002-2_1600x1200.json",
     "pipeline": "v4l2src device=/dev/video0 extra_controls=\"c,exposure_dynamic_framerate=1\" ! image/jpeg,format=MJPG,width=1280,height=720 ! jpegdec ! appsink drop=1",
-    "fps": 120
+    "fps": 50
   },
   "aruco": {
     "decimate": 1,
     "aruco3": false,
     "corner_refinement": "subpix",
-    "relative_refinement_window": 0.3,
+    "relative_refinement_window": 1,
     "max_refinement_window": 5
   },
   "apriltag3": {
@@ -30,16 +30,16 @@
     "enabled": true,
     "quality": 25, 
     "max_res": [
-      1280,
-      800
+      1600,
+      1200
     ]
   },
   "websockets": {
     "enabled": true,
     "quality": 25, 
     "max_res": [
-      1280,
-      800
+      1600,
+      1200
     ]
   },
   "use_networktables": true,
