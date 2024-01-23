@@ -42,29 +42,32 @@ device_id = os.environ.get("DEVICE_ID", settings["device_id"])
 
 # Setup detection params
 detector = settings["detector"]
+aruco_params = settings["aruco"]
+apriltag_params = settings["apriltag3"]
+
 if detector == "aruco":
     detection_params = cv2.aruco.DetectorParameters()
-    detection_params.useAruco3Detection = settings["aruco"]["aruco3"]
-    detection_params.aprilTagQuadDecimate = settings["aruco"]["decimate"]
+    detection_params.useAruco3Detection = aruco_params["aruco3"]
+    detection_params.aprilTagQuadDecimate = aruco_params["decimate"]
 
     if settings["aruco"]["corner_refinement"] == "none":
         detection_params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_NONE
     elif settings["aruco"]["corner_refinement"] == "subpix":
         detection_params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
-        detection_params.relativeCornerRefinmentWinSize = settings["aruco"]["relative_refinement_window"]
-        detection_params.cornerRefinementWinSize = settings["aruco"]["max_refinement_window"]
+        detection_params.relativeCornerRefinmentWinSize = aruco_params["relative_refinement_window"]
+        detection_params.cornerRefinementWinSize = aruco_params["max_refinement_window"]
 
 elif detector == "apriltag":
-    detector_options = apriltag.DetectorOptions(families='tag16h5')
-    detector_options.border = settings["apriltag3"]["border"]
-    detector_options.nthreads = settings["apriltag3"]["threads"]
-    detector_options.quad_decimate = settings["apriltag3"]["quad_decimate"]
-    detector_options.quad_blur = settings["apriltag3"]["quad_blur"]
-    detector_options.refine_edges = settings["apriltag3"]["refine_edges"]
-    detector_options.refine_decode = settings["apriltag3"]["refine_decode"]
-    detector_options.refine_pose = settings["apriltag3"]["refine_pose"]
-    detector_options.debug = settings["apriltag3"]["debug"]
-    detector_options.quad_contours = settings["apriltag3"]["quad_contours"]
+    detector_options = apriltag.DetectorOptions(families='tag36h11')
+    detector_options.border = apriltag_params["border"]
+    detector_options.nthreads = apriltag_params["threads"]
+    detector_options.quad_decimate = apriltag_params["quad_decimate"]
+    detector_options.quad_blur = apriltag_params["quad_blur"]
+    detector_options.refine_edges = apriltag_params["refine_edges"]
+    detector_options.refine_decode = apriltag_params["refine_decode"]
+    detector_options.refine_pose = apriltag_params["refine_pose"]
+    detector_options.debug = apriltag_params["debug"]
+    detector_options.quad_contours = apriltag_params["quad_contours"]
 
 elif detector == "wpilib":
     pass

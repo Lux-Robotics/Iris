@@ -4,7 +4,7 @@
   "server_ip": "10.60.36.2",
   "test_video": "testdata/2024speaker.webm",
   "camera": {
-    "calibration": "calibration/002-2_1600x1200.json",
+    "calibration": "calibration/002-5_1600x1200.json",
     "pipeline": "v4l2src device=/dev/video0 extra_controls=\"c,exposure_dynamic_framerate=1\" ! image/jpeg,format=MJPG,width=1280,height=720 ! jpegdec ! appsink drop=1",
     "fps": 50
   },
