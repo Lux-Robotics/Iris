@@ -23,7 +23,7 @@ if config.logger_enabled:
     logging_thread.start()
 
 # make sure logging thread has started
-time.sleep(1)
+time.sleep(0.2)
 
 # Import apriltag detector
 try:
@@ -34,7 +34,7 @@ except ImportError:
     sys.exit()
 
 # Initialize video capture
-try:
+def init_camera():
     if args.mode == 0:
         if config.capture_mode == "opencv":
             camera = cv2.VideoCapture(0)
@@ -56,6 +56,11 @@ try:
         # Mode parameter not valid
         config.logger.error("Program mode invalid")
         sys.exit()
+
+    return camera
+
+try:
+    camera = init_camera()
 except Exception:
     config.logger.error("Failed to initialize video capture")
     sys.exit()
@@ -79,14 +84,19 @@ while True:
     # Latency compensation estimate
     new_frame_time -= (1 / config.camera_fps) / 2
 
+    # Bad camera return value
     if not ret:
-        if args.mode != 0:
+        if args.mode == 0:
+            config.logger.warning("video input not detected")
+
+            # Attempt to reinitialize camera after 0.1 seconds
+            time.sleep(0.1)
+            camera = init_camera()
+            continue
+
+        else:
             info = config.logger.info(
                 "Average FPS: " + str(1 / ((config.fps[-1] - config.fps[11]) / len(config.fps[10:]))))
-            break
-        else:
-            config.logger.warning("video input not detected")
-            time.sleep(1)
             break
 
     if config.detector == "aruco":
