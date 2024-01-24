@@ -16,10 +16,10 @@ mkdir -p "$IMAGE_DIR"
 ffmpeg -i "$VIDEO_FILE" -vsync 0 "$IMAGE_DIR"/output_%04d.png
 
 # Run mrgingham to find corners
-mrgingham --jobs $(nproc) --gridn 13 "$IMAGE_DIR"/*.png > corners.vnl
+mrgingham --jobs $(nproc) --gridn 13 "$IMAGE_DIR"/"*.png" > corners.vnl
 
 # Run camera calibration
-mrcal-calibrate-cameras --corners-cache corners.vnl --lensmodel LENSMODEL_OPENCV8 --focal 900 --object-spacing 0.012 --object-width-n 13 "$IMAGE_DIR"/*.png
+mrcal-calibrate-cameras --corners-cache corners.vnl --lensmodel LENSMODEL_OPENCV8 --focal 900 --object-spacing 0.012 --object-width-n 13 "$IMAGE_DIR"/"*.png"
 
 # Remove the images directory
 rm -r "$IMAGE_DIR"
