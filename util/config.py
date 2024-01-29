@@ -24,8 +24,6 @@ f.close()
 # Camera config
 camera_fps = settings["camera"]["fps"]
 
-gstreamer_pipeline = os.environ.get("GSTREAMER_PIPELINE", settings["camera"]["pipeline"])
-
 calibration_path = os.environ.get("CALIBRATION_FILE", settings["camera"]["calibration"])
 
 c = open(calibration_path, 'r')
@@ -34,6 +32,14 @@ camera_matrix = np.array(calibration["cameraMatrix"])
 dist_coeffs = np.array(calibration["distCoeffs"])
 resx, resy = tuple(calibration["resolution"])
 c.close()
+
+# Load gstreamer pipeline
+if "pipeline" in calibration:
+    gstreamer_pipeline = calibration["pipeline"]
+else:
+    gstreamer_pipeline = settings["camera"]["pipeline"]
+
+gstreamer_pipeline = os.environ.get("GSTREAMER_PIPELINE", gstreamer_pipeline)
 
 # networktables
 use_nt = settings["use_networktables"]
