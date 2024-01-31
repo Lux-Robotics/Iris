@@ -97,6 +97,7 @@ detections = None
 fps = [0 for x in range(10)]
 poses = []
 new_data = False
+bad_frames = 0
 
 # Define apriltag locations
 apriltag_size = 0.1651  # 36h11
@@ -131,7 +132,7 @@ def is_serializable(v):
 
 
 # Filter out non-serializable items, functions, built-ins, and modules
-log_exclude = ["settings", "tag", "last_frame", "detections", "poses", "new_data", "log_exclude", "fps", "tags"]
+log_exclude = ["settings", "tag", "last_frame", "detections", "poses", "new_data", "log_exclude", "fps", "tags", "bad_frames"]
 module_vars = {
     k: v for k, v in globals().items()
     if k not in log_exclude and not k.startswith('__') and not callable(v) and is_serializable(v)

@@ -92,6 +92,10 @@ while True:
             config.logger.warning("video input not detected")
 
             # Attempt to reinitialize camera after 0.1 seconds
+            config.bad_frames += 1
+            if config.bad_frames > 10:
+                break
+
             time.sleep(0.1)
             camera = init_camera()
             continue
