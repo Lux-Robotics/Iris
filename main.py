@@ -33,6 +33,7 @@ except ImportError:
     config.logger.error("The specified detector does not exist")
     sys.exit()
 
+
 # Initialize video capture
 def init_camera():
     if args.mode == 0:
@@ -58,6 +59,7 @@ def init_camera():
         sys.exit()
 
     return camera
+
 
 try:
     camera = init_camera()

@@ -1,4 +1,5 @@
 import json
+import tomllib
 import logging
 import os
 
@@ -17,8 +18,8 @@ v = open("package.json", 'r')
 version = json.load(v)["version"]
 v.close()
 
-f = open("config.json", 'r')
-settings = json.load(f)
+f = open("config.toml", 'rb')
+settings = tomllib.load(f)
 f.close()
 
 # Camera config

@@ -1,10 +1,10 @@
 # Tool to convert mrcal calibration to a normal .json
 
 import argparse
+import json
 import sys
 
 import mrcal
-import json
 
 parser = argparse.ArgumentParser("mrcal_converter")
 
