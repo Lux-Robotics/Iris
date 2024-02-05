@@ -46,7 +46,7 @@ debug = false
 quad_contours = true
 
 [logging]
-enabled = true
+enabled = false
 # jpeg encoding quality (0-100)
 quality = 25
 # Maximum logged resolution (integer downscaled)
@@ -57,4 +57,4 @@ enabled = true
 # jpeg encoding quality (0-100)
 quality = 25
 # Maximum logged resolution (integer downscaled)
-max_res = [ 1600, 1200 ]
+max_res = [ 800, 600 ]
