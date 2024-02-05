@@ -1,10 +1,11 @@
 import math
+from typing import List
 
 import ntcore
 
 import util.config as config
 from util.config import version
-from util.vision_types import Pose
+from util.vision_types import Pose, TagObservation
 
 
 class NTPublisher:
@@ -20,12 +21,13 @@ class NTPublisher:
             ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True))
         self.errors_pub = self.output_table.getDoubleArrayTopic("errors").publish(
             ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True))
+        self.tags_pub = self.output_table.getIntegerArrayTopic("tag_ids").publish(
+            ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True))
         self.fps_pub = self.output_table.getDoubleTopic("fps").publish()
-        self.tags_pub = self.output_table.getIntegerTopic("tags").publish()
         self.version_pub = self.output_table.getStringTopic("version").publish()
         self.version_pub.set(version)
 
-    def publish_data(self, pose0: Pose, pose1: Pose, tags: int, timestamp: float) -> None:
+    def publish_data(self, pose0: Pose, pose1: Pose, tags: List[TagObservation], timestamp: float) -> None:
         errors = []
         observation_data = []
         if pose0 is not None:
@@ -58,4 +60,4 @@ class NTPublisher:
         self.observations1_pub.set(observation_data_2, math.floor(timestamp * 1000000))
         self.errors_pub.set(errors, math.floor(timestamp * 1000000))
         self.fps_pub.set(fps, math.floor(timestamp * 1000000))
-        self.tags_pub.set(int(tags), math.floor(timestamp * 1000000))
+        self.tags_pub.set([tag.tag_id for tag in tags], math.floor(timestamp * 1000000))

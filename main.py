@@ -2,6 +2,7 @@ import argparse
 import sys
 import threading
 import time
+import output.foxglove_logger as out
 
 import cv2
 
@@ -15,10 +16,9 @@ parser.add_argument("--mode", help="Toggle for operation modes", type=int, defau
 args = parser.parse_args()
 
 # Start logging thread
-if config.logger_enabled:
-    import output.foxglove_logger as out
 
-    logging_thread = threading.Thread(target=out.start)
+logging_thread = threading.Thread(target=out.start)
+if config.logger_enabled:
     logging_thread.daemon = True
     logging_thread.start()
 
@@ -131,7 +131,7 @@ while True:
     if nt_instance is not None:
         try:
             nt_instance.publish_data(poses[0] if len(poses) > 0 else None, poses[1] if len(poses) > 1 else None,
-                                     len(detections),
+                                     detections,
                                      new_frame_time)
         except Exception:
             config.logger.warning("Failed to publish nt4 data")
