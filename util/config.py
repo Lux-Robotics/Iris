@@ -108,6 +108,8 @@ m.close()
 
 tag_world_coords = {}
 
+ignored_tags = []
+
 pose_estimation_mode = os.environ.get("SOLVEPNP_MODE", settings["solvepnp_method"])
 capture_mode = os.environ.get("CAPTURE_METHOD", settings["capture"])
 
@@ -131,11 +133,14 @@ def is_serializable(v):
         return False
 
 
-# Filter out non-serializable items, functions, built-ins, and modules
-log_exclude = ["settings", "tag", "last_frame", "detections", "poses", "new_data", "log_exclude", "fps", "tags", "bad_frames"]
-module_vars = {
-    k: v for k, v in globals().items()
-    if k not in log_exclude and not k.startswith('__') and not callable(v) and is_serializable(v)
-}
+def to_json():
+    # Filter out non-serializable items, functions, built-ins, and modules
+    log_exclude = ["settings", "tag", "last_frame", "detections", "poses", "new_data", "log_exclude", "fps", "tags", "bad_frames", "ignored_tags"]
+    module_vars = {
+        k: v for k, v in globals().items()
+        if k not in log_exclude and not k.startswith('__') and not callable(v) and is_serializable(v)
+    }
 
-config_json = json.dumps(module_vars, indent=4)
+    return json.dumps(module_vars, indent=4)
+
+config_json = to_json()

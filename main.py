@@ -8,7 +8,7 @@ import cv2
 
 import output.foxglove_server
 import util.config as config
-from util.output_publisher import NTPublisher
+from util.nt_interface import NTInterface
 from util.pose_estimator import solvepnp_singletag, solvepnp_multitag, solvepnp_ransac
 
 parser = argparse.ArgumentParser("peninsula_perception")
@@ -70,7 +70,7 @@ except Exception:
 nt_instance = None
 
 if config.use_nt:
-    nt_instance = NTPublisher(config.server_ip)
+    nt_instance = NTInterface(config.server_ip)
 
 prev_frame_time = 0
 

@@ -28,7 +28,7 @@ class NTInterface:
         self.version_pub.set(version)
 
         self.config_table = ntcore.NetworkTableInstance.getDefault().getTable("/Perception/config")
-        self.tagignore_sub = self.config_table.getIntegerArrayTopic("ignored_tags").subscribe(config.ig)
+        self.tagignore_sub = self.config_table.getIntegerArrayTopic("ignored_tags").subscribe([])
 
     def publish_data(self, pose0: Pose, pose1: Pose, tags: List[TagObservation], timestamp: float) -> None:
         errors = []
@@ -66,4 +66,5 @@ class NTInterface:
         self.tags_pub.set([tag.tag_id for tag in tags], math.floor(timestamp * 1000000))
 
     def get_config(self):
-        pass
+        config.ignored_tags = self.tagignore_sub.get([])
+
