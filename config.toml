@@ -1,5 +1,5 @@
 # Device name, used to differentiate cameras over networktables
-device_id = "front_left"
+device_id = "test"
 # Map of apriltag location, copied from wpilib
 map = "maps/2024-crescendo.json"
 # Robot IP Address

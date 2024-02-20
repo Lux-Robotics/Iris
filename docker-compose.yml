@@ -1,16 +1,15 @@
 version: '3.8'
 services:
   perception:
-    image: peninsula/perception:v0.1.6
+    image: peninsula/perception
     container_name: perception
     privileged: true
     network_mode: host
     devices:
       - "/dev/video0:/dev/video0"
     volumes:
-      - "/logs:/app/logs"
+      - "/home/ubuntu/app:/app"
     restart: always
     environment:
       - DEVICE_ID=test
-      - CALIBRATION_FILE=calibration/003-4_1280x720.json
       - CAPTURE_METHOD=gstreamer

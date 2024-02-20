@@ -59,6 +59,6 @@ RUN python3.11 -m pip install -r requirements.txt
 RUN CI=1 python3.11 -m pip install --upgrade --find-links=https://tortall.net/~robotpy/wheels/2023/raspbian 'robotpy[apriltag]'
 
 # Add project files
-ADD . /app
+ ADD . /app
 
 CMD ["python3.11", "main.py"]
