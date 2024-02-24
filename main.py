@@ -80,6 +80,9 @@ if config.stream_enabled:
     server_thread.start()
 
 while True:
+    # read data from networktables
+    nt_instance.get_states()
+
     ret, frame = camera.read()
     new_frame_time = time.time()
 

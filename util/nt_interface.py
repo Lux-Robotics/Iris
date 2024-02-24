@@ -1,4 +1,5 @@
 import math
+import time
 from typing import List
 
 import ntcore
@@ -29,6 +30,9 @@ class NTInterface:
 
         self.config_table = ntcore.NetworkTableInstance.getDefault().getTable("/Perception/config")
         self.tagignore_sub = self.config_table.getIntegerArrayTopic("ignored_tags").subscribe([])
+
+        fms_data = ntcore.NetworkTableInstance.getDefault().getTable("/FMSInfo")
+        self.control_data_sub = fms_data.getIntegerTopic("FMSControlData").subscribe(0)
 
     def publish_data(self, pose0: Pose, pose1: Pose, tags: List[TagObservation], timestamp: float) -> None:
         errors = []
@@ -65,6 +69,12 @@ class NTInterface:
         self.fps_pub.set(fps, math.floor(timestamp * 1000000))
         self.tags_pub.set([tag.tag_id for tag in tags], math.floor(timestamp * 1000000))
 
-    def get_config(self):
+    def get_states(self):
         config.ignored_tags = self.tagignore_sub.get([])
 
+        control_data = self.control_data_sub.get(0)
+        ds_attached, fms_attached, emergency_stopped, test_enabled, auto_enabled, robot_enabled = [
+            (control_data & (1 << bit)) > 0 for bit in range(5, -1, -1)]
+
+        if robot_enabled:
+            config.robot_last_enabled = time.time()

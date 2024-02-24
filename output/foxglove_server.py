@@ -212,7 +212,7 @@ async def main():
                 await asyncio.sleep(0.05)
                 now = time.time_ns()
 
-                frame, points, ids = output.pipeline.process(config.stream_res, force_new_data=False)
+                frame, points, ids = output.pipeline.process(config.stream_res, "stream")
                 if frame is None:
                     continue
                 else:

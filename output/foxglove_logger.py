@@ -69,7 +69,7 @@ def main(log_dir: str):
         while True:
             now = time.time_ns()
             try:
-                frame, points, ids = output.pipeline.process(config.log_res)
+                frame, points, ids = output.pipeline.process(config.log_res, "log")
                 if frame is None:
                     continue
                 else:
