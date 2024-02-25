@@ -108,3 +108,9 @@ def solvepnp_ransac(detections):
         return (Pose(rvec, tvec, 0),)
     else:
         return ()
+
+def solvepnp_ransac_fallback(detections):
+    poses = solvepnp_ransac(detections)
+    if poses == ():
+        return solvepnp_multitag(detections)
+

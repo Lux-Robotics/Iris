@@ -9,7 +9,7 @@ import cv2
 import output.foxglove_server
 import util.config as config
 from util.nt_interface import NTInterface
-from util.pose_estimator import solvepnp_singletag, solvepnp_multitag, solvepnp_ransac
+from util.pose_estimator import solvepnp_singletag, solvepnp_multitag, solvepnp_ransac, solvepnp_ransac_fallback
 
 parser = argparse.ArgumentParser("peninsula_perception")
 parser.add_argument("--mode", help="Toggle for operation modes", type=int, default=0, required=False)
@@ -123,6 +123,8 @@ while True:
             poses = solvepnp_multitag(detections)
         elif config.pose_estimation_mode == "ransac":
             poses = solvepnp_ransac(detections)
+        elif config.pose_estimation_mode == "ransac_fallback":
+            poses = solvepnp_ransac_fallback(detections)
         else:
             config.logger.error("Pose estimation mode invalid")
             sys.exit(-1)
