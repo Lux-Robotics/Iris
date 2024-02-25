@@ -50,8 +50,8 @@ def main(log_dir: str):
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
 
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-    with open(log_dir + "log-" + timestamp + ".mcap", "wb") as f, Writer(f) as writer:
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
+    with open(log_dir + "log-" + config.device_id + "-" + timestamp + ".mcap", "wb") as f, Writer(f) as writer:
 
         # check if disk is too full 
         _, _, free_bytes = shutil.disk_usage(log_dir)
