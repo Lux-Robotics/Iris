@@ -13,11 +13,12 @@ capture = "opencv"
 # apriltag, aruco, wpilib
 detector = "aruco"
 # singletag, multitag, ransac
-solvepnp_method = "ransac_fallback"
+#solvepnp_method = "multitag_ap3p"
+solvepnp_method = "ransac"
 ignored_tags = []
 
 [camera]
-calibration = "calibration/002-5_1600x1200.json"
+calibration = "calibration/002-7_1600x1200.json"
 # Default GStreamer pipeline
 pipeline = "v4l2src device=/dev/video0 extra_controls=\"c,exposure_dynamic_framerate=1\" ! image/jpeg,format=MJPG,width=1280,height=720 ! jpegdec ! appsink drop=1"
 # Camera fps, used to estimate latency

@@ -12,3 +12,4 @@ foxglove-schemas-protobuf
 foxglove-websocket
 typing
 asyncio
+scipy

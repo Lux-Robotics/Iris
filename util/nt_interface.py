@@ -70,7 +70,7 @@ class NTInterface:
         self.tags_pub.set([tag.tag_id for tag in tags], math.floor(timestamp * 1000000))
 
     def get_states(self):
-        config.ignored_tags = self.tagignore_sub.get([3])
+        config.ignored_tags = self.tagignore_sub.get([])
 
         control_data = self.control_data_sub.get(0)
         ds_attached, fms_attached, emergency_stopped, test_enabled, auto_enabled, robot_enabled = [
