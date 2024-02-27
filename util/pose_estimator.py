@@ -51,23 +51,12 @@ def solvepnp_singletag(detections):
 
 
 def solvepnp_multitag(detections):
-    if len(detections) == 0:
-        return ()
-    corners = None
-    world_coords = None
+    corners = np.empty((0, 2)) 
+    world_coords = np.empty((0, 3))
+
     for detection in detections:
-        if detection.tag_id not in config.tag_world_coords:
-            continue
-        if detection.tag_id in config.ignored_tags:
-            continue
-        if corners is None:
-            corners = detection.corners.reshape((4, 2))
-        else:
-            corners = np.vstack((corners, detection.corners.reshape((4, 2))))
-        if world_coords is None:
-            world_coords = config.tag_world_coords[detection.tag_id].get_corners()
-        else:
-            world_coords = np.vstack((world_coords, config.tag_world_coords[detection.tag_id].get_corners()))
+        corners = np.vstack((corners, detection.corners.reshape((4, 2))))
+        world_coords = np.vstack((world_coords, config.tag_world_coords[detection.tag_id].get_corners()))
 
     _, rvecs, tvecs, errors = cv2.solvePnPGeneric(world_coords, corners, config.camera_matrix,
                                                   distCoeffs=config.dist_coeffs, flags=cv2.SOLVEPNP_SQPNP)
@@ -77,40 +66,19 @@ def solvepnp_multitag(detections):
         return (Pose(rvecs[0], tvecs[0], errors[0]),)
 
 
-def solvepnp_ransac(detections):
-    corners = None
-    world_coords = None
+def solvepnp_ransac(detections,):
+    corners = np.empty((0, 2)) 
+    world_coords = np.empty((0, 3))
 
     for detection in detections:
-        if detection.tag_id not in config.tag_world_coords:
-            continue
-        if detection.tag_id in config.ignored_tags:
-            continue
-        if corners is None:
-            corners = detection.corners.reshape((4, 2))
-        else:
-            corners = np.vstack((corners, detection.corners.reshape((4, 2))))
-        if world_coords is None:
-            world_coords = config.tag_world_coords[detection.tag_id].get_corners()
-        else:
-            world_coords = np.vstack((world_coords, config.tag_world_coords[detection.tag_id].get_corners()))
-
-    if len(detections) == 0:
-        return ()
-
-    if len(detections) == 1:
-        return solvepnp_singletag(detections)
+        corners = np.vstack((corners, detection.corners.reshape((4, 2))))
+        world_coords = np.vstack((world_coords, config.tag_world_coords[detection.tag_id].get_corners()))
 
     retval, rvec, tvec, inliers = cv2.solvePnPRansac(world_coords, corners, config.camera_matrix,
-                                                     distCoeffs=config.dist_coeffs, flags=cv2.SOLVEPNP_SQPNP)
+                                                     distCoeffs=config.dist_coeffs)
 
     if retval:
         return (Pose(rvec, tvec, 0),)
     else:
         return ()
-
-def solvepnp_ransac_fallback(detections):
-    poses = solvepnp_ransac(detections)
-    if poses == ():
-        return solvepnp_multitag(detections)
 

@@ -9,7 +9,8 @@ import cv2
 import output.foxglove_server
 import util.config as config
 from util.nt_interface import NTInterface
-from util.pose_estimator import solvepnp_singletag, solvepnp_multitag, solvepnp_ransac, solvepnp_ransac_fallback
+from util.pose_estimator import solvepnp_singletag, solvepnp_multitag, solvepnp_ransac
+from util.filter_tags import filter_tags
 
 parser = argparse.ArgumentParser("peninsula_perception")
 parser.add_argument("--mode", help="Toggle for operation modes", type=int, default=0, required=False)
@@ -113,25 +114,29 @@ while True:
     else:
         detections = find_corners(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
 
+    filtered_detections, ignored_detections = filter_tags(detections)
+
     poses = tuple()
 
     # Solve for pose
     try:
-        if config.pose_estimation_mode == "singletag":
-            poses = solvepnp_singletag(detections)
+        if config.pose_estimation_mode == "singletag" or len(filtered_detections) <= 1:
+            poses = solvepnp_singletag(filtered_detections)
         elif config.pose_estimation_mode == "multitag":
-            poses = solvepnp_multitag(detections)
+            poses = solvepnp_multitag(filtered_detections)
         elif config.pose_estimation_mode == "ransac":
-            poses = solvepnp_ransac(detections)
+            poses = solvepnp_ransac(filtered_detections)
         elif config.pose_estimation_mode == "ransac_fallback":
-            poses = solvepnp_ransac_fallback(detections)
+            poses = solvepnp_ransac(filtered_detections)
+            if poses == ():
+                poses = solvepnp_multitag(filtered_detections)
         else:
             config.logger.error("Pose estimation mode invalid")
             sys.exit(-1)
     except AssertionError:
         config.logger.warning("SolvePNP failed with assertion error")
-    except Exception:
-        config.logger.warning("SolvePNP failed")
+    except Exception as e:
+        config.logger.warning("SolvePNP failed: " + str(e))
 
     if nt_instance is not None:
         try:

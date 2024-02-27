@@ -13,7 +13,7 @@ capture = "opencv"
 # apriltag, aruco, wpilib
 detector = "aruco"
 # singletag, multitag, ransac
-solvepnp_method = "ransac"
+solvepnp_method = "ransac_fallback"
 ignored_tags = []
 
 [camera]
