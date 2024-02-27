@@ -146,7 +146,7 @@ while True:
         except Exception:
             config.logger.warning("Failed to publish nt4 data")
 
-    config.last_frame, config.detections, config.poses = frame, detections, poses
+    config.last_frame, config.filtered_detections, config.ignored_detections, config.poses = frame, filtered_detections, ignored_detections, poses
     config.new_data = True
 
     if not config.logger_enabled and args.mode == 1:

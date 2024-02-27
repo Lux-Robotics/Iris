@@ -130,6 +130,17 @@ async def main():
                 "schemaEncoding": "protobuf",
             }
         )
+        ignored_annotations_pub = await server.add_channel(
+            {
+                "topic": "/camera/ignored_annotations",
+                "encoding": "protobuf",
+                "schemaName": ImageAnnotations.DESCRIPTOR.full_name,
+                "schema": b64encode(
+                    build_file_descriptor_set(ImageAnnotations).SerializeToString()
+                ).decode("ascii"),
+                "schemaEncoding": "protobuf",
+            }
+        )
         calibration_pub = await server.add_channel(
             {
                 "topic": "/camera/calibration",
@@ -212,7 +223,7 @@ async def main():
                 await asyncio.sleep(0.05)
                 now = time.time_ns()
 
-                frame, points, ids = output.pipeline.process(config.stream_res, "stream")
+                frame, points, ids, ignored_points, ignored_ids = output.pipeline.process(config.stream_res, "stream")
                 if frame is None:
                     continue
                 else:
@@ -224,7 +235,7 @@ async def main():
 
                 # Convert the frame to bytes
                 data = buffer.tobytes()
-                img, cal, ann, fps = get_frame(now, data, points, ids)
+                img, cal, ann, ignored_ann, fps = get_frame(now, data, points, ids, ignored_points, ignored_ids)
                 if len(config.poses) > 0:
                     pose = get_pose(now, config.poses[0], "camera")
                     await server.send_message(pose_pub, now, pose.SerializeToString())
@@ -240,6 +251,7 @@ async def main():
                 await server.send_message(image_pub, now, img.SerializeToString())
                 await server.send_message(calibration_pub, now, cal.SerializeToString())
                 await server.send_message(annotations_pub, now, ann.SerializeToString())
+                await server.send_message(ignored_annotations_pub, now, ignored_ann.SerializeToString())
                 await server.send_message(fps_pub, now, fps.SerializeToString())
                 if log is not None:
                     await server.send_message(log_pub, now, log.SerializeToString())

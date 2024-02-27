@@ -8,8 +8,8 @@ from output.float_message_pb2 import FloatMessage
 from output.foxglove_utils import timestamp, points
 
 
-def get_frame(now: int, buffer: bytes, points_array, ids) -> (
-        CompressedImage, CameraCalibration, ImageAnnotations, FloatMessage):
+def get_frame(now: int, buffer: bytes, points_array, ids, ignored_points_array, ignored_ids) -> (
+        CompressedImage, CameraCalibration, ImageAnnotations, ImageAnnotations, FloatMessage):
     # /camera/image
     img = CompressedImage(
         timestamp=timestamp(now),
@@ -34,11 +34,13 @@ def get_frame(now: int, buffer: bytes, points_array, ids) -> (
     # /camera/annotations
     point, id = points(points_array, ids, now)
     ann = ImageAnnotations(points=point, texts=id)
-    return img, cal, ann, FloatMessage(number=9 / (config.fps[-1] - config.fps[-10]))
+    ignored_point, ignored_id = points(ignored_points_array, ignored_ids, now, bad=True)
+    ignored_ann = ImageAnnotations(points=ignored_point, texts=ignored_id)
+    return img, cal, ann, ignored_ann, FloatMessage(number=9 / (config.fps[-1] - config.fps[-10]))
 
 
-def write_frame(now: int, buffer: bytes, points_array, ids, writer: Writer, disk_full: bool = False) -> None:
-    img, cal, ann, fps = get_frame(now, buffer, points_array, ids)
+def write_frame(now: int, buffer: bytes, points_array, ids, ignored_points_array, ignored_ids, writer: Writer, disk_full: bool = False) -> None:
+    img, cal, ann, ignored_ann, fps = get_frame(now, buffer, points_array, ids, ignored_points_array, ignored_ids)
     if not disk_full:
         writer.write_message(
             topic="/camera/image",
@@ -56,6 +58,12 @@ def write_frame(now: int, buffer: bytes, points_array, ids, writer: Writer, disk
         topic="/camera/annotations",
         log_time=now,
         message=ann,
+        publish_time=now,
+    )
+    writer.write_message(
+        topic="/camera/ignored_annotations",
+        log_time=now,
+        message=ignored_ann,
         publish_time=now,
     )
     # /camera/fps

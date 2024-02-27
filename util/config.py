@@ -93,7 +93,8 @@ test_video = os.environ.get("TEST_VIDEO", settings["test_video"])
 
 # not constants
 last_frame = None
-detections = None
+filtered_detections = None
+ignored_detections = None
 fps = [0 for x in range(10)]
 poses = []
 last_logged_timestamp = 0.0

@@ -69,7 +69,7 @@ def main(log_dir: str):
         while True:
             now = time.time_ns()
             try:
-                frame, points, ids = output.pipeline.process(config.log_res, "log")
+                frame, points, ids, ignored_points, ignored_ids = output.pipeline.process(config.log_res, "log")
                 if frame is None:
                     continue
                 else:
@@ -84,7 +84,7 @@ def main(log_dir: str):
             # Convert the frame to bytes
             try:
                 data = buffer.tobytes()
-                write_frame(now, data, points, ids, writer, free_bytes < safety_margin)
+                write_frame(now, data, points, ids, ignored_points, ignored_ids, writer, free_bytes < safety_margin)
                 if len(config.poses) > 0:
                     write_pose(now, config.poses[0], "camera", writer)
                 if len(config.poses) > 1:
