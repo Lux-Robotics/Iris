@@ -44,14 +44,28 @@ class FoxgloveLoggingHandler(logging.Handler):
             # Handle any errors that occur during logging
             self.handleError(record)
 
+def generate_filename(directory, prefix, extension='.mcap'):
+    """Generate an incremental filename in the given directory."""
+    i = 1
+    while True:
+        # Generate the next filename
+        next_filename = f"{prefix}{i}{extension}"
+        full_path = os.path.join(directory, next_filename)
+        
+        # Check if it exists
+        if not os.path.exists(full_path):
+            # If it doesn't exist, we've found our new filename
+            return next_filename
+        i += 1
 
 def main(log_dir: str):
     # Create logs director if doesn't exist
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
 
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
-    with open(log_dir + "log-" + config.device_id + "-" + timestamp + ".mcap", "wb") as f, Writer(f) as writer:
+    log_name = generate_filename(log_dir, "log-" + config.device_id + "-")
+
+    with open(os.path.join(log_dir, log_name), "wb") as f, Writer(f) as writer:
 
         # check if disk is too full 
         _, _, free_bytes = shutil.disk_usage(log_dir)
@@ -98,4 +112,4 @@ def start(log_dir: str = "logs/"):
 
 
 if __name__ == "__main__":
-    main("logs/")
+    main("logs")
