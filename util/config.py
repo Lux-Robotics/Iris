@@ -10,15 +10,18 @@ from wpimath.geometry import *
 
 from util.vision_types import TagCoordinates
 
-logging.basicConfig(level="INFO", format='%(asctime)s: [%(levelname)s] %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S')
+logging.basicConfig(
+    level="INFO",
+    format="%(asctime)s: [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 logger = logging.getLogger("perception")
 
-v = open("package.json", 'r')
+v = open("package.json", "r")
 version = json.load(v)["version"]
 v.close()
 
-f = open("config.toml", 'rb')
+f = open("config.toml", "rb")
 settings = tomllib.load(f)
 f.close()
 
@@ -27,7 +30,7 @@ camera_fps = settings["camera"]["fps"]
 
 calibration_path = os.environ.get("CALIBRATION_FILE", settings["camera"]["calibration"])
 
-c = open(calibration_path, 'r')
+c = open(calibration_path, "r")
 calibration = json.load(c)
 camera_matrix = np.array(calibration["cameraMatrix"])
 dist_coeffs = np.array(calibration["distCoeffs"])
@@ -61,11 +64,13 @@ if detector == "aruco":
         detection_params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_NONE
     elif settings["aruco"]["corner_refinement"] == "subpix":
         detection_params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
-        detection_params.relativeCornerRefinmentWinSize = aruco_params["relative_refinement_window"]
+        detection_params.relativeCornerRefinmentWinSize = aruco_params[
+            "relative_refinement_window"
+        ]
         detection_params.cornerRefinementWinSize = aruco_params["max_refinement_window"]
 
 elif detector == "apriltag":
-    detector_options = apriltag.DetectorOptions(families='tag36h11')
+    detector_options = apriltag.DetectorOptions(families="tag36h11")
     detector_options.border = apriltag_params["border"]
     detector_options.nthreads = apriltag_params["threads"]
     detector_options.quad_decimate = apriltag_params["quad_decimate"]
@@ -84,7 +89,9 @@ logger_enabled = settings["logging"]["enabled"]
 stream_enabled = settings["websockets"]["enabled"]
 
 log_quality = int(os.environ.get("LOG_QUALITY", settings["logging"]["quality"]))
-stream_quality = int(os.environ.get("STREAM_QUALITY", settings["websockets"]["quality"]))
+stream_quality = int(
+    os.environ.get("STREAM_QUALITY", settings["websockets"]["quality"])
+)
 
 stream_res = settings["websockets"]["max_res"]
 log_res = settings["logging"]["max_res"]
@@ -106,7 +113,7 @@ robot_last_enabled = False
 # Define apriltag locations
 apriltag_size = 0.1651  # 36h11
 
-m = open(settings["map"], 'r')
+m = open(settings["map"], "r")
 tags = json.load(m)["tags"]
 m.close()
 
@@ -118,13 +125,21 @@ pose_estimation_mode = os.environ.get("SOLVEPNP_MODE", settings["solvepnp_method
 capture_mode = os.environ.get("CAPTURE_METHOD", settings["capture"])
 
 for tag in tags:
-    tag_pose = Pose3d(Translation3d(tag["pose"]["translation"]["x"],
-                                    tag["pose"]["translation"]["y"],
-                                    tag["pose"]["translation"]["z"]),
-                      Rotation3d(Quaternion(tag["pose"]["rotation"]["quaternion"]["W"],
-                                            tag["pose"]["rotation"]["quaternion"]["X"],
-                                            tag["pose"]["rotation"]["quaternion"]["Y"],
-                                            tag["pose"]["rotation"]["quaternion"]["Z"])))
+    tag_pose = Pose3d(
+        Translation3d(
+            tag["pose"]["translation"]["x"],
+            tag["pose"]["translation"]["y"],
+            tag["pose"]["translation"]["z"],
+        ),
+        Rotation3d(
+            Quaternion(
+                tag["pose"]["rotation"]["quaternion"]["W"],
+                tag["pose"]["rotation"]["quaternion"]["X"],
+                tag["pose"]["rotation"]["quaternion"]["Y"],
+                tag["pose"]["rotation"]["quaternion"]["Z"],
+            )
+        ),
+    )
     tag_world_coords[tag["ID"]] = TagCoordinates(tag_pose, apriltag_size)
 
 
@@ -139,11 +154,26 @@ def is_serializable(v):
 
 def to_json():
     # Filter out non-serializable items, functions, built-ins, and modules
-    log_exclude = ["settings", "tag", "last_frame", "detections", "poses", "new_data", "log_exclude", "fps", "tags",
-                   "bad_frames", "ignored_tags"]
+    log_exclude = [
+        "settings",
+        "tag",
+        "last_frame",
+        "detections",
+        "poses",
+        "new_data",
+        "log_exclude",
+        "fps",
+        "tags",
+        "bad_frames",
+        "ignored_tags",
+    ]
     module_vars = {
-        k: v for k, v in globals().items()
-        if k not in log_exclude and not k.startswith('__') and not callable(v) and is_serializable(v)
+        k: v
+        for k, v in globals().items()
+        if k not in log_exclude
+        and not k.startswith("__")
+        and not callable(v)
+        and is_serializable(v)
     }
 
     return json.dumps(module_vars, indent=4)

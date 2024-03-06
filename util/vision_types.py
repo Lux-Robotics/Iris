@@ -21,7 +21,9 @@ class Pose:
 
     def get_object_pose(self) -> Pose3d:
         pose = self.get_wpilib()
-        pose = pose.transformBy(Transform3d(Translation3d(), Rotation3d(Quaternion(-0.5, 0.5, -0.5, 0.5))))
+        pose = pose.transformBy(
+            Transform3d(Translation3d(), Rotation3d(Quaternion(-0.5, 0.5, -0.5, 0.5)))
+        )
         return pose
 
     def get_wpilib(self) -> Pose3d:
@@ -30,9 +32,15 @@ class Pose:
 
         pose = Pose3d(
             Translation3d(tvec[0][0], tvec[1][0], tvec[2][0]),
-            Rotation3d(np.array([self.rvec[2][0], -self.rvec[0][0], -self.rvec[1][0]]),
-                       math.sqrt(
-                           math.pow(self.rvec[0][0], 2) + math.pow(self.rvec[1][0], 2) + math.pow(self.rvec[2][0], 2))))
+            Rotation3d(
+                np.array([self.rvec[2][0], -self.rvec[0][0], -self.rvec[1][0]]),
+                math.sqrt(
+                    math.pow(self.rvec[0][0], 2)
+                    + math.pow(self.rvec[1][0], 2)
+                    + math.pow(self.rvec[2][0], 2)
+                ),
+            ),
+        )
 
         # solvepnp returns pose to object, invert to get camera pose
         target_pose = Transform3d(pose.translation(), pose.rotation())
@@ -42,13 +50,22 @@ class Pose:
 
 class TagCoordinates:
     def __init__(self, tag_pos: Pose3d, tag_size):
-        self.corners = [Transform3d(Translation3d(0, tag_size / 2, -tag_size / 2), Rotation3d()),
-                        Transform3d(Translation3d(0, -tag_size / 2, -tag_size / 2), Rotation3d()),
-                        Transform3d(Translation3d(0, -tag_size / 2, tag_size / 2), Rotation3d()),
-                        Transform3d(Translation3d(0, tag_size / 2, tag_size / 2), Rotation3d())]
+        self.corners = [
+            Transform3d(Translation3d(0, tag_size / 2, -tag_size / 2), Rotation3d()),
+            Transform3d(Translation3d(0, -tag_size / 2, -tag_size / 2), Rotation3d()),
+            Transform3d(Translation3d(0, -tag_size / 2, tag_size / 2), Rotation3d()),
+            Transform3d(Translation3d(0, tag_size / 2, tag_size / 2), Rotation3d()),
+        ]
         self.corners = [tag_pos.transformBy(corner) for corner in self.corners]
 
     def get_corners(self) -> ndarray[Any, dtype[Any]]:
-        return np.array([
-            [-corner.translation().Y(), -corner.translation().Z(), corner.translation().X()] for corner in self.corners
-        ])
+        return np.array(
+            [
+                [
+                    -corner.translation().Y(),
+                    -corner.translation().Z(),
+                    corner.translation().X(),
+                ]
+                for corner in self.corners
+            ]
+        )

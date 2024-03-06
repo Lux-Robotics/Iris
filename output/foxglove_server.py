@@ -28,7 +28,7 @@ from output.foxglove_utils import timestamp
 
 
 def build_file_descriptor_set(
-        message_class: Type[google.protobuf.message.Message],
+    message_class: Type[google.protobuf.message.Message],
 ) -> FileDescriptorSet:
     """
     Build a FileDescriptorSet representing the message class and its dependencies.
@@ -60,7 +60,7 @@ class FoxgloveWSHandler(logging.Handler):
         return Log(
             timestamp=timestamp(int(record.created * 1e9)),
             level=record.levelname,
-            message=record.getMessage()
+            message=record.getMessage(),
         )
 
     def emit(self, record):
@@ -95,7 +95,9 @@ async def main():
         async def on_unsubscribe(self, server: FoxgloveServer, channel_id: ChannelId):
             print("Last client unsubscribed from", channel_id)
 
-    async with FoxgloveServer("0.0.0.0", 8765, "Peninsula Perception", logger=config.logger) as server:
+    async with FoxgloveServer(
+        "0.0.0.0", 8765, "Peninsula Perception", logger=config.logger
+    ) as server:
         server.set_listener(Listener())
         ambiguity_pose_pub = await server.add_channel(
             {
@@ -223,35 +225,54 @@ async def main():
                 await asyncio.sleep(0.05)
                 now = time.time_ns()
 
-                frame, points, ids, ignored_points, ignored_ids = output.pipeline.process(config.stream_res, "stream")
+                (
+                    frame,
+                    points,
+                    ids,
+                    ignored_points,
+                    ignored_ids,
+                ) = output.pipeline.process(config.stream_res, "stream")
                 if frame is None:
                     continue
                 else:
                     # Encode the frame in JPEG format
-                    encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), config.stream_quality]
-                    ret, buffer = cv2.imencode('.jpg', frame, encode_param)
+                    encode_param = [
+                        int(cv2.IMWRITE_JPEG_QUALITY),
+                        config.stream_quality,
+                    ]
+                    ret, buffer = cv2.imencode(".jpg", frame, encode_param)
                     if not ret:
                         continue
 
                 # Convert the frame to bytes
                 data = buffer.tobytes()
-                img, cal, ann, ignored_ann, fps = get_frame(now, data, points, ids, ignored_points, ignored_ids)
+                img, cal, ann, ignored_ann, fps = get_frame(
+                    now, data, points, ids, ignored_points, ignored_ids
+                )
                 if len(config.poses) > 0:
                     pose = get_pose(now, config.poses[0], "camera")
                     await server.send_message(pose_pub, now, pose.SerializeToString())
                 if len(config.poses) > 1:
                     ambiguity = get_pose(now, config.poses[1], "ambiguity")
-                    await server.send_message(ambiguity_pose_pub, now, ambiguity.SerializeToString())
+                    await server.send_message(
+                        ambiguity_pose_pub, now, ambiguity.SerializeToString()
+                    )
 
                 if field_reset:
-                    await server.send_message(field_pub, now, get_field(now).SerializeToString())
+                    await server.send_message(
+                        field_pub, now, get_field(now).SerializeToString()
+                    )
                     field_reset = False
                 if config_reset:
-                    await server.send_message(config_pub, now, config.config_json.encode("utf8"))
+                    await server.send_message(
+                        config_pub, now, config.config_json.encode("utf8")
+                    )
                 await server.send_message(image_pub, now, img.SerializeToString())
                 await server.send_message(calibration_pub, now, cal.SerializeToString())
                 await server.send_message(annotations_pub, now, ann.SerializeToString())
-                await server.send_message(ignored_annotations_pub, now, ignored_ann.SerializeToString())
+                await server.send_message(
+                    ignored_annotations_pub, now, ignored_ann.SerializeToString()
+                )
                 await server.send_message(fps_pub, now, fps.SerializeToString())
                 if log is not None:
                     await server.send_message(log_pub, now, log.SerializeToString())

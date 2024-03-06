@@ -9,11 +9,18 @@ import cv2
 import output.foxglove_server
 import util.config as config
 from util.nt_interface import NTInterface
-from util.pose_estimator import solvepnp_singletag, solvepnp_multitag, solvepnp_ransac, multitag_ap3p
+from util.pose_estimator import (
+    solvepnp_singletag,
+    solvepnp_multitag,
+    solvepnp_ransac,
+    multitag_ap3p,
+)
 from util.filter_tags import filter_tags
 
 parser = argparse.ArgumentParser("peninsula_perception")
-parser.add_argument("--mode", help="Toggle for operation modes", type=int, default=0, required=False)
+parser.add_argument(
+    "--mode", help="Toggle for operation modes", type=int, default=0, required=False
+)
 args = parser.parse_args()
 
 # Start logging thread
@@ -28,8 +35,10 @@ time.sleep(0.2)
 
 # Import apriltag detector
 try:
-    module = __import__("detectors." + config.settings["detector"] + "_detector", fromlist=[''])
-    find_corners = getattr(module, 'find_corners')
+    module = __import__(
+        "detectors." + config.settings["detector"] + "_detector", fromlist=[""]
+    )
+    find_corners = getattr(module, "find_corners")
 except ImportError:
     config.logger.error("The specified detector does not exist")
     sys.exit()
@@ -106,7 +115,9 @@ while True:
 
         else:
             info = config.logger.info(
-                "Average FPS: " + str(1 / ((config.fps[-1] - config.fps[11]) / len(config.fps[10:]))))
+                "Average FPS: "
+                + str(1 / ((config.fps[-1] - config.fps[11]) / len(config.fps[10:])))
+            )
             break
 
     if config.detector == "aruco":
@@ -142,13 +153,21 @@ while True:
 
     if nt_instance is not None:
         try:
-            nt_instance.publish_data(poses[0] if len(poses) > 0 else None, poses[1] if len(poses) > 1 else None,
-                                     detections,
-                                     new_frame_time)
+            nt_instance.publish_data(
+                poses[0] if len(poses) > 0 else None,
+                poses[1] if len(poses) > 1 else None,
+                detections,
+                new_frame_time,
+            )
         except Exception:
             config.logger.warning("Failed to publish nt4 data")
 
-    config.last_frame, config.filtered_detections, config.ignored_detections, config.poses = frame, filtered_detections, ignored_detections, poses
+    (
+        config.last_frame,
+        config.filtered_detections,
+        config.ignored_detections,
+        config.poses,
+    ) = (frame, filtered_detections, ignored_detections, poses)
     config.new_data = True
 
     if not config.logger_enabled and args.mode == 1:
@@ -158,7 +177,9 @@ while True:
 
     if config.logger_enabled and not logging_thread.is_alive():
         config.logger.error("Logging thread unalived")
-        config.logger_enabled = False  # Do not exit since logging does not affect primary function
+        config.logger_enabled = (
+            False  # Do not exit since logging does not affect primary function
+        )
 
 camera.release()
 

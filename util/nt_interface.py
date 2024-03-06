@@ -15,26 +15,37 @@ class NTInterface:
         ntcore.NetworkTableInstance.getDefault().setServer(ip)
         ntcore.NetworkTableInstance.getDefault().startClient4("Perception")
         self.output_table = ntcore.NetworkTableInstance.getDefault().getTable(
-            "/Perception/" + config.device_id)
-        self.observations0_pub = self.output_table.getDoubleArrayTopic("observations0").publish(
-            ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True))
-        self.observations1_pub = self.output_table.getDoubleArrayTopic("observations1").publish(
-            ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True))
+            "/Perception/" + config.device_id
+        )
+        self.observations0_pub = self.output_table.getDoubleArrayTopic(
+            "observations0"
+        ).publish(ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True))
+        self.observations1_pub = self.output_table.getDoubleArrayTopic(
+            "observations1"
+        ).publish(ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True))
         self.errors_pub = self.output_table.getDoubleArrayTopic("errors").publish(
-            ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True))
+            ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True)
+        )
         self.tags_pub = self.output_table.getIntegerArrayTopic("tag_ids").publish(
-            ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True))
+            ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True)
+        )
         self.fps_pub = self.output_table.getDoubleTopic("fps").publish()
         self.version_pub = self.output_table.getStringTopic("version").publish()
         self.version_pub.set(version)
 
-        self.config_table = ntcore.NetworkTableInstance.getDefault().getTable("/Perception/config")
-        self.tagignore_sub = self.config_table.getIntegerArrayTopic("ignored_tags").subscribe([])
+        self.config_table = ntcore.NetworkTableInstance.getDefault().getTable(
+            "/Perception/config"
+        )
+        self.tagignore_sub = self.config_table.getIntegerArrayTopic(
+            "ignored_tags"
+        ).subscribe([])
 
         fms_data = ntcore.NetworkTableInstance.getDefault().getTable("/FMSInfo")
         self.control_data_sub = fms_data.getIntegerTopic("FMSControlData").subscribe(0)
 
-    def publish_data(self, pose0: Pose, pose1: Pose, tags: List[TagObservation], timestamp: float) -> None:
+    def publish_data(
+        self, pose0: Pose, pose1: Pose, tags: List[TagObservation], timestamp: float
+    ) -> None:
         errors = []
         observation_data = []
         if pose0 is not None:
@@ -73,8 +84,14 @@ class NTInterface:
         config.ignored_tags = self.tagignore_sub.get([])
 
         control_data = self.control_data_sub.get(0)
-        ds_attached, fms_attached, emergency_stopped, test_enabled, auto_enabled, robot_enabled = [
-            (control_data & (1 << bit)) > 0 for bit in range(5, -1, -1)]
+        (
+            ds_attached,
+            fms_attached,
+            emergency_stopped,
+            test_enabled,
+            auto_enabled,
+            robot_enabled,
+        ) = [(control_data & (1 << bit)) > 0 for bit in range(5, -1, -1)]
 
         if robot_enabled:
             config.robot_last_enabled = time.time()

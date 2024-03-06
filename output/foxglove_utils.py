@@ -10,7 +10,9 @@ from google.protobuf import timestamp_pb2
 
 
 def timestamp(time_ns: int) -> timestamp_pb2.Timestamp:
-    return timestamp_pb2.Timestamp(seconds=time_ns // 1_000_000_000, nanos=time_ns % 1_000_000_000)
+    return timestamp_pb2.Timestamp(
+        seconds=time_ns // 1_000_000_000, nanos=time_ns % 1_000_000_000
+    )
 
 
 def points(point_array, ids, now: int, bad=False):
@@ -21,11 +23,24 @@ def points(point_array, ids, now: int, bad=False):
     else:
         color = Color(r=0, b=0, g=1, a=1)
     for series, id in zip(point_array, ids):
-        labels_out.append(TextAnnotation(timestamp=timestamp(now), position=Point2(x=series[3][0], y=series[3][1]),
-                                         text=id, text_color=color, font_size=8))
+        labels_out.append(
+            TextAnnotation(
+                timestamp=timestamp(now),
+                position=Point2(x=series[3][0], y=series[3][1]),
+                text=id,
+                text_color=color,
+                font_size=8,
+            )
+        )
         points_out.append(
-            PointsAnnotation(timestamp=timestamp(now), type="LINE_LOOP", points=[Point2(x=x, y=y) for x, y in series],
-                             outline_color=color, thickness=1))
+            PointsAnnotation(
+                timestamp=timestamp(now),
+                type="LINE_LOOP",
+                points=[Point2(x=x, y=y) for x, y in series],
+                outline_color=color,
+                thickness=1,
+            )
+        )
     return points_out, labels_out
 
 

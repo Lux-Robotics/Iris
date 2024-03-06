@@ -8,8 +8,15 @@ from output.float_message_pb2 import FloatMessage
 from output.foxglove_utils import timestamp, points
 
 
-def get_frame(now: int, buffer: bytes, points_array, ids, ignored_points_array, ignored_ids) -> (
-        CompressedImage, CameraCalibration, ImageAnnotations, ImageAnnotations, FloatMessage):
+def get_frame(
+    now: int, buffer: bytes, points_array, ids, ignored_points_array, ignored_ids
+) -> (
+    CompressedImage,
+    CameraCalibration,
+    ImageAnnotations,
+    ImageAnnotations,
+    FloatMessage,
+):
     # /camera/image
     img = CompressedImage(
         timestamp=timestamp(now),
@@ -36,11 +43,28 @@ def get_frame(now: int, buffer: bytes, points_array, ids, ignored_points_array, 
     ann = ImageAnnotations(points=point, texts=id)
     ignored_point, ignored_id = points(ignored_points_array, ignored_ids, now, bad=True)
     ignored_ann = ImageAnnotations(points=ignored_point, texts=ignored_id)
-    return img, cal, ann, ignored_ann, FloatMessage(number=9 / (config.fps[-1] - config.fps[-10]))
+    return (
+        img,
+        cal,
+        ann,
+        ignored_ann,
+        FloatMessage(number=9 / (config.fps[-1] - config.fps[-10])),
+    )
 
 
-def write_frame(now: int, buffer: bytes, points_array, ids, ignored_points_array, ignored_ids, writer: Writer, disk_full: bool = False) -> None:
-    img, cal, ann, ignored_ann, fps = get_frame(now, buffer, points_array, ids, ignored_points_array, ignored_ids)
+def write_frame(
+    now: int,
+    buffer: bytes,
+    points_array,
+    ids,
+    ignored_points_array,
+    ignored_ids,
+    writer: Writer,
+    disk_full: bool = False,
+) -> None:
+    img, cal, ann, ignored_ann, fps = get_frame(
+        now, buffer, points_array, ids, ignored_points_array, ignored_ids
+    )
     if not disk_full:
         writer.write_message(
             topic="/camera/image",
@@ -68,8 +92,5 @@ def write_frame(now: int, buffer: bytes, points_array, ids, ignored_points_array
     )
     # /camera/fps
     writer.write_message(
-        topic="/camera/fps",
-        log_time=now,
-        message=fps,
-        publish_time=now
+        topic="/camera/fps", log_time=now, message=fps, publish_time=now
     )

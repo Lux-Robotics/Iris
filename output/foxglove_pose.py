@@ -18,7 +18,7 @@ def get_pose(now: int, pose: PerceptionPose, frame_id: str) -> FrameTransform:
     position = Vector3(
         x=object_pose.translation().X(),
         y=object_pose.translation().Y(),
-        z=object_pose.translation().Z()
+        z=object_pose.translation().Z(),
     )
     orientation = Quaternion(
         w=object_pose.rotation().getQuaternion().W(),
@@ -31,7 +31,7 @@ def get_pose(now: int, pose: PerceptionPose, frame_id: str) -> FrameTransform:
         parent_frame_id="base_link",
         child_frame_id=frame_id,
         translation=position,
-        rotation=orientation
+        rotation=orientation,
     )
 
 
@@ -45,22 +45,25 @@ def write_pose(now: int, pose: PerceptionPose, frame_id: str, writer: Writer) ->
 
 
 def get_field(now: int) -> SceneUpdate:
-    with open("assets/2024_crescendo.glb", mode='rb') as f:  # b is important -> binary
+    with open("assets/2024_crescendo.glb", mode="rb") as f:  # b is important -> binary
         field_model = f.read()
 
     field = ModelPrimitive(
-        pose=Pose(position=Vector3(x=8.270875, y=4.00685, z=0), orientation=Quaternion(w=0, x=0, y=0, z=1)),
+        pose=Pose(
+            position=Vector3(x=8.270875, y=4.00685, z=0),
+            orientation=Quaternion(w=0, x=0, y=0, z=1),
+        ),
         scale=Vector3(x=1, y=1, z=1),
         override_color=True,
         color=Color(r=1, g=1, b=1, a=0.3),
         data=field_model,
-        media_type="model/gltf-binary"
+        media_type="model/gltf-binary",
     )
     entities = SceneEntity(
         timestamp=timestamp(now),
         lifetime=Duration(seconds=0),
         frame_id="base_link",
-        models=[field]
+        models=[field],
     )
     return SceneUpdate(entities=[entities])
 
@@ -68,8 +71,5 @@ def get_field(now: int) -> SceneUpdate:
 def setup_field(now: int, writer: Writer) -> None:
     update = get_field(now)
     writer.write_message(
-        topic="/world/field",
-        log_time=now,
-        message=update,
-        publish_time=now
+        topic="/world/field", log_time=now, message=update, publish_time=now
     )

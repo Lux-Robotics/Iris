@@ -2,7 +2,10 @@ from typing import List
 from util.vision_types import TagObservation
 import util.config as config
 
-def filter_tags(detections: List[TagObservation]) -> (List[TagObservation], List[TagObservation]):
+
+def filter_tags(
+    detections: List[TagObservation],
+) -> (List[TagObservation], List[TagObservation]):
     filtered_detections = []
     ignored_detections = []
     for detection in detections:
@@ -16,4 +19,3 @@ def filter_tags(detections: List[TagObservation]) -> (List[TagObservation], List
             filtered_detections.append(detection)
 
     return filtered_detections, ignored_detections
-

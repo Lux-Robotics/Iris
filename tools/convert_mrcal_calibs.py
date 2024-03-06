@@ -26,13 +26,16 @@ x_res, y_res = model.imagersize().tolist()
 intrinsic_matrix_opencv = [
     [intrinsics_mrcal[0], 0, intrinsics_mrcal[2]],
     [0, intrinsics_mrcal[1], intrinsics_mrcal[3]],
-    [0, 0, 1]
+    [0, 0, 1],
 ]
 
 distortions_opencv = intrinsics_mrcal[4:].tolist()
 
-calibration_out = {"resolution": [x_res, y_res], "cameraMatrix": intrinsic_matrix_opencv,
-                   "distCoeffs": distortions_opencv}
+calibration_out = {
+    "resolution": [x_res, y_res],
+    "cameraMatrix": intrinsic_matrix_opencv,
+    "distCoeffs": distortions_opencv,
+}
 
 out = open("calibration/" + id_num + "_" + str(x_res) + "x" + str(y_res) + ".json", "w")
 out.write(json.dumps(calibration_out, indent=2))
