@@ -21,7 +21,7 @@ from google.protobuf.descriptor_pb2 import FileDescriptorSet
 import output.pipeline
 import util.config as config
 from output.float_message_pb2 import FloatMessage
-from output.foxglove_image import get_frame
+from output.foxglove_image import get_frame, get_image
 from output.foxglove_pose import get_pose, get_field
 from output.foxglove_utils import run_cancellable
 from output.foxglove_utils import timestamp
@@ -225,13 +225,13 @@ async def main():
                 await asyncio.sleep(0.05)
                 now = time.time_ns()
 
+                frame, scale = output.pipeline.process_image(config.stream_res)
                 (
-                    frame,
                     points,
                     ids,
                     ignored_points,
                     ignored_ids,
-                ) = output.pipeline.process(config.stream_res, "stream")
+                ) = output.pipeline.process_detections(scale)
                 if frame is None:
                     continue
                 else:
@@ -246,8 +246,9 @@ async def main():
 
                 # Convert the frame to bytes
                 data = buffer.tobytes()
-                img, cal, ann, ignored_ann, fps = get_frame(
-                    now, data, points, ids, ignored_points, ignored_ids
+                img = get_image(now, data)
+                cal, ann, ignored_ann, fps = get_frame(
+                    now, points, ids, ignored_points, ignored_ids
                 )
                 if len(config.poses) > 0:
                     pose = get_pose(now, config.poses[0], "camera")

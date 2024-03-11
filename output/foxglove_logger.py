@@ -3,6 +3,7 @@ import logging
 import os
 import shutil
 import time
+import math
 
 import cv2
 from foxglove_schemas_protobuf.Log_pb2 import Log
@@ -78,33 +79,52 @@ def main(log_dir: str):
         if free_bytes < safety_margin:
             config.logger.error("Disk too full, video logging disabled")
 
+        scale = math.ceil(
+            max(config.resx / config.log_res[0], config.resy / config.log_res[1])
+        )
+
         while True:
             now = time.time_ns()
+            current_time = time.time()
             try:
+                if not config.new_data:
+                    time.sleep(0.002)
+                    continue
+
+                config.new_data = False
+
+                if (
+                    current_time - config.robot_last_enabled < 5.0
+                    or current_time - config.last_logged_timestamp > 0.5
+                ):
+                    frame, scale = output.pipeline.process_image(config.log_res)
+                    config.last_logged_timestamp = current_time
+                else:
+                    frame = None
+
                 (
-                    frame,
                     points,
                     ids,
                     ignored_points,
                     ignored_ids,
-                ) = output.pipeline.process(config.log_res, "log")
-                if frame is None:
-                    continue
-                else:
+                ) = output.pipeline.process_detections(scale)
+
+                encoded_img = None
+                if frame is not None:
                     # Encode the frame in JPEG format
                     encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), config.log_quality]
                     ret, buffer = cv2.imencode(".jpg", frame, encode_param)
-                    if not ret:
-                        continue
+                    if ret:
+                        encoded_img = buffer.tobytes()
+
             except Exception as e:
                 config.logger.exception(e)
 
             # Convert the frame to bytes
             try:
-                data = buffer.tobytes()
                 write_frame(
                     now,
-                    data,
+                    encoded_img,
                     points,
                     ids,
                     ignored_points,

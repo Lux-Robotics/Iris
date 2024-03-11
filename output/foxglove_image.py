@@ -7,24 +7,24 @@ import util.config as config
 from output.float_message_pb2 import FloatMessage
 from output.foxglove_utils import timestamp, points
 
-
-def get_frame(
-    now: int, buffer: bytes, points_array, ids, ignored_points_array, ignored_ids
-) -> (
-    CompressedImage,
-    CameraCalibration,
-    ImageAnnotations,
-    ImageAnnotations,
-    FloatMessage,
-):
+def get_image(now: int, buffer: bytes) -> CompressedImage:
     # /camera/image
-    img = CompressedImage(
+    return CompressedImage(
         timestamp=timestamp(now),
         frame_id="camera",
         format="jpeg",
         data=buffer,
     )
 
+
+def get_frame(
+    now: int, points_array, ids, ignored_points_array, ignored_ids
+) -> (
+    CameraCalibration,
+    ImageAnnotations,
+    ImageAnnotations,
+    FloatMessage,
+):
     # /camera/calibration
     cal = CameraCalibration(
         timestamp=timestamp(now),
@@ -44,7 +44,6 @@ def get_frame(
     ignored_point, ignored_id = points(ignored_points_array, ignored_ids, now, bad=True)
     ignored_ann = ImageAnnotations(points=ignored_point, texts=ignored_id)
     return (
-        img,
         cal,
         ann,
         ignored_ann,
@@ -62,10 +61,11 @@ def write_frame(
     writer: Writer,
     disk_full: bool = False,
 ) -> None:
-    img, cal, ann, ignored_ann, fps = get_frame(
-        now, buffer, points_array, ids, ignored_points_array, ignored_ids
+    cal, ann, ignored_ann, fps = get_frame(
+        now, points_array, ids, ignored_points_array, ignored_ids
     )
-    if not disk_full:
+    if not disk_full and buffer is not None:
+        img = get_image(now, buffer)
         writer.write_message(
             topic="/camera/image",
             log_time=now,
