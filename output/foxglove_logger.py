@@ -84,7 +84,7 @@ def main(log_dir: str):
         )
 
         while True:
-            now = time.time_ns()
+            capture_time = int(config.last_frame_time* 1e9)
             current_time = time.time()
             try:
                 if not config.new_data:
@@ -123,7 +123,7 @@ def main(log_dir: str):
             # Convert the frame to bytes
             try:
                 write_frame(
-                    now,
+                    capture_time,
                     encoded_img,
                     points,
                     ids,
@@ -133,9 +133,9 @@ def main(log_dir: str):
                     free_bytes < safety_margin,
                 )
                 if len(config.poses) > 0:
-                    write_pose(now, config.poses[0], "camera", writer)
+                    write_pose(capture_time, config.poses[0], "camera", writer)
                 if len(config.poses) > 1:
-                    write_pose(now, config.poses[1], "ambiguity", writer)
+                    write_pose(capture_time, config.poses[1], "ambiguity", writer)
             except Exception as e:
                 config.logger.exception(e)
 
