@@ -9,12 +9,7 @@ import cv2
 import output.foxglove_server
 import util.config as config
 from util.nt_interface import NTInterface
-from util.pose_estimator import (
-    solvepnp_singletag,
-    solvepnp_multitag,
-    solvepnp_ransac,
-    multitag_ap3p,
-)
+from util.pose_estimator import *
 from util.filter_tags import filter_tags
 
 parser = argparse.ArgumentParser("peninsula_perception")
@@ -128,6 +123,7 @@ while True:
     filtered_detections, ignored_detections = filter_tags(detections)
 
     poses = tuple()
+    distances = {}
 
     # Solve for pose
     try:
@@ -146,6 +142,10 @@ while True:
         else:
             config.logger.error("Pose estimation mode invalid")
             sys.exit(-1)
+        distances, centerx, centery = get_distances(filtered_detections)
+        cv2.undistortPoints(src, cameraMatrix, distCoeffs)
+        cv2.circle(frame, (centerx, centery), 4, (0, 255, 0), -1)
+
     except AssertionError:
         config.logger.warning("SolvePNP failed with assertion error")
     except Exception as e:

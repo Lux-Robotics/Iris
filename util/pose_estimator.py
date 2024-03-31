@@ -4,16 +4,15 @@ import numpy as np
 
 import util.config as config
 from util.vision_types import Pose
+from wpimath.geometry import *
 from util.reduce_points import find_max_area_quadrilateral
 
 
-# for testing only
-def solvepnp_apriltag(detections):
-    if len(detections) == 0:
-        return ()
+def get_distances(detections):
+    distances = []
+    centerX = 0
+    centerY = 0
     for detection in detections:
-        if detection.tag_id not in config.tag_world_coords:
-            continue
         corners = detection.corners.reshape((4, 2))
         world_coords = np.array(
             [
@@ -29,15 +28,16 @@ def solvepnp_apriltag(detections):
             corners,
             config.camera_matrix,
             distCoeffs=config.dist_coeffs,
-            flags=cv2.SOLVEPNP_IPPE_SQUARE,
+            flags=cv2.SOLVEPNP_AP3P,
         )
 
-        if len(rvecs) > 1:
-            return Pose(rvecs[0], tvecs[0], errors[0]), Pose(
-                rvecs[1], tvecs[1], errors[1]
-            )
-        else:
-            return (Pose(rvecs[0], tvecs[0], errors[0]),)
+        distance = Pose(rvecs[0], tvecs[0], errors[0]).get_object_pose().translation().norm()
+        centerX = int((corners[0][0] + corners[1][0] + corners[2][0] + corners[3][0]) / 4)
+        centerY = int((corners[0][1] + corners[1][1] + corners[2][1] + corners[3][1]) / 4)
+
+        distances.append(distance)
+
+    return distances, centerX, centerY
 
 
 def solvepnp_singletag(detections):
