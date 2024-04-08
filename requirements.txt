@@ -1,4 +1,4 @@
-apriltag
+pyapriltags
 numpy
 flask
 

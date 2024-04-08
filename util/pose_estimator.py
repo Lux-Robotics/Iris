@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 import util.config as config
-from util.vision_types import Pose
+from util.vision_types import Pose, Target2D
 from wpimath.geometry import *
 from util.reduce_points import find_max_area_quadrilateral
 
@@ -31,13 +31,28 @@ def get_distances(detections):
             flags=cv2.SOLVEPNP_AP3P,
         )
 
-        distance = Pose(rvecs[0], tvecs[0], errors[0]).get_object_pose().translation().norm()
-        centerX = int((corners[0][0] + corners[1][0] + corners[2][0] + corners[3][0]) / 4)
-        centerY = int((corners[0][1] + corners[1][1] + corners[2][1] + corners[3][1]) / 4)
+        distance = (
+            Pose(rvecs[0], tvecs[0], errors[0]).get_object_pose().translation().norm()
+        )
 
-        distances.append(distance)
+        distances.append(Target2D(distance, theta_x, theta_y))
 
     return distances, centerX, centerY
+
+
+def get_angle_offsets(x, y, intrinsics):
+    f_x = intrinsics[0, 0]
+    f_y = intrinsics[1, 1]
+    c_x = intrinsics[0, 2]
+    c_y = intrinsics[1, 2]
+
+    dx = x - c_x
+    dy = y - c_y
+
+    t_x = np.degrees(np.arctan(dx / f_x))
+    t_y = np.degrees(np.arctan(dy / f_y))
+
+    return t_x, t_y
 
 
 def solvepnp_singletag(detections):

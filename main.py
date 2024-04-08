@@ -20,6 +20,11 @@ args = parser.parse_args()
 
 # Start logging thread
 
+if args.mode == 2:
+    config.logger_enabled = False
+    config.use_nt = False
+    config.stream_enabled = False
+
 logging_thread = threading.Thread(target=out.start)
 if config.logger_enabled:
     logging_thread.daemon = True
@@ -56,8 +61,6 @@ def init_camera():
         camera = cv2.VideoCapture(config.test_video)
     elif args.mode == 2:
         camera = cv2.VideoCapture(config.test_video)
-        config.logger_enabled = False
-        config.use_nt = False
     else:
         # Mode parameter not valid
         config.logger.error("Program mode invalid")
@@ -86,7 +89,8 @@ if config.stream_enabled:
 
 while True:
     # read data from networktables
-    nt_instance.get_states()
+    if config.use_nt:
+        nt_instance.get_states()
 
     ret, frame = camera.read()
     new_frame_time = time.time()
@@ -123,7 +127,6 @@ while True:
     filtered_detections, ignored_detections = filter_tags(detections)
 
     poses = tuple()
-    distances = {}
 
     # Solve for pose
     try:
@@ -142,9 +145,6 @@ while True:
         else:
             config.logger.error("Pose estimation mode invalid")
             sys.exit(-1)
-        distances, centerx, centery = get_distances(filtered_detections)
-        cv2.undistortPoints(src, cameraMatrix, distCoeffs)
-        cv2.circle(frame, (centerx, centery), 4, (0, 255, 0), -1)
 
     except AssertionError:
         config.logger.warning("SolvePNP failed with assertion error")
@@ -167,11 +167,11 @@ while True:
         config.filtered_detections,
         config.ignored_detections,
         config.poses,
-        config.last_frame_time
+        config.last_frame_time,
     ) = (frame, filtered_detections, ignored_detections, poses, new_frame_time)
     config.new_data = True
 
-    if not config.logger_enabled and args.mode == 1:
+    if not config.logger_enabled and not config.stream_enabled:
         print("FPS:", 10 / (new_frame_time - config.fps[-10]))
 
     config.fps.append(new_frame_time)

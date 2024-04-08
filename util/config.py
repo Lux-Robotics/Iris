@@ -3,7 +3,7 @@ import logging
 import os
 import tomllib
 
-import apriltag
+import pyapriltags
 import cv2
 import numpy as np
 from wpimath.geometry import *
@@ -70,16 +70,15 @@ if detector == "aruco":
         detection_params.cornerRefinementWinSize = aruco_params["max_refinement_window"]
 
 elif detector == "apriltag":
-    detector_options = apriltag.DetectorOptions(families="tag36h11")
-    detector_options.border = apriltag_params["border"]
-    detector_options.nthreads = apriltag_params["threads"]
-    detector_options.quad_decimate = apriltag_params["quad_decimate"]
-    detector_options.quad_blur = apriltag_params["quad_blur"]
-    detector_options.refine_edges = apriltag_params["refine_edges"]
-    detector_options.refine_decode = apriltag_params["refine_decode"]
-    detector_options.refine_pose = apriltag_params["refine_pose"]
-    detector_options.debug = apriltag_params["debug"]
-    detector_options.quad_contours = apriltag_params["quad_contours"]
+    apriltag_border = apriltag_params["border"]
+    apriltag_nthreads = apriltag_params["threads"]
+    apriltag_quad_decimate = apriltag_params["quad_decimate"]
+    apriltag_quad_blur = apriltag_params["quad_blur"]
+    apriltag_refine_edges = apriltag_params["refine_edges"]
+    apriltag_refine_decode = apriltag_params["refine_decode"]
+    apriltag_refine_pose = apriltag_params["refine_pose"]
+    apriltag_debug = apriltag_params["debug"]
+    apriltag_quad_contours = apriltag_params["quad_contours"]
 
 elif detector == "wpilib":
     pass
@@ -105,6 +104,7 @@ ignored_detections = None
 last_frame_time = 0.0
 fps = [0 for x in range(10)]
 poses = []
+tags2d = []
 last_logged_timestamp = 0.0
 new_data = False
 bad_frames = 0

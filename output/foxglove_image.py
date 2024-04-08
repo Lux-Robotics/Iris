@@ -7,6 +7,7 @@ import util.config as config
 from output.float_message_pb2 import FloatMessage
 from output.foxglove_utils import timestamp, points
 
+
 def get_image(now: int, buffer: bytes) -> CompressedImage:
     # /camera/image
     return CompressedImage(
@@ -19,12 +20,7 @@ def get_image(now: int, buffer: bytes) -> CompressedImage:
 
 def get_frame(
     now: int, points_array, ids, ignored_points_array, ignored_ids
-) -> (
-    CameraCalibration,
-    ImageAnnotations,
-    ImageAnnotations,
-    FloatMessage,
-):
+) -> (CameraCalibration, ImageAnnotations, ImageAnnotations, FloatMessage,):
     # /camera/calibration
     cal = CameraCalibration(
         timestamp=timestamp(now),

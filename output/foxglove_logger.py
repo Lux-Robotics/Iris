@@ -84,7 +84,7 @@ def main(log_dir: str):
         )
 
         while True:
-            capture_time = int(config.last_frame_time* 1e9)
+            capture_time = int(config.last_frame_time * 1e9)
             current_time = time.time()
             try:
                 if not config.new_data:
