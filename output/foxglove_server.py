@@ -87,9 +87,9 @@ async def main():
         async def on_subscribe(self, server: FoxgloveServer, channel_id: ChannelId):
             global field_reset, config_reset
             print("First client subscribed to", channel_id)
-            if str(channel_id) == "6":
+            if str(channel_id) == "7":
                 field_reset = True
-            elif str(channel_id) == "7":
+            elif str(channel_id) == "8":
                 config_reset = True
 
         async def on_unsubscribe(self, server: FoxgloveServer, channel_id: ChannelId):
