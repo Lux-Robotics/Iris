@@ -27,7 +27,7 @@ def find_corners(image):
     # change corner order to match aruco
     result = []
     for detection in detections:
-        ordered_detections = np.vstack((detection.corners[2:], detection.corners[:2]))
+        ordered_detections = np.vstack((detection.corners[2:], detection.corners[:2]))[::-1]
         result.append(
             TagObservation(
                 detection.tag_id,
