@@ -15,23 +15,17 @@ detector = pyapriltags.Detector(
 def find_corners(image):
     # Detect AprilTags in the image
     detections = detector.detect(image)
-    # detections_filtered = []
-    # for detection in detections:
-    #     margin = getattr(detection, "decision_margin")
-    #     hamming = getattr(detection, "hamming")
-    #     if margin > 35 and hamming == 0:
-    #         detections_filtered.append(detection)
     if len(detections) == 0:
         return []
 
     # change corner order to match aruco
     result = []
     for detection in detections:
-        ordered_detections = np.vstack((detection.corners[2:], detection.corners[:2]))[::-1]
+        ordered_corners = np.vstack((detection.corners[2:], detection.corners[:2]))[::-1]
         result.append(
             TagObservation(
                 detection.tag_id,
-                ordered_detections.reshape((1, 4, 2)).astype(np.float32),
+                ordered_corners.reshape((1, 4, 2)).astype(np.float32),
             )
         )
     return result

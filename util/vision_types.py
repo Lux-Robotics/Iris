@@ -14,13 +14,6 @@ class TagObservation:
 
 
 @dataclass(frozen=True)
-class Target2D:
-    distance: int
-    theta_x: int
-    theta_y: int
-
-
-@dataclass(frozen=True)
 class Pose:
     rvec: np.ndarray[np.float64]
     tvec: np.ndarray[np.float64]

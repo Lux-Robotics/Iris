@@ -140,8 +140,6 @@ while True:
             poses = solvepnp_ransac(filtered_detections)
             if poses == ():
                 poses = solvepnp_multitag(filtered_detections)
-        elif config.pose_estimation_mode == "multitag_ap3p":
-            poses = multitag_ap3p(filtered_detections)
         else:
             config.logger.error("Pose estimation mode invalid")
             sys.exit(-1)

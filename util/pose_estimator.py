@@ -127,30 +127,3 @@ def solvepnp_ransac(detections):
     else:
         return ()
 
-
-def multitag_ap3p(detections):
-    corners = np.empty((0, 2))
-    world_coords = np.empty((0, 3))
-
-    for detection in detections:
-        corners = np.vstack((corners, detection.corners.reshape((4, 2))))
-        world_coords = np.vstack(
-            (world_coords, config.tag_world_coords[detection.tag_id].get_corners())
-        )
-
-    max_area_corners_indices = find_max_area_quadrilateral(corners)
-
-    ap3p_world_coords = world_coords[max_area_corners_indices, :]
-    ap3p_corners = corners[max_area_corners_indices, :]
-
-    _, rvecs, tvecs, errors = cv2.solvePnPGeneric(
-        ap3p_world_coords,
-        ap3p_corners,
-        config.camera_matrix,
-        distCoeffs=config.dist_coeffs,
-        flags=cv2.SOLVEPNP_AP3P,
-    )
-    if len(rvecs) > 1:
-        return Pose(rvecs[0], tvecs[0], errors[0]), Pose(rvecs[1], tvecs[1], errors[1])
-    else:
-        return (Pose(rvecs[0], tvecs[0], errors[0]),)
