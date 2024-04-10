@@ -3,9 +3,8 @@ import cv2
 import numpy as np
 
 import util.config as config
-from util.vision_types import Pose, Target2D
+from util.vision_types import Pose
 from wpimath.geometry import *
-from util.reduce_points import find_max_area_quadrilateral
 
 
 def get_distances(detections):
@@ -126,4 +125,3 @@ def solvepnp_ransac(detections):
         return (Pose(rvec, tvec, 0),)
     else:
         return ()
-
