@@ -23,7 +23,9 @@ RUN python3.11 -m pip install numpy
 RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/4.x.zip \
     && wget -O opencv_contrib.zip https://github.com/opencv/opencv_contrib/archive/4.x.zip \
     && unzip opencv.zip \
-    && unzip opencv_contrib.zip
+    && unzip opencv_contrib.zip \
+    && rm opencv.zip \
+    && rm opencv_contrib.zip
 
 # Build opencv
 RUN cd opencv-4.x/ \
