@@ -68,7 +68,7 @@ def main(log_dir: str):
     with open(os.path.join(log_dir, log_name), "wb") as f, Writer(f) as writer:
         # check if disk is too full
         _, _, free_bytes = shutil.disk_usage(log_dir)
-        safety_margin = 1 * 1024 * 1024 * 1024  # 1GB
+        safety_margin = 10 * 1024 * 1024 * 1024  # 1GB
 
         start_time = time.time_ns()
         foxglove_handler = FoxgloveLoggingHandler(writer)
