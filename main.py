@@ -113,9 +113,11 @@ while True:
             camera = init_camera()
             continue
 
-        else:
+        elif args.mode == 1:
             camera = init_camera()
             continue
+
+        else:
             info = config.logger.info(
                 "Average FPS: "
                 + str(1 / ((config.fps[-1] - config.fps[11]) / len(config.fps[10:])))

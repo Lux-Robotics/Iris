@@ -10,6 +10,7 @@ import output.pipeline
 
 web = WebGear(skip_generate_webdata=True)
 
+
 async def generate_frames():
     while True:
         try:
@@ -26,7 +27,11 @@ async def generate_frames():
                 encoded_img = buffer.tobytes()
 
                 # Yield the frame as a response to the client
-                yield (b"--frame\r\nContent-Type:image/jpeg\r\n\r\n" + encoded_img + b"\r\n")
+                yield (
+                    b"--frame\r\nContent-Type:image/jpeg\r\n\r\n"
+                    + encoded_img
+                    + b"\r\n"
+                )
                 await asyncio.sleep(0)
         except Exception as e:
             config.logger.exception(e)
