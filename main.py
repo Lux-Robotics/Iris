@@ -7,6 +7,7 @@ import output.foxglove_logger as out
 import cv2
 
 import output.foxglove_server
+import output.web_stream
 import util.config as config
 from util.nt_interface import NTInterface
 from util.pose_estimator import *
@@ -83,7 +84,7 @@ if config.use_nt:
 prev_frame_time = 0
 
 if config.stream_enabled:
-    server_thread = threading.Thread(target=output.foxglove_server.start)
+    server_thread = threading.Thread(target=output.web_stream.start)
     server_thread.daemon = True
     server_thread.start()
 
@@ -113,6 +114,8 @@ while True:
             continue
 
         else:
+            camera = init_camera()
+            continue
             info = config.logger.info(
                 "Average FPS: "
                 + str(1 / ((config.fps[-1] - config.fps[11]) / len(config.fps[10:])))
