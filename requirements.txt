@@ -1,4 +1,5 @@
 pyapriltags
+vidgear
 numpy
 flask
 
