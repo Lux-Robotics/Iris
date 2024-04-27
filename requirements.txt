@@ -1,5 +1,6 @@
 pyapriltags
 vidgear
+uvicorn
 numpy
 flask
 
