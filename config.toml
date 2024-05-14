@@ -54,7 +54,14 @@ quality = 25
 # Maximum logged resolution (integer downscaled)
 max_res = [ 1600, 1200 ]
 
-[websockets]
+[http_stream]
+enabled = true
+# jpeg encoding quality (0-100)
+quality = 25
+# Maximum stream resolution (integer downscaled)
+max_res = [ 800, 600 ]
+
+[foxglove_server]
 enabled = true
 # jpeg encoding quality (0-100)
 quality = 25

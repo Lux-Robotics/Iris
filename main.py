@@ -7,7 +7,7 @@ import output.foxglove_logger as out
 import cv2
 
 import output.foxglove_server
-import output.web_stream
+import output.http_stream
 import util.config as config
 from util.nt_interface import NTInterface
 from util.pose_estimator import *
@@ -24,7 +24,7 @@ args = parser.parse_args()
 if args.mode == 2:
     config.logger_enabled = False
     config.use_nt = False
-    config.stream_enabled = False
+    config.foxglove_server_enabled = False
 
 logging_thread = threading.Thread(target=out.start)
 if config.logger_enabled:
@@ -83,8 +83,13 @@ if config.use_nt:
 
 prev_frame_time = 0
 
-if config.stream_enabled:
-    server_thread = threading.Thread(target=output.web_stream.start)
+if config.foxglove_server_enabled:
+    server_thread = threading.Thread(target=output.foxglove_server.start)
+    server_thread.daemon = True
+    server_thread.start()
+
+if config.http_stream_enabled:
+    server_thread = threading.Thread(target=output.http_stream.start)
     server_thread.daemon = True
     server_thread.start()
 
@@ -174,7 +179,7 @@ while True:
     ) = (frame, filtered_detections, ignored_detections, poses, new_frame_time)
     config.new_data = True
 
-    if not config.logger_enabled and not config.stream_enabled:
+    if not config.logger_enabled and not config.foxglove_server_enabled:
         print("FPS:", 10 / (new_frame_time - config.fps[-10]))
 
     config.fps.append(new_frame_time)

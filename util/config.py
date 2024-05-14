@@ -85,14 +85,17 @@ elif detector == "wpilib":
 
 # Foxglove
 logger_enabled = settings["logging"]["enabled"]
-stream_enabled = settings["websockets"]["enabled"]
+foxglove_server_enabled = settings["foxglove_server"]["enabled"]
+http_stream_enabled = settings["http_stream"]["enabled"]
 
 log_quality = int(os.environ.get("LOG_QUALITY", settings["logging"]["quality"]))
-stream_quality = int(
-    os.environ.get("STREAM_QUALITY", settings["websockets"]["quality"])
+foxglove_stream_quality = int(
+    os.environ.get("STREAM_QUALITY", settings["foxglove_server"]["quality"])
 )
+http_stream_quality = settings["http_stream"]["quality"]
 
-stream_res = settings["websockets"]["max_res"]
+foxglove_stream_res = settings["foxglove_server"]["max_res"]
+http_stream_res = settings["http_stream"]["max_res"]
 log_res = settings["logging"]["max_res"]
 
 test_video = os.environ.get("TEST_VIDEO", settings["test_video"])

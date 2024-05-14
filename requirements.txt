@@ -1,6 +1,8 @@
 pyapriltags
 vidgear
 uvicorn
+starlette
+simplejpeg
 numpy
 flask
 

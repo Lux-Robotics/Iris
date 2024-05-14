@@ -225,7 +225,7 @@ async def main():
                 await asyncio.sleep(0.05)
                 now = time.time_ns()
 
-                frame, scale = output.pipeline.process_image(config.stream_res)
+                frame, scale = output.pipeline.process_image(config.foxglove_stream_res)
                 (
                     points,
                     ids,
@@ -238,7 +238,7 @@ async def main():
                     # Encode the frame in JPEG format
                     encode_param = [
                         int(cv2.IMWRITE_JPEG_QUALITY),
-                        config.stream_quality,
+                        config.foxglove_stream_quality,
                     ]
                     ret, buffer = cv2.imencode(".jpg", frame, encode_param)
                     if not ret:

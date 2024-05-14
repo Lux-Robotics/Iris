@@ -14,12 +14,12 @@ web = WebGear(skip_generate_webdata=True)
 async def generate_frames():
     while True:
         try:
-            frame, scale = output.pipeline.process_image(config.stream_res)
+            frame, scale = output.pipeline.process_image(config.http_stream_res)
             if frame is None:
                 break
             else:
                 # Encode the frame in JPEG format
-                encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), config.stream_quality]
+                encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), config.http_stream_quality]
                 ret, buffer = cv2.imencode(".jpg", frame, encode_param)
 
             # Convert the frame to bytes
