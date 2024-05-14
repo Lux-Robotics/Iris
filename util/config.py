@@ -17,6 +17,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger("perception")
 
+logger.info("Logger initialized")
+
 v = open("package.json", "r")
 version = json.load(v)["version"]
 v.close()
@@ -128,6 +130,8 @@ ignored_tags = []
 pose_estimation_mode = os.environ.get("SOLVEPNP_MODE", settings["solvepnp_method"])
 capture_mode = os.environ.get("CAPTURE_METHOD", settings["capture"])
 
+logger.info("Load Configuration Successful")
+
 for tag in tags:
     tag_pose = Pose3d(
         Translation3d(
@@ -145,6 +149,8 @@ for tag in tags:
         ),
     )
     tag_world_coords[tag["ID"]] = TagCoordinates(tag_pose, apriltag_size)
+
+logger.info("Load Field Map Successful")
 
 
 # condense config variables into a json

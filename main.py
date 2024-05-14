@@ -83,15 +83,15 @@ if config.use_nt:
 
 prev_frame_time = 0
 
+foxglove_server_thread = threading.Thread(target=output.foxglove_server.start)
 if config.foxglove_server_enabled:
-    server_thread = threading.Thread(target=output.foxglove_server.start)
-    server_thread.daemon = True
-    server_thread.start()
+    foxglove_server_thread.daemon = True
+    foxglove_server_thread.start()
 
+http_stream_thread = threading.Thread(target=output.http_stream.start)
 if config.http_stream_enabled:
-    server_thread = threading.Thread(target=output.http_stream.start)
-    server_thread.daemon = True
-    server_thread.start()
+    http_stream_thread.daemon = True
+    http_stream_thread.start()
 
 while True:
     # read data from networktables
