@@ -19,7 +19,10 @@ async def generate_frames():
                 break
             else:
                 # Encode the frame in JPEG format
-                encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), config.http_stream_quality]
+                encode_param = [
+                    int(cv2.IMWRITE_JPEG_QUALITY),
+                    config.http_stream_quality,
+                ]
                 ret, buffer = cv2.imencode(".jpg", frame, encode_param)
 
             # Convert the frame to bytes
