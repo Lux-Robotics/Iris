@@ -2,7 +2,7 @@
 
 # Define the fixed image name
 BASE_IMAGE_NAME="peninsula/perception"
-PACKAGE_JSON_PATH="./package.json"
+PACKAGE_JSON_PATH="./version.json"
 BUILD_DIR="./build"
 
 # Ask the user for the version string
