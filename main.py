@@ -23,6 +23,7 @@ args = parser.parse_args()
 
 if args.mode == 2:
     config.logger_enabled = False
+    config.http_stream_enabled = False
     config.use_nt = False
     config.foxglove_server_enabled = False
 

@@ -11,7 +11,7 @@ use_networktables = true
 # opencv, gstreamer
 capture = "opencv"
 # apriltag, aruco, wpilib
-detector = "aruco"
+detector = "apriltag"
 # singletag, multitag, ransac
 #solvepnp_method = "multitag_ap3p"
 solvepnp_method = "ransac"

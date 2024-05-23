@@ -24,7 +24,7 @@ v = open("version.json", "r")
 version = json.load(v)["version"]
 v.close()
 
-f = open("default_config.toml", "rb")
+f = open("config.toml", "rb")
 settings = tomllib.load(f)
 f.close()
 
