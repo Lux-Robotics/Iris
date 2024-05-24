@@ -20,12 +20,12 @@ from google.protobuf.descriptor_pb2 import FileDescriptorSet
 
 import output.pipeline
 import util.config as config
-from util.config import settings, logger
 from output.float_message_pb2 import FloatMessage
 from output.foxglove_image import get_frame, get_image
 from output.foxglove_pose import get_pose, get_field
 from output.foxglove_utils import run_cancellable
 from output.foxglove_utils import timestamp
+from util.config import settings, logger
 
 
 def build_file_descriptor_set(

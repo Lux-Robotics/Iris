@@ -1,9 +1,7 @@
-import datetime
 import logging
 import os
 import shutil
 import time
-import math
 
 import cv2
 from foxglove_schemas_protobuf.Log_pb2 import Log
@@ -11,10 +9,10 @@ from mcap_protobuf.writer import Writer
 
 import output.pipeline
 import util.config as config
-from util.config import settings, logger
 from output.foxglove_image import write_frame
 from output.foxglove_pose import write_pose, setup_field
 from output.foxglove_utils import timestamp
+from util.config import settings, logger
 
 
 class FoxgloveLoggingHandler(logging.Handler):

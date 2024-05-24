@@ -1,12 +1,11 @@
-import uvicorn
 import asyncio
+
 import cv2
-
+import uvicorn
 from vidgear.gears.asyncio import WebGear
-from vidgear.gears.asyncio.helper import reducer
-from util.config import settings, logger
-import output.pipeline
 
+import output.pipeline
+from util.config import settings, logger
 
 web = WebGear(skip_generate_webdata=True)
 

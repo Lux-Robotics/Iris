@@ -2,17 +2,14 @@ import argparse
 import sys
 import threading
 import time
+
 import output.foxglove_logger as out
-
-import cv2
-
 import output.foxglove_server
 import output.http_stream
-import util.config as config
 from util.config import settings, logger
+from util.filter_tags import filter_tags
 from util.nt_interface import NTInterface
 from util.pose_estimator import *
-from util.filter_tags import filter_tags
 
 parser = argparse.ArgumentParser("peninsula_perception")
 parser.add_argument(

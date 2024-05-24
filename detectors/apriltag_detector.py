@@ -1,5 +1,5 @@
-import pyapriltags
 import numpy as np
+import pyapriltags
 
 from util.config import settings
 from util.vision_types import TagObservation
