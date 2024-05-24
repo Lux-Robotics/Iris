@@ -28,39 +28,6 @@ f = open("config.toml", "rb")
 settings = tomllib.load(f)
 f.close()
 
-# def load_config():
-#     # Define the paths
-#     config_json_path = Path.home() / ".config/perception/config.json"
-#     default_toml_path = Path("default_config.toml")  # Assuming it's in the current directory
-#
-#     # Try to load the JSON config
-#     try:
-#         if config_json_path.exists():
-#             with open(config_json_path, 'r', encoding='utf-8') as json_file:
-#                 config_data = json.load(json_file)
-#                 logger.info("Loaded JSON config successfully.")
-#                 return config_data
-#         else:
-#             raise FileNotFoundError
-#     except (FileNotFoundError, json.JSONDecodeError) as e:
-#         logger.info(f"Failed to load config.json due to: {e}. Attempting to load from TOML.")
-#         # Attempt to load from the TOML file as a fallback
-#         if default_toml_path.exists():
-#             with open(default_toml_path, 'rb') as toml_file:
-#                 config_data = tomllib.load(toml_file)
-#                 # Write the TOML data as JSON to the .config directory
-#                 if not config_json_path.parent.exists():
-#                     os.makedirs(config_json_path.parent)
-#                 with open(config_json_path, 'w', encoding='utf-8') as json_output_file:
-#                     json.dump(config_data, json_output_file, indent=4)
-#                 logger.info("Converted TOML to JSON and saved to .config directory.")
-#                 return config_data
-#         else:
-#             logger.info("default_config.toml not found. Cannot proceed.")
-#             return None
-#
-# settings = load_config()
-
 # Camera config
 camera_fps = settings["camera"]["fps"]
 
@@ -224,4 +191,3 @@ def to_json():
 
 
 config_json = to_json()
-

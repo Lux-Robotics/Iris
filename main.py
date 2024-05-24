@@ -181,7 +181,7 @@ while True:
     config.new_data = True
 
     if not config.logger_enabled and not config.foxglove_server_enabled:
-        print("FPS:", 10 / (new_frame_time - config.fps[-10]))
+        config.logger.info("FPS:" + str(10 / (new_frame_time - config.fps[-10])))
 
     config.fps.append(new_frame_time)
 
