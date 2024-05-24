@@ -4,7 +4,7 @@ import cv2
 
 from vidgear.gears.asyncio import WebGear
 from vidgear.gears.asyncio.helper import reducer
-import util.config as config
+from util.config import settings, logger
 import output.pipeline
 
 
@@ -14,14 +14,14 @@ web = WebGear(skip_generate_webdata=True)
 async def generate_frames():
     while True:
         try:
-            frame, scale = output.pipeline.process_image(config.http_stream_res)
+            frame, scale = output.pipeline.process_image(settings.http_stream.max_res)
             if frame is None:
                 break
             else:
                 # Encode the frame in JPEG format
                 encode_param = [
                     int(cv2.IMWRITE_JPEG_QUALITY),
-                    config.http_stream_quality,
+                    settings.http_stream.quality,
                 ]
                 ret, buffer = cv2.imencode(".jpg", frame, encode_param)
 
@@ -37,7 +37,7 @@ async def generate_frames():
                 )
                 await asyncio.sleep(0)
         except Exception as e:
-            config.logger.exception(e)
+            logger.exception(e)
 
 
 def start():

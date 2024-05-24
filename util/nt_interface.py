@@ -5,7 +5,7 @@ from typing import List
 import ntcore
 
 import util.config as config
-from util.config import version
+from util.config import version, settings
 from util.vision_types import Pose, TagObservation
 
 
@@ -15,7 +15,7 @@ class NTInterface:
         ntcore.NetworkTableInstance.getDefault().setServer(ip)
         ntcore.NetworkTableInstance.getDefault().startClient4("Perception")
         self.output_table = ntcore.NetworkTableInstance.getDefault().getTable(
-            "/Perception/" + config.device_id
+            "/Perception/" + settings.device_id
         )
         self.observations0_pub = self.output_table.getDoubleArrayTopic(
             "observations0"

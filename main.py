@@ -9,6 +9,7 @@ import cv2
 import output.foxglove_server
 import output.http_stream
 import util.config as config
+from util.config import settings, logger
 from util.nt_interface import NTInterface
 from util.pose_estimator import *
 from util.filter_tags import filter_tags
@@ -22,13 +23,13 @@ args = parser.parse_args()
 # Start logging thread
 
 if args.mode == 2:
-    config.logger_enabled = False
-    config.http_stream_enabled = False
-    config.use_nt = False
-    config.foxglove_server_enabled = False
+    settings.logging.enabled = False
+    settings.http_stream.enabled = False
+    settings.foxglove_server.enabled = False
+    settings.use_networktables = False
 
 logging_thread = threading.Thread(target=out.start)
-if config.logger_enabled:
+if settings.logging.enabled:
     logging_thread.daemon = True
     logging_thread.start()
 
@@ -37,35 +38,33 @@ time.sleep(0.2)
 
 # Import apriltag detector
 try:
-    module = __import__(
-        "detectors." + config.settings["detector"] + "_detector", fromlist=[""]
-    )
+    module = __import__("detectors." + settings.detector + "_detector", fromlist=[""])
     find_corners = getattr(module, "find_corners")
 except ImportError:
-    config.logger.error("The specified detector does not exist")
+    logger.error("The specified detector does not exist")
     sys.exit()
 
 
 # Initialize video capture
 def init_camera():
     if args.mode == 0:
-        if config.capture_mode == "opencv":
+        if settings.capture == "opencv":
             camera = cv2.VideoCapture(0)
             camera.set(cv2.CAP_PROP_FRAME_WIDTH, config.resx)
             camera.set(cv2.CAP_PROP_FRAME_HEIGHT, config.resy)
-        elif config.capture_mode == "gstreamer":
+        elif settings.capture == "gstreamer":
             camera = cv2.VideoCapture(config.gstreamer_pipeline, cv2.CAP_GSTREAMER)
         else:
             # Mode parameter not valid
-            config.logger.error("Program mode invalid")
+            logger.error("Program mode invalid")
             sys.exit()
     elif args.mode == 1:
-        camera = cv2.VideoCapture(config.test_video)
+        camera = cv2.VideoCapture(settings.test_video)
     elif args.mode == 2:
-        camera = cv2.VideoCapture(config.test_video)
+        camera = cv2.VideoCapture(settings.test_video)
     else:
         # Mode parameter not valid
-        config.logger.error("Program mode invalid")
+        logger.error("Program mode invalid")
         sys.exit()
 
     return camera
@@ -74,41 +73,41 @@ def init_camera():
 try:
     camera = init_camera()
 except Exception:
-    config.logger.error("Failed to initialize video capture")
+    logger.error("Failed to initialize video capture")
     sys.exit()
 
 nt_instance = None
 
-if config.use_nt:
-    nt_instance = NTInterface(config.server_ip)
+if settings.use_networktables:
+    nt_instance = NTInterface(settings.server_ip)
 
 prev_frame_time = 0
 
 foxglove_server_thread = threading.Thread(target=output.foxglove_server.start)
-if config.foxglove_server_enabled:
+if settings.foxglove_server.enabled:
     foxglove_server_thread.daemon = True
     foxglove_server_thread.start()
 
 http_stream_thread = threading.Thread(target=output.http_stream.start)
-if config.http_stream_enabled:
+if settings.http_stream.enabled:
     http_stream_thread.daemon = True
     http_stream_thread.start()
 
 while True:
     # read data from networktables
-    if config.use_nt:
+    if settings.use_networktables:
         nt_instance.get_states()
 
     ret, frame = camera.read()
     new_frame_time = time.time()
 
     # Latency compensation estimate
-    new_frame_time -= (1 / config.camera_fps) / 2
+    new_frame_time -= (1 / settings.camera.fps) / 2
 
     # Bad camera return value
     if not ret:
         if args.mode == 0:
-            config.logger.warning("video input not detected")
+            logger.warning("video input not detected")
 
             # Attempt to reinitialize camera after 0.1 seconds
             config.bad_frames += 1
@@ -124,13 +123,13 @@ while True:
             continue
 
         else:
-            info = config.logger.info(
+            info = logger.info(
                 "Average FPS: "
                 + str(1 / ((config.fps[-1] - config.fps[11]) / len(config.fps[10:])))
             )
             break
 
-    if config.detector == "aruco":
+    if settings.detector == "aruco":
         detections = find_corners(frame)
     else:
         detections = find_corners(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
@@ -141,24 +140,24 @@ while True:
 
     # Solve for pose
     try:
-        if config.pose_estimation_mode == "singletag" or len(filtered_detections) <= 1:
+        if settings.solvepnp_method == "singletag" or len(filtered_detections) <= 1:
             poses = solvepnp_singletag(filtered_detections)
-        elif config.pose_estimation_mode == "multitag":
+        elif settings.solvepnp_method == "multitag":
             poses = solvepnp_multitag(filtered_detections)
-        elif config.pose_estimation_mode == "ransac":
+        elif settings.solvepnp_method == "ransac":
             poses = solvepnp_ransac(filtered_detections)
-        elif config.pose_estimation_mode == "ransac_fallback":
+        elif settings.solvepnp_method == "ransac_fallback":
             poses = solvepnp_ransac(filtered_detections)
             if poses == ():
                 poses = solvepnp_multitag(filtered_detections)
         else:
-            config.logger.error("Pose estimation mode invalid")
+            logger.error("Pose estimation mode invalid")
             sys.exit(-1)
 
     except AssertionError:
-        config.logger.warning("SolvePNP failed with assertion error")
+        logger.warning("SolvePNP failed with assertion error")
     except Exception as e:
-        config.logger.warning("SolvePNP failed: " + str(e))
+        logger.warning("SolvePNP failed: " + str(e))
 
     if nt_instance is not None:
         try:
@@ -169,7 +168,7 @@ while True:
                 new_frame_time,
             )
         except Exception:
-            config.logger.warning("Failed to publish nt4 data")
+            logger.warning("Failed to publish nt4 data")
 
     (
         config.last_frame,
@@ -180,14 +179,14 @@ while True:
     ) = (frame, filtered_detections, ignored_detections, poses, new_frame_time)
     config.new_data = True
 
-    if not config.logger_enabled and not config.foxglove_server_enabled:
-        config.logger.info("FPS:" + str(10 / (new_frame_time - config.fps[-10])))
+    if not settings.logging.enabled and not settings.foxglove_server.enabled:
+        logger.info("FPS:" + str(10 / (new_frame_time - config.fps[-10])))
 
     config.fps.append(new_frame_time)
 
-    if config.logger_enabled and not logging_thread.is_alive():
-        config.logger.error("Logging thread unalived")
-        config.logger_enabled = (
+    if settings.logging.enabled and not logging_thread.is_alive():
+        logger.error("Logging thread unalived")
+        settings.logging.enabled = (
             False  # Do not exit since logging does not affect primary function
         )
 

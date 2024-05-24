@@ -1,14 +1,14 @@
 import pyapriltags
 import numpy as np
 
-import util.config as config
+from util.config import settings
 from util.vision_types import TagObservation
 
 detector = pyapriltags.Detector(
     families="tag36h11",
-    nthreads=config.apriltag_nthreads,
-    quad_decimate=config.apriltag_quad_decimate,
-    refine_edges=config.apriltag_refine_edges,
+    nthreads=settings.apriltag3.threads,
+    quad_decimate=settings.apriltag3.quad_decimate,
+    refine_edges=settings.apriltag3.refine_edges,
 )
 
 

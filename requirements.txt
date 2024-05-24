@@ -5,6 +5,7 @@ starlette
 simplejpeg
 numpy
 flask
+dynaconf
 
 mcap
 protobuf3

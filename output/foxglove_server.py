@@ -20,6 +20,7 @@ from google.protobuf.descriptor_pb2 import FileDescriptorSet
 
 import output.pipeline
 import util.config as config
+from util.config import settings, logger
 from output.float_message_pb2 import FloatMessage
 from output.foxglove_image import get_frame, get_image
 from output.foxglove_pose import get_pose, get_field
@@ -96,7 +97,7 @@ async def main():
             print("Last client unsubscribed from", channel_id)
 
     async with FoxgloveServer(
-        "0.0.0.0", 8765, "Peninsula Perception", logger=config.logger
+        "0.0.0.0", 8765, "Peninsula Perception", logger=logger
     ) as server:
         server.set_listener(Listener())
         ambiguity_pose_pub = await server.add_channel(
@@ -218,14 +219,16 @@ async def main():
 
         ws_handler = FoxgloveWSHandler(server)
         ws_handler.setLevel(logging.DEBUG)
-        config.logger.addHandler(ws_handler)
+        logger.addHandler(ws_handler)
 
         while True:
             try:
                 await asyncio.sleep(0.05)
                 now = time.time_ns()
 
-                frame, scale = output.pipeline.process_image(config.foxglove_stream_res)
+                frame, scale = output.pipeline.process_image(
+                    settings.foxglove_server.max_res
+                )
                 (
                     points,
                     ids,
@@ -238,7 +241,7 @@ async def main():
                     # Encode the frame in JPEG format
                     encode_param = [
                         int(cv2.IMWRITE_JPEG_QUALITY),
-                        config.foxglove_stream_quality,
+                        settings.foxglove_server.quality,
                     ]
                     ret, buffer = cv2.imencode(".jpg", frame, encode_param)
                     if not ret:
@@ -280,7 +283,7 @@ async def main():
                     log = None
 
             except Exception as e:
-                config.logger.exception(e)
+                logger.exception(e)
 
 
 def start():
