@@ -47,7 +47,7 @@ def init_camera():
     if args.mode == 0:
         if settings.capture == "opencv":
             camera = cv2.VideoCapture(0)
-            camera.set(cv2.CAP_PROP_FRAME_WIDTH, config.resx)
+            camera.set(cv2.CAP_PROP_FRAME_WIDTH, resx)
             camera.set(cv2.CAP_PROP_FRAME_HEIGHT, config.resy)
         elif settings.capture == "gstreamer":
             camera = cv2.VideoCapture(config.gstreamer_pipeline, cv2.CAP_GSTREAMER)

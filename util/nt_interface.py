@@ -5,7 +5,7 @@ from typing import List
 import ntcore
 
 import util.config as config
-from util.config import version, settings
+from util.config import settings
 from util.vision_types import Pose, TagObservation
 
 
@@ -31,7 +31,7 @@ class NTInterface:
         )
         self.fps_pub = self.output_table.getDoubleTopic("fps").publish()
         self.version_pub = self.output_table.getStringTopic("version").publish()
-        self.version_pub.set(version)
+        self.version_pub.set(settings.version)
 
         self.config_table = ntcore.NetworkTableInstance.getDefault().getTable(
             "/Perception/config"

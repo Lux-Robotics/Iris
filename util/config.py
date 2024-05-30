@@ -3,6 +3,7 @@ import logging
 
 import numpy as np
 from dynaconf import Dynaconf
+from dynaconf.utils.boxing import DynaBox
 from wpimath.geometry import *
 
 from util.vision_types import TagCoordinates
@@ -15,27 +16,24 @@ logging.basicConfig(
 logger = logging.getLogger("perception")
 
 logger.info("Logger initialized")
-v = open("version.json", "r")
-version = json.load(v)["version"]
-v.close()
+
+def load_calibration(settings):
+    """Hook to load calibration data into settings."""
+    with open(settings.camera.calibration_file, "r") as c:
+        calibration = json.load(c)
+    return {"calibration": calibration}
 
 settings = Dynaconf(
     envvar_prefix="DYNACONF",
-    settings_files=["config.toml"],
+    settings_files=["config.toml", "version.json"],
+    post_hooks=[load_calibration]
 )
 
 logger.info("Load Configuration Successful")
 
-c = open(settings.camera.calibration, "r")
-calibration = json.load(c)
-camera_matrix = np.array(calibration["cameraMatrix"])
-dist_coeffs = np.array(calibration["distCoeffs"])
-resx, resy = tuple(calibration["resolution"])
-c.close()
-
 # Load gstreamer pipeline
-if "pipeline" in calibration:
-    gstreamer_pipeline = calibration["pipeline"]
+if "pipeline" in settings.calibration:
+    gstreamer_pipeline = settings.calibration.pipeline
 else:
     gstreamer_pipeline = settings["camera"]["pipeline"]
 

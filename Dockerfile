@@ -58,9 +58,7 @@ WORKDIR /app
 # Install python libraries
 ADD requirements.txt /app
 RUN python3.11 -m pip install -r requirements.txt
-RUN CI=1 python3.11 -m pip install --upgrade --find-links=https://tortall.net/~robotpy/wheels/2023/raspbian 'robotpy[apriltag]'
-
-# Add project files
+RUN CI=1 python3.11 -m pip install --upgrade --find-links=https://wpilib.jfrog.io/artifactory/api/pypi/wpilib-python-release-2024/simple robotpy-wpimath pyntcore
 ADD . /app
 
 CMD ["python3.11", "main.py"]
