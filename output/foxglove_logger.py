@@ -1,9 +1,7 @@
-import datetime
 import logging
 import os
 import shutil
 import time
-import math
 
 import cv2
 from foxglove_schemas_protobuf.Log_pb2 import Log
@@ -14,6 +12,7 @@ import util.config as config
 from output.foxglove_image import write_frame
 from output.foxglove_pose import write_pose, setup_field
 from output.foxglove_utils import timestamp
+from util.config import settings, logger
 
 
 class FoxgloveLoggingHandler(logging.Handler):
@@ -63,7 +62,7 @@ def main(log_dir: str):
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
 
-    log_name = generate_filename(log_dir, "log-" + config.device_id + "-")
+    log_name = generate_filename(log_dir, "log-" + settings.device_id + "-")
 
     with open(os.path.join(log_dir, log_name), "wb") as f, Writer(f) as writer:
         # check if disk is too full
@@ -73,15 +72,11 @@ def main(log_dir: str):
         start_time = time.time_ns()
         foxglove_handler = FoxgloveLoggingHandler(writer)
         foxglove_handler.setLevel(logging.DEBUG)
-        config.logger.addHandler(foxglove_handler)
+        logger.addHandler(foxglove_handler)
         setup_field(start_time, writer)
-        config.logger.info(config.config_json)
+        # config.logger.info(config.config_json)
         if free_bytes < safety_margin:
             config.logger.error("Disk too full, video logging disabled")
-
-        scale = math.ceil(
-            max(config.resx / config.log_res[0], config.resy / config.log_res[1])
-        )
 
         while True:
             capture_time = int(config.last_frame_time * 1e9)
@@ -97,7 +92,9 @@ def main(log_dir: str):
                     current_time - config.robot_last_enabled < 5.0
                     or current_time - config.last_logged_timestamp > 0.5
                 ):
-                    frame, scale = output.pipeline.process_image(config.log_res)
+                    frame, scale = output.pipeline.process_image(
+                        settings.logging.max_res
+                    )
                     config.last_logged_timestamp = current_time
                 else:
                     frame = None
@@ -112,13 +109,16 @@ def main(log_dir: str):
                 encoded_img = None
                 if frame is not None:
                     # Encode the frame in JPEG format
-                    encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), config.log_quality]
+                    encode_param = [
+                        int(cv2.IMWRITE_JPEG_QUALITY),
+                        settings.logging.quality,
+                    ]
                     ret, buffer = cv2.imencode(".jpg", frame, encode_param)
                     if ret:
                         encoded_img = buffer.tobytes()
 
             except Exception as e:
-                config.logger.exception(e)
+                logger.exception(e)
 
             # Convert the frame to bytes
             try:
@@ -137,7 +137,7 @@ def main(log_dir: str):
                 if len(config.poses) > 1:
                     write_pose(capture_time, config.poses[1], "ambiguity", writer)
             except Exception as e:
-                config.logger.exception(e)
+                logger.exception(e)
 
 
 def start(log_dir: str = "logs/"):

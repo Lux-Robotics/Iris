@@ -11,7 +11,6 @@ from google.protobuf.internal import builder as _builder
 
 _sym_db = _symbol_database.Default()
 
-
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
     b'\n\x13\x66loat_message.proto"\x1e\n\x0c\x46loatMessage\x12\x0e\n\x06number\x18\x01 \x01(\x02\x62\x06proto3'
 )

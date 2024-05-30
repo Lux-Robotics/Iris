@@ -1,11 +1,9 @@
 import json
 import logging
-import os
-import tomllib
 
-import pyapriltags
-import cv2
 import numpy as np
+from dynaconf import Dynaconf
+from dynaconf.utils.boxing import DynaBox
 from wpimath.geometry import *
 
 from util.vision_types import TagCoordinates
@@ -17,85 +15,27 @@ logging.basicConfig(
 )
 logger = logging.getLogger("perception")
 
-v = open("package.json", "r")
-version = json.load(v)["version"]
-v.close()
+logger.info("Logger initialized")
 
-f = open("config.toml", "rb")
-settings = tomllib.load(f)
-f.close()
+def load_calibration(settings):
+    """Hook to load calibration data into settings."""
+    with open(settings.camera.calibration_file, "r") as c:
+        calibration = json.load(c)
+    return {"calibration": calibration}
 
-# Camera config
-camera_fps = settings["camera"]["fps"]
-
-calibration_path = os.environ.get("CALIBRATION_FILE", settings["camera"]["calibration"])
-
-c = open(calibration_path, "r")
-calibration = json.load(c)
-camera_matrix = np.array(calibration["cameraMatrix"])
-dist_coeffs = np.array(calibration["distCoeffs"])
-resx, resy = tuple(calibration["resolution"])
-c.close()
-
-# Load gstreamer pipeline
-if "pipeline" in calibration:
-    gstreamer_pipeline = calibration["pipeline"]
-else:
-    gstreamer_pipeline = settings["camera"]["pipeline"]
-
-gstreamer_pipeline = os.environ.get("GSTREAMER_PIPELINE", gstreamer_pipeline)
-
-# networktables
-use_nt = settings["use_networktables"]
-server_ip = os.environ.get("SERVER_IP", settings["server_ip"])
-device_id = os.environ.get("DEVICE_ID", settings["device_id"])
-
-# Setup detection params
-detector = settings["detector"]
-aruco_params = settings["aruco"]
-apriltag_params = settings["apriltag3"]
-
-if detector == "aruco":
-    detection_params = cv2.aruco.DetectorParameters()
-    detection_params.useAruco3Detection = aruco_params["aruco3"]
-    detection_params.aprilTagQuadDecimate = aruco_params["decimate"]
-
-    if settings["aruco"]["corner_refinement"] == "none":
-        detection_params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_NONE
-    elif settings["aruco"]["corner_refinement"] == "subpix":
-        detection_params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
-        detection_params.relativeCornerRefinmentWinSize = aruco_params[
-            "relative_refinement_window"
-        ]
-        detection_params.cornerRefinementWinSize = aruco_params["max_refinement_window"]
-
-elif detector == "apriltag":
-    apriltag_border = apriltag_params["border"]
-    apriltag_nthreads = apriltag_params["threads"]
-    apriltag_quad_decimate = apriltag_params["quad_decimate"]
-    apriltag_quad_blur = apriltag_params["quad_blur"]
-    apriltag_refine_edges = apriltag_params["refine_edges"]
-    apriltag_refine_decode = apriltag_params["refine_decode"]
-    apriltag_refine_pose = apriltag_params["refine_pose"]
-    apriltag_debug = apriltag_params["debug"]
-    apriltag_quad_contours = apriltag_params["quad_contours"]
-
-elif detector == "wpilib":
-    pass
-
-# Foxglove
-logger_enabled = settings["logging"]["enabled"]
-stream_enabled = settings["websockets"]["enabled"]
-
-log_quality = int(os.environ.get("LOG_QUALITY", settings["logging"]["quality"]))
-stream_quality = int(
-    os.environ.get("STREAM_QUALITY", settings["websockets"]["quality"])
+settings = Dynaconf(
+    envvar_prefix="DYNACONF",
+    settings_files=["config.toml", "version.json"],
+    post_hooks=[load_calibration]
 )
 
-stream_res = settings["websockets"]["max_res"]
-log_res = settings["logging"]["max_res"]
+logger.info("Load Configuration Successful")
 
-test_video = os.environ.get("TEST_VIDEO", settings["test_video"])
+# Load gstreamer pipeline
+if "pipeline" in settings.calibration:
+    gstreamer_pipeline = settings.calibration.pipeline
+else:
+    gstreamer_pipeline = settings["camera"]["pipeline"]
 
 # not constants
 last_frame = None
@@ -114,16 +54,13 @@ robot_last_enabled = False
 # Define apriltag locations
 apriltag_size = 0.1651  # 36h11
 
-m = open(settings["map"], "r")
+m = open(settings.map, "r")
 tags = json.load(m)["tags"]
 m.close()
 
 tag_world_coords = {}
 
 ignored_tags = []
-
-pose_estimation_mode = os.environ.get("SOLVEPNP_MODE", settings["solvepnp_method"])
-capture_mode = os.environ.get("CAPTURE_METHOD", settings["capture"])
 
 for tag in tags:
     tag_pose = Pose3d(
@@ -142,6 +79,8 @@ for tag in tags:
         ),
     )
     tag_world_coords[tag["ID"]] = TagCoordinates(tag_pose, apriltag_size)
+
+logger.info("Load Field Map Successful")
 
 
 # condense config variables into a json

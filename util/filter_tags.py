@@ -1,6 +1,7 @@
 from typing import List
-from util.vision_types import TagObservation
+
 import util.config as config
+from util.vision_types import TagObservation
 
 
 def filter_tags(

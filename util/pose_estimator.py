@@ -1,10 +1,8 @@
-# work in progress
 import cv2
 import numpy as np
 
 import util.config as config
 from util.vision_types import Pose
-from wpimath.geometry import *
 
 
 def get_distances(detections):

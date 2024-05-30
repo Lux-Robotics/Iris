@@ -11,14 +11,14 @@ use_networktables = true
 # opencv, gstreamer
 capture = "opencv"
 # apriltag, aruco, wpilib
-detector = "aruco"
+detector = "apriltag"
 # singletag, multitag, ransac
 #solvepnp_method = "multitag_ap3p"
 solvepnp_method = "ransac"
 ignored_tags = []
 
 [camera]
-calibration = "calibration/002-7_1600x1200.json"
+calibration_file = "calibration/002-7_1600x1200.json"
 # Default GStreamer pipeline
 pipeline = "v4l2src device=/dev/video0 extra_controls=\"c,exposure_dynamic_framerate=1\" ! image/jpeg,format=MJPG,width=1280,height=720 ! jpegdec ! appsink drop=1"
 # Camera fps, used to estimate latency
@@ -38,7 +38,7 @@ max_refinement_window = 5
 
 [apriltag3]
 border = 1
-threads = 8
+threads = 6
 quad_decimate = 1.0
 quad_blur = 0.0
 refine_edges = true
@@ -52,11 +52,18 @@ enabled = true
 # jpeg encoding quality (0-100)
 quality = 25
 # Maximum logged resolution (integer downscaled)
-max_res = [ 1600, 1200 ]
+max_res = [1600, 1200]
 
-[websockets]
+[http_stream]
 enabled = true
 # jpeg encoding quality (0-100)
 quality = 25
 # Maximum stream resolution (integer downscaled)
-max_res = [ 800, 600 ]
+max_res = [800, 600]
+
+[foxglove_server]
+enabled = true
+# jpeg encoding quality (0-100)
+quality = 25
+# Maximum stream resolution (integer downscaled)
+max_res = [800, 600]

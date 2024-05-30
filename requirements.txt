@@ -1,6 +1,11 @@
 pyapriltags
+vidgear
+uvicorn
+starlette
+simplejpeg
 numpy
 flask
+dynaconf
 
 mcap
 protobuf3
