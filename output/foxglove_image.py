@@ -20,19 +20,7 @@ def get_image(now: int, buffer: bytes) -> CompressedImage:
 
 def get_frame(
     now: int, points_array, ids, ignored_points_array, ignored_ids
-) -> (CameraCalibration, ImageAnnotations, ImageAnnotations, FloatMessage,):
-    # /camera/calibration
-    cal = CameraCalibration(
-        timestamp=timestamp(now),
-        frame_id="camera",
-        width=config.resx,
-        height=config.resy,
-        distortion_model="rational_polynomial",
-        D=config.dist_coeffs.tolist(),
-        K=config.camera_matrix.reshape(9).tolist(),
-        R=[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0],
-        P=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0],
-    )
+) -> (ImageAnnotations, ImageAnnotations, FloatMessage,):
 
     # /camera/annotations
     point, id = points(points_array, ids, now)
@@ -40,7 +28,6 @@ def get_frame(
     ignored_point, ignored_id = points(ignored_points_array, ignored_ids, now, bad=True)
     ignored_ann = ImageAnnotations(points=ignored_point, texts=ignored_id)
     return (
-        cal,
         ann,
         ignored_ann,
         FloatMessage(number=9 / (config.fps[-1] - config.fps[-10])),
@@ -57,7 +44,7 @@ def write_frame(
     writer: Writer,
     disk_full: bool = False,
 ) -> None:
-    cal, ann, ignored_ann, fps = get_frame(
+    ann, ignored_ann, fps = get_frame(
         now, points_array, ids, ignored_points_array, ignored_ids
     )
     if not disk_full and buffer is not None:
@@ -68,12 +55,6 @@ def write_frame(
             message=img,
             publish_time=now,
         )
-    writer.write_message(
-        topic="/camera/calibration",
-        log_time=now,
-        message=cal,
-        publish_time=now,
-    )
     writer.write_message(
         topic="/camera/annotations",
         log_time=now,

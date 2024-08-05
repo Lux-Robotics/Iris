@@ -47,8 +47,8 @@ def init_camera():
     if args.mode == 0:
         if settings.capture == "opencv":
             camera = cv2.VideoCapture(0)
-            camera.set(cv2.CAP_PROP_FRAME_WIDTH, resx)
-            camera.set(cv2.CAP_PROP_FRAME_HEIGHT, config.resy)
+            # camera.set(cv2.CAP_PROP_FRAME_WIDTH, resx)
+            # camera.set(cv2.CAP_PROP_FRAME_HEIGHT, config.resy)
         elif settings.capture == "gstreamer":
             camera = cv2.VideoCapture(config.gstreamer_pipeline, cv2.CAP_GSTREAMER)
         else:
@@ -69,8 +69,8 @@ def init_camera():
 
 try:
     camera = init_camera()
-except Exception:
-    logger.error("Failed to initialize video capture")
+except Exception as e:
+    logger.error("Failed to initialize video capture: " + str(e))
     sys.exit()
 
 nt_instance = None

@@ -144,17 +144,6 @@ async def main():
                 "schemaEncoding": "protobuf",
             }
         )
-        calibration_pub = await server.add_channel(
-            {
-                "topic": "/camera/calibration",
-                "encoding": "protobuf",
-                "schemaName": CameraCalibration.DESCRIPTOR.full_name,
-                "schema": b64encode(
-                    build_file_descriptor_set(CameraCalibration).SerializeToString()
-                ).decode("ascii"),
-                "schemaEncoding": "protobuf",
-            }
-        )
         fps_pub = await server.add_channel(
             {
                 "topic": "/camera/fps",
@@ -250,7 +239,7 @@ async def main():
                 # Convert the frame to bytes
                 data = buffer.tobytes()
                 img = get_image(now, data)
-                cal, ann, ignored_ann, fps = get_frame(
+                ann, ignored_ann, fps = get_frame(
                     now, points, ids, ignored_points, ignored_ids
                 )
                 if len(config.poses) > 0:
@@ -272,7 +261,6 @@ async def main():
                         config_pub, now, config.config_json.encode("utf8")
                     )
                 await server.send_message(image_pub, now, img.SerializeToString())
-                await server.send_message(calibration_pub, now, cal.SerializeToString())
                 await server.send_message(annotations_pub, now, ann.SerializeToString())
                 await server.send_message(
                     ignored_annotations_pub, now, ignored_ann.SerializeToString()
