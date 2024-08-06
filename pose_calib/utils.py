@@ -9,7 +9,7 @@ in the top-level directory of this distribution.
 import time
 
 import cv2
-from cv2.aruco import Dictionary_get, CharucoBoard_create, drawAxis, interpolateCornersCharuco, detectMarkers, estimatePoseCharucoBoard
+from cv2.aruco import CharucoBoard, interpolateCornersCharuco, detectMarkers, estimatePoseCharucoBoard
 
 import numpy as np
 import numpy.linalg as la
@@ -19,10 +19,10 @@ class ChArucoDetector:
         # configuration
         self.board_sz = np.array([int(cfg.getNode("board_x").real()), int(cfg.getNode("board_y").real())])
         self.square_len = cfg.getNode("square_len").real()
-        self.ardict = Dictionary_get(int(cfg.getNode("dictionary").real()))
+        self.ardict = cv2.aruco.getPredefinedDictionary(int(cfg.getNode("dictionary").real()))
         
         marker_len = cfg.getNode("marker_len").real()
-        self.board = CharucoBoard_create(self.board_sz[0], self.board_sz[1], self.square_len, marker_len, self.ardict)
+        self.board = CharucoBoard(self.board_sz, self.square_len, marker_len, self.ardict)
         self.img_size = (int(cfg.getNode("image_width").real()), int(cfg.getNode("image_height").real()))
 
         # per frame data
@@ -45,7 +45,7 @@ class ChArucoDetector:
         self.cdist = calib.cdist
 
     def draw_axis(self, img):
-        drawAxis(img, self.K, self.cdist, self.rvec, self.tvec, self.square_len)
+        cv2.drawFrameAxes(img, self.K, self.cdist, self.rvec, self.tvec, self.square_len)
 
     def detect_pts(self, img):
         self.corners, ids, self.rejected = detectMarkers(img, self.ardict)
