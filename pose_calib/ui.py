@@ -15,6 +15,8 @@ from utils import Calibrator
 from render import BoardPreview
 from posegen import PoseGeneratorDist
 
+from math import ceil
+
 def debug_jaccard(img, tmp):
     dbg = img.copy() + tmp * 2
     cv2.imshow("jaccard", dbg * 127)
@@ -40,7 +42,7 @@ class UserGuidance:
         self.overlap = np.zeros((self.img_size[1], self.img_size[0]), dtype=np.uint8)
 
         # preview image
-        self.board = BoardPreview(self.tracker.board.generateImage(tuple(tracker.board_sz * self.SQUARE_LEN_PIX)))
+        self.board = BoardPreview(self.tracker.board.draw(tuple(tracker.board_sz * self.SQUARE_LEN_PIX)))
 
         self.calib = Calibrator(tracker.img_size)
         self.min_reperr_init = float("inf")
@@ -51,7 +53,7 @@ class UserGuidance:
         self.board_warped = None
 
         self.var_terminate = var_terminate
-        self.pconverged = np.zeros(self.calib.nintr, dtype=bool)
+        self.pconverged = np.zeros(self.calib.nintr, dtype=np.bool)
 
         self.converged = False
         self.tgt_param = None

@@ -93,7 +93,7 @@ class ChArucoDetector:
             self.pose_valid = False
             return
 
-        ret = estimatePoseCharucoBoard(self.ccorners, self.cids, self.board, self.K, self.cdist)
+        ret = estimatePoseCharucoBoard(self.ccorners, self.cids, self.board, self.K, self.cdist, np.empty(1), np.empty(1))
         self.pose_valid, rvec, tvec = ret
 
         if not self.pose_valid:

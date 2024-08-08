@@ -24,13 +24,13 @@ class UVCVideoCapture:
         
         cam_id = 0
         if not cfg.getNode("v4l_id").empty():
-            cam_id = "/dev/v4l/by-id/usb-{}-video-index0".format(cfg.getNode("v4l_id").string())
+            cam_id = "/dev/video{}".format(cfg.getNode("v4l_id").string())
         
         cap = cv2.VideoCapture(cam_id)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, imsize[0])
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, imsize[1])
         cap.set(cv2.CAP_PROP_GAIN, 0.0)
-        cap.set(cv2.CAP_PROP_AUTOFOCUS, int(not self.manual_focus))
+        #cap.set(cv2.CAP_PROP_AUTOFOCUS, not self.manual_focus)
         cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
         
         val = 1 / 4 if self.manual_exposure else 3 / 4
