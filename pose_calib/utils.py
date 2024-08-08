@@ -83,7 +83,7 @@ class ChArucoDetector:
             self.update_pose()
 
     def get_pts3d(self):
-        return self.board.chessboardCorners[self.cids].reshape(-1, 3)
+        return self.board.getChessboardCorners()[self.cids].reshape(-1, 3)
 
     def get_calib_pts(self):
         return (self.ccorners.copy(), self.get_pts3d())
@@ -265,7 +265,10 @@ def calibrateCamera(keyframes, img_size, flags, K):
         pts3d.append(p3d)
         N += len(p2d)
 
-    res = cv2.calibrateCamera(np.array(pts3d), np.array(pts2d), img_size, K, None, flags=flags)
+    pts2d = [np.array(pts, dtype=np.float32) for pts in pts2d]
+    pts3d = [np.array(pts, dtype=np.float32) for pts in pts3d]
+
+    res = cv2.calibrateCamera(pts3d, pts2d, img_size, K, None, flags=flags)
 
     reperr, K, cdist, rvecs, tvecs = res
     cov = compute_state_cov(pts3d, rvecs, tvecs, K, cdist, flags)

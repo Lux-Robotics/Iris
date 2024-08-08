@@ -81,7 +81,6 @@ def main():
     live = cfg.getNode("images").empty()
     if live:
         cap = UVCVideoCapture(cfg)
-        add_camera_controls("PoseCalib", cap)
         wait = 1
     else:
         cv2.namedWindow("PoseCalib")
@@ -126,9 +125,11 @@ def main():
             else:
                 outfile = args.outfile
             ugui.write(outfile)
+            print("Calibration saved to " + outfile)
+            break
 
         if ugui.user_info_text:
-            cv2.displayOverlay("PoseCalib", ugui.user_info_text, 1000 // 30)
+            print("info: " + ugui.user_info_text)
 
         cv2.imshow("PoseCalib", out)
         k = cv2.waitKey(wait)
