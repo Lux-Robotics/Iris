@@ -1,6 +1,5 @@
 <template>
-  <v-app-bar
-    density="compact">
+  <v-app-bar density="compact">
     <div class="d-lg-none">
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
     </div>
@@ -18,13 +17,13 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue'
+import { ref } from 'vue'
 
-  const drawer = ref(null)
+const drawer = ref(null)
 </script>
 
 <script>
-  export default {
-    data: () => ({ drawer: null }),
-  }
+export default {
+  data: () => ({ drawer: null }),
+}
 </script>

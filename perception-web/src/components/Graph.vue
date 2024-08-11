@@ -1,9 +1,5 @@
 <template>
-  <v-card
-    elevation="12"
-    rounded="lg"
-    min-width="350"
-  >
+  <v-card elevation="12" rounded="lg" min-width="350">
     <v-toolbar density="compact" title="CPU Metrics"> </v-toolbar>
     <div class="px-4 py-4">
       <canvas id="cpuMetricsChart" width="400" height="200"></canvas>
@@ -12,6 +8,7 @@
 </template>
 
 <script>
+// This is just randomized data
 import { ref, onMounted, onUnmounted } from 'vue';
 import { Chart, registerables } from 'chart.js';
 
@@ -131,6 +128,7 @@ export default {
   padding-left: 16px;
   padding-right: 16px;
 }
+
 .py-4 {
   padding-top: 16px;
   padding-bottom: 16px;
