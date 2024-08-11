@@ -2,7 +2,7 @@
   <v-card elevation="12" rounded="lg" min-width="400" width="100%">
     <v-toolbar density="compact" title="Camera"> </v-toolbar>
     <div class="px-4 py-4">
-      <v-img width=100% src="https://april.eecs.umich.edu/media/apriltag/tagformats_web.png"> </v-img>
+      <v-img src="http://localhost:5800/video" width="100%"> </v-img>
 
       <v-select label="Orientation" :items="['Normal', '90°', '180°', '270°']" variant="outlined"
         class="ma-4"></v-select>
