@@ -23,8 +23,8 @@ def get_distances(detections):
         _, rvecs, tvecs, errors = cv2.solvePnPGeneric(
             world_coords,
             corners,
-            config.camera_matrix,
-            distCoeffs=config.dist_coeffs,
+            np.array(config.settings.calibration.cameraMatrix),
+            distCoeffs=np.array(config.settings.calibration.distCoeffs),
             flags=cv2.SOLVEPNP_AP3P,
         )
 
@@ -66,8 +66,8 @@ def solvepnp_singletag(detections):
         _, rvecs, tvecs, errors = cv2.solvePnPGeneric(
             world_coords,
             corners,
-            config.camera_matrix,
-            distCoeffs=config.dist_coeffs,
+            np.array(config.settings.calibration.cameraMatrix),
+            distCoeffs=np.array(config.settings.calibration.distCoeffs),
             flags=cv2.SOLVEPNP_AP3P,
         )
         if len(rvecs) > 1:
@@ -91,8 +91,8 @@ def solvepnp_multitag(detections):
     _, rvecs, tvecs, errors = cv2.solvePnPGeneric(
         world_coords,
         corners,
-        config.camera_matrix,
-        distCoeffs=config.dist_coeffs,
+        np.array(config.settings.calibration.cameraMatrix),
+        distCoeffs=np.array(config.settings.calibration.distCoeffs),
         flags=cv2.SOLVEPNP_SQPNP,
     )
     if len(rvecs) > 1:
@@ -114,8 +114,8 @@ def solvepnp_ransac(detections):
     retval, rvec, tvec, inliers = cv2.solvePnPRansac(
         world_coords,
         corners,
-        config.camera_matrix,
-        distCoeffs=config.dist_coeffs,
+        np.array(config.settings.calibration.cameraMatrix),
+        distCoeffs=np.array(config.settings.calibration.distCoeffs),
         flags=cv2.SOLVEPNP_SQPNP,
     )
 

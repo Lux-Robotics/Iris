@@ -2,6 +2,7 @@ import json
 import logging
 
 import numpy as np
+import pyapriltags
 from dynaconf import Dynaconf
 from dynaconf.utils.boxing import DynaBox
 from wpimath.geometry import *
@@ -17,16 +18,18 @@ logger = logging.getLogger("perception")
 
 logger.info("Logger initialized")
 
+
 def load_calibration(settings):
     """Hook to load calibration data into settings."""
     with open(settings.camera.calibration_file, "r") as c:
         calibration = json.load(c)
     return {"calibration": calibration}
 
+
 settings = Dynaconf(
     envvar_prefix="DYNACONF",
     settings_files=["config.toml", "version.json"],
-    post_hooks=[load_calibration]
+    post_hooks=[load_calibration],
 )
 
 logger.info("Load Configuration Successful")
@@ -34,10 +37,19 @@ logger.info("Load Configuration Successful")
 # Load gstreamer pipeline
 if "pipeline" in settings.calibration:
     gstreamer_pipeline = settings.calibration.pipeline
+    print("yes")
 else:
     gstreamer_pipeline = settings["camera"]["pipeline"]
 
 # not constants
+detector = pyapriltags.Detector(
+    families="tag36h11",
+    nthreads=settings.apriltag3.threads,
+    quad_decimate=settings.apriltag3.quad_decimate,
+    refine_edges=settings.apriltag3.refine_edges,
+)
+detector_update_needed = False
+
 last_frame = None
 filtered_detections = None
 ignored_detections = None
@@ -83,6 +95,7 @@ for tag in tags:
 logger.info("Load Field Map Successful")
 
 
+# TODO: remove
 # condense config variables into a json
 def is_serializable(v):
     try:
