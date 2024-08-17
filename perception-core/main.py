@@ -1,3 +1,6 @@
+import pyapriltags
+
+from util.nt_listener import NTListener
 import argparse
 import sys
 import threading
@@ -77,6 +80,8 @@ nt_instance = None
 
 if settings.use_networktables:
     nt_instance = NTInterface(settings.server_ip)
+
+nt_listener = NTListener()
 
 prev_frame_time = 0
 
@@ -166,6 +171,18 @@ while True:
             )
         except Exception:
             logger.warning("Failed to publish nt4 data")
+
+    nt_listener.update_data(new_frame_time)
+
+    if config.detector_update_needed:
+        config.detector = pyapriltags.Detector(
+            families="tag36h11",
+            nthreads=settings.apriltag3.threads,
+            quad_decimate=settings.apriltag3.quad_decimate,
+            refine_edges=settings.apriltag3.refine_edges,
+        )
+        logger.info("Detector updated: " + str(config.detector.params))
+        config.detector_update_needed = False
 
     (
         config.last_frame,

@@ -18,9 +18,11 @@ def get_image(now: int, buffer: bytes) -> CompressedImage:
     )
 
 
-def get_frame(
-    now: int, points_array, ids, ignored_points_array, ignored_ids
-) -> (ImageAnnotations, ImageAnnotations, FloatMessage,):
+def get_frame(now: int, points_array, ids, ignored_points_array, ignored_ids) -> (
+    ImageAnnotations,
+    ImageAnnotations,
+    FloatMessage,
+):
 
     # /camera/annotations
     point, id = points(points_array, ids, now)

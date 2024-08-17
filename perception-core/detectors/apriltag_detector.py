@@ -1,20 +1,13 @@
 import numpy as np
 import pyapriltags
 
-from util.config import settings
+import util.config as config
 from util.vision_types import TagObservation
-
-detector = pyapriltags.Detector(
-    families="tag36h11",
-    nthreads=settings.apriltag3.threads,
-    quad_decimate=settings.apriltag3.quad_decimate,
-    refine_edges=settings.apriltag3.refine_edges,
-)
 
 
 def find_corners(image):
     # Detect AprilTags in the image
-    detections = detector.detect(image)
+    detections = config.detector.detect(image)
     if len(detections) == 0:
         return []
 
