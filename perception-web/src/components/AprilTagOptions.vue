@@ -1,41 +1,76 @@
 <template>
-  <v-card elevation="12" rounded="lg" min-width="350">
-    <v-toolbar density="compact" title="Apriltag"> </v-toolbar>
+  <v-card elevation="12" min-width="350" rounded="lg">
+    <v-toolbar density="compact" title="Apriltag" />
     <div class="px-4 py-4">
 
-      <v-select label="AprilTag Family" :items="['36h11', '25h9', '16h5']" variant="outlined" class="ma-4"></v-select>
+      <v-select class="ma-4" :items="['36h11', '25h9', '16h5']" label="AprilTag Family" variant="outlined" />
 
-
-      <v-slider v-model="decimate" :max="3" :step="0.5" class="ma-4" hide-details>
-        <template v-slot:label>
+      <v-slider
+        v-model="decimate"
+        class="ma-4"
+        hide-details
+        :max="3"
+        :step="0.5"
+      >
+        <template #label>
           <span class="slider-label">Decimate</span>
         </template>
-        <template v-slot:append>
-          <v-text-field v-model="decimate" density="compact" style="width: 80px" type="number" variant="outlined"
-            hide-details></v-text-field>
+        <template #append>
+          <v-text-field
+            v-model="decimate"
+            density="compact"
+            hide-details
+            style="width: 80px"
+            type="number"
+            variant="outlined"
+          />
         </template>
       </v-slider>
-      <v-slider v-model="blur" :max="4" :step="1" class="ma-4" hide-details>
-        <template v-slot:label>
+      <v-slider
+        v-model="blur"
+        class="ma-4"
+        hide-details
+        :max="4"
+        :step="1"
+      >
+        <template #label>
           <span class="slider-label">Gaussian Blur</span>
         </template>
-        <template v-slot:append>
-          <v-text-field v-model="blur" density="compact" style="width: 80px" type="number" variant="outlined"
-            hide-details></v-text-field>
+        <template #append>
+          <v-text-field
+            v-model="blur"
+            density="compact"
+            hide-details
+            style="width: 80px"
+            type="number"
+            variant="outlined"
+          />
         </template>
       </v-slider>
-      <v-slider v-model="nthreads" :max="8" :step="1" class="ma-4" hide-details>
-        <template v-slot:label>
+      <v-slider
+        v-model="nthreads"
+        class="ma-4"
+        hide-details
+        :max="8"
+        :step="1"
+      >
+        <template #label>
           <span class="slider-label">CPU Threads</span>
         </template>
-        <template v-slot:append>
-          <v-text-field v-model="nthreads" density="compact" style="width: 80px" type="number" variant="outlined"
-            hide-details></v-text-field>
+        <template #append>
+          <v-text-field
+            v-model="nthreads"
+            density="compact"
+            hide-details
+            style="width: 80px"
+            type="number"
+            variant="outlined"
+          />
         </template>
       </v-slider>
 
       <v-switch class="ma-4" hide-details>
-        <template v-slot:label>
+        <template #label>
           <span class="switch-label">Refine Edges</span>
         </template>
       </v-switch>
@@ -43,21 +78,21 @@
   </v-card>
 </template>
 
+<script>
+  export default {
+    data () {
+      return {
+        decimate: 1.0, // Initial slider value
+        blur: 0, // Initial slider value
+        nthreads: 4, // Initial slider value
+      }
+    },
+  }
+</script>
+
 <style>
 .slider-label {
   display: inline-block;
   width: 200px;
 }
 </style>
-
-<script>
-export default {
-  data() {
-    return {
-      decimate: 1.0, // Initial slider value
-      blur: 0, // Initial slider value
-      nthreads: 4, // Initial slider value
-    };
-  },
-};
-</script>

@@ -1,126 +1,125 @@
 <template>
-  <v-card elevation="12" rounded="lg" min-width="350">
-    <v-toolbar density="compact" title="CPU Metrics"> </v-toolbar>
+  <v-card elevation="12" min-width="350" rounded="lg">
+    <v-toolbar density="compact" title="CPU Metrics" />
     <div class="px-4 py-4">
-      <canvas id="cpuMetricsChart" width="400" height="200"></canvas>
+      <canvas id="cpuMetricsChart" height="200" width="400" />
     </div>
   </v-card>
 </template>
 
-<script>
-// This is just randomized data
-import { ref, onMounted, onUnmounted } from 'vue';
-import { Chart, registerables } from 'chart.js';
+<script lang="ts">
+  import { onMounted, onUnmounted, ref } from 'vue'
+  import { Chart, registerables } from 'chart.js'
 
-Chart.register(...registerables);
+  Chart.register(...registerables)
 
-export default {
-  name: 'CpuMetricsComponent',
-  setup() {
-    const chartRef = ref(null);
-    let cpuMetricsChart = null;
-    let updateInterval = null;
-    let elapsedTime = 0;
+  export default {
+    name: 'CpuMetricsComponent',
+    setup () {
+      const chartRef = ref(null)
+      let cpuMetricsChart = null
+      let updateInterval = null
+      let elapsedTime = 0
 
-    const getRandomInt = (min, max) => {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    };
-
-    const addData = () => {
-      elapsedTime += 15;
-      const time = `${elapsedTime}s`;
-      const newLoad = getRandomInt(10, 100); // Simulate CPU load
-      const newTemp = getRandomInt(40, 60); // Simulate CPU temperature
-
-      if (cpuMetricsChart.data.labels.length > 10) {
-        cpuMetricsChart.data.labels.shift();
-        cpuMetricsChart.data.datasets[0].data.shift();
-        cpuMetricsChart.data.datasets[1].data.shift();
+      const getRandomInt = (min, max) => {
+        return Math.floor(Math.random() * (max - min + 1)) + min
       }
 
-      cpuMetricsChart.data.labels.push(time);
-      cpuMetricsChart.data.datasets[0].data.push(newLoad);
-      cpuMetricsChart.data.datasets[1].data.push(newTemp);
+      const addData = () => {
+        elapsedTime += 15
+        const time = `${elapsedTime}s`
+        const newLoad = getRandomInt(10, 100) // Simulate CPU load
+        const newTemp = getRandomInt(40, 60) // Simulate CPU temperature
 
-      cpuMetricsChart.update();
-    };
-
-    onMounted(() => {
-      const ctx = document.getElementById('cpuMetricsChart').getContext('2d');
-      cpuMetricsChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: ['0s'],
-          datasets: [
-            {
-              label: 'CPU Load (%)',
-              data: [getRandomInt(10, 100)],
-              backgroundColor: 'rgba(255, 159, 64, 0.2)',
-              borderColor: 'rgba(255, 159, 64, 1)',
-              borderWidth: 1,
-              fill: false,
-              tension: 0.1,
-              yAxisID: 'y-load'
-            },
-            {
-              label: 'CPU Temperature (°C)',
-              data: [getRandomInt(40, 60)],
-              backgroundColor: 'rgba(75, 192, 192, 0.2)',
-              borderColor: 'rgba(75, 192, 192, 1)',
-              borderWidth: 1,
-              fill: false,
-              tension: 0.1,
-              yAxisID: 'y-temp'
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            'y-load': {
-              type: 'linear',
-              position: 'left',
-              beginAtZero: true,
-              max: 100,
-              title: {
-                display: true,
-                text: 'Load (%)'
-              }
-            },
-            'y-temp': {
-              type: 'linear',
-              position: 'right',
-              beginAtZero: false,
-              min: 40,
-              max: 60,
-              title: {
-                display: true,
-                text: 'Temperature (°C)'
-              }
-            },
-            x: {
-              title: {
-                display: true,
-                text: 'Time (s)'
-              }
-            }
-          }
+        if (cpuMetricsChart.data.labels.length > 10) {
+          cpuMetricsChart.data.labels.shift()
+          cpuMetricsChart.data.datasets[0].data.shift()
+          cpuMetricsChart.data.datasets[1].data.shift()
         }
-      });
 
-      updateInterval = setInterval(addData, 15000);
-    });
+        cpuMetricsChart.data.labels.push(time)
+        cpuMetricsChart.data.datasets[0].data.push(newLoad)
+        cpuMetricsChart.data.datasets[1].data.push(newTemp)
 
-    onUnmounted(() => {
-      clearInterval(updateInterval);
-    });
+        cpuMetricsChart.update()
+      }
 
-    return {
-      chartRef
-    };
+      onMounted(() => {
+        const ctx = document.getElementById('cpuMetricsChart').getContext('2d')
+        cpuMetricsChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: ['0s'],
+            datasets: [
+              {
+                label: 'CPU Load (%)',
+                data: [getRandomInt(10, 100)],
+                backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                borderColor: 'rgba(255, 159, 64, 1)',
+                borderWidth: 1,
+                fill: false,
+                tension: 0.1,
+                yAxisID: 'y-load',
+              },
+              {
+                label: 'CPU Temperature (°C)',
+                data: [getRandomInt(40, 60)],
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                fill: false,
+                tension: 0.1,
+                yAxisID: 'y-temp',
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              'y-load': {
+                type: 'linear',
+                position: 'left',
+                beginAtZero: true,
+                max: 100,
+                title: {
+                  display: true,
+                  text: 'Load (%)',
+                },
+              },
+              'y-temp': {
+                type: 'linear',
+                position: 'right',
+                beginAtZero: false,
+                min: 40,
+                max: 60,
+                title: {
+                  display: true,
+                  text: 'Temperature (°C)',
+                },
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: 'Time (s)',
+                },
+              },
+            },
+          },
+        })
+
+        updateInterval = setInterval(addData, 15000)
+      })
+
+      onUnmounted(() => {
+        clearInterval(updateInterval)
+      })
+
+      return {
+        chartRef,
+      }
+    },
   }
-};
 </script>
 
 <style scoped>
