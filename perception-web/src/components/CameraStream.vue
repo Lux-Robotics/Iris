@@ -7,19 +7,28 @@
       <v-select label="Orientation" :items="['Normal', '90°', '180°', '270°']" variant="outlined"
         class="ma-4"></v-select>
 
-      <v-slider v-model="brightness" :max="255" :step="1" class="ma-4" label="Brightness" hide-details>
+      <v-slider v-model="brightness" :max="255" :step="1" class="ma-4" hide-details>
+        <template v-slot:label>
+          <span class="slider-label">Brightness</span>
+        </template>
         <template v-slot:append>
           <v-text-field v-model="brightness" density="compact" style="width: 80px" type="number" variant="outlined"
             hide-details></v-text-field>
         </template>
       </v-slider>
-      <v-slider v-model="exposure" :max="255" :step="1" class="ma-4" label="Exposure" hide-details>
+      <v-slider v-model="exposure" :max="255" :step="1" class="ma-4" hide-details>
+        <template v-slot:label>
+          <span class="slider-label">Exposure</span>
+        </template>
         <template v-slot:append>
           <v-text-field v-model="exposure" density="compact" style="width: 80px" type="number" variant="outlined"
             hide-details></v-text-field>
         </template>
       </v-slider>
-      <v-slider v-model="gain" :max="255" :step="1" class="ma-4" label="Sensor Gain" hide-details>
+      <v-slider v-model="gain" :max="255" :step="1" class="ma-4" hide-details>
+        <template v-slot:label>
+          <span class="slider-label">Sensor Gain</span>
+        </template>
         <template v-slot:append>
           <v-text-field v-model="gain" density="compact" style="width: 80px" type="number" variant="outlined"
             hide-details></v-text-field>
@@ -28,6 +37,13 @@
     </div>
   </v-card>
 </template>
+
+<style>
+.slider-label {
+  display: inline-block;
+  width: 100px; /* Adjust this value as needed */
+}
+</style>
 
 <script>
 export default {
