@@ -17,9 +17,11 @@ from posegen import PoseGeneratorDist
 
 from math import ceil
 
+
 def debug_jaccard(img, tmp):
     dbg = img.copy() + tmp * 2
     cv2.imshow("jaccard", dbg * 127)
+
 
 class UserGuidance:
     AX_NAMES = ("red", "green", "blue")
@@ -42,14 +44,21 @@ class UserGuidance:
         self.overlap = np.zeros((self.img_size[1], self.img_size[0]), dtype=np.uint8)
 
         # preview image
-        self.board = BoardPreview(self.tracker.board.generateImage(tuple(tracker.board_sz * self.SQUARE_LEN_PIX)))
+        self.board = BoardPreview(
+            self.tracker.board.generateImage(
+                tuple(tracker.board_sz * self.SQUARE_LEN_PIX)
+            )
+        )
 
         self.calib = Calibrator(tracker.img_size)
         self.min_reperr_init = float("inf")
 
         # desired pose of board for first frame
         # translation defined in terms of board dimensions
-        self.board_units = np.array([tracker.board_sz[0], tracker.board_sz[1], tracker.board_sz[0]]) * self.square_len
+        self.board_units = (
+            np.array([tracker.board_sz[0], tracker.board_sz[1], tracker.board_sz[0]])
+            * self.square_len
+        )
         self.board_warped = None
 
         self.var_terminate = var_terminate
@@ -74,12 +83,12 @@ class UserGuidance:
             # need at least 2 keyframes
             return
 
-        pvar_prev = np.diag(self.calib.PCov)[:self.calib.nintr]
+        pvar_prev = np.diag(self.calib.PCov)[: self.calib.nintr]
         first = len(self.calib.keyframes) == 2
 
         index_of_dispersion = self.calib.calibrate().copy()
 
-        pvar = np.diag(self.calib.PCov)[:self.calib.nintr]
+        pvar = np.diag(self.calib.PCov)[: self.calib.nintr]
 
         if not first:
             total_var_prev = np.sum(pvar_prev)
@@ -95,7 +104,7 @@ class UserGuidance:
             # np.set_printoptions(linewidth=800)
             # print(np.abs(np.sqrt(var) / vals))
             # print(rel_pstd[self.tgt_param])
-            #assert rel_pstd[self.tgt_param] >= 0, self.INTRINSICS[self.tgt_param] + " degraded"
+            # assert rel_pstd[self.tgt_param] >= 0, self.INTRINSICS[self.tgt_param] + " degraded"
             if rel_pstd[self.tgt_param] < 0:
                 print(self.INTRINSICS[self.tgt_param] + " degraded")
             for g in self.PARAM_GROUPS:
@@ -130,11 +139,9 @@ class UserGuidance:
     def set_next_pose(self):
         nk = len(self.calib.keyframes)
 
-        self.tgt_r, self.tgt_t = self.posegen.get_pose(self.board_units,
-                                                       nk,
-                                                       self.tgt_param,
-                                                       self.calib.K,
-                                                       self.calib.cdist)
+        self.tgt_r, self.tgt_t = self.posegen.get_pose(
+            self.board_units, nk, self.tgt_param, self.calib.K, self.calib.cdist
+        )
 
         self.board.create_maps(self.calib.K, self.calib.cdist, self.img_size)
         self.board_warped = self.board.project(self.tgt_r, self.tgt_t)
@@ -150,9 +157,7 @@ class UserGuidance:
 
         Aa = np.sum(self.overlap)
 
-        tmp = self.board.project(self.tracker.rvec, 
-                                 self.tracker.tvec, 
-                                 shadow=True)
+        tmp = self.board.project(self.tracker.rvec, self.tracker.tvec, shadow=True)
         Ab = np.sum(tmp)
         # debug_jaccard(self.overlap, tmp)
         self.overlap *= tmp[:, :]
@@ -171,7 +176,10 @@ class UserGuidance:
             # try to estimate intrinsic params from single frame
             self.calib.calibrate([self.tracker.get_calib_pts()])
 
-            if not np.isnan(self.calib.K).any() and self.calib.reperr < self.min_reperr_init:
+            if (
+                not np.isnan(self.calib.K).any()
+                and self.calib.reperr < self.min_reperr_init
+            ):
                 self.set_next_pose()  # update target pose
                 self.tracker.set_intrinsics(self.calib)
                 self.min_reperr_init = self.calib.reperr
@@ -238,7 +246,9 @@ class UserGuidance:
                 axis = self.calib.pose_var[3:6].argmin() + 3
 
             param = self.INTRINSICS[self.tgt_param]
-            self.user_info_text = "{} '{}' to minimize '{}'".format(action, self.POSE[axis], param)
+            self.user_info_text = "{} '{}' to minimize '{}'".format(
+                action, self.POSE[axis], param
+            )
         else:
             self.user_info_text = "converged at MSE: {}".format(self.calib.reperr)
 
@@ -261,9 +271,11 @@ class UserGuidance:
             self.update(force=True)
 
     def write(self, outfile):
-        flags = [(cv2.CALIB_FIX_PRINCIPAL_POINT, "+fix_principal_point"),
-                 (cv2.CALIB_ZERO_TANGENT_DIST, "+zero_tangent_dist"),
-                 (cv2.CALIB_USE_LU, "+use_lu")]
+        flags = [
+            (cv2.CALIB_FIX_PRINCIPAL_POINT, "+fix_principal_point"),
+            (cv2.CALIB_ZERO_TANGENT_DIST, "+zero_tangent_dist"),
+            (cv2.CALIB_USE_LU, "+use_lu"),
+        ]
 
         fs = cv2.FileStorage(outfile, cv2.FILE_STORAGE_WRITE)
         fs.write("calibration_time", datetime.datetime.now().strftime("%c"))
@@ -283,4 +295,3 @@ class UserGuidance:
         fs.write("distortion_coefficients", self.calib.cdist)
         fs.write("avg_reprojection_error", self.calib.reperr)
         fs.release()
-
