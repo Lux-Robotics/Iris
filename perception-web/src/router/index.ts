@@ -4,10 +4,22 @@
  * Automatic routes for `./src/pages/*.vue`
  */
 
+import calibration from '@/pages/calibration.vue'
+import index from '@/pages/index.vue'
+import logs from '@/pages/logs.vue'
+import docs from '@/pages/docs.vue'
+import settings from '@/pages/settings.vue'
 // Composables
 import { createRouter, createWebHistory } from 'vue-router/auto'
 import { setupLayouts } from 'virtual:generated-layouts'
-import { routes } from 'vue-router/auto-routes'
+
+const routes = [
+  { path: '/', name: 'Dashboard', component: index },
+  { path: '/calibration', name: 'Camera Calibration', component: calibration },
+  { path: '/logs', name: 'Logs', component: logs },
+  { path: '/docs', name: 'Documentation', component: docs },
+  { path: '/settings', name: 'Settings', component: settings },
+]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

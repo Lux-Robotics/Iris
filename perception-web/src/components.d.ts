@@ -11,9 +11,8 @@ declare module 'vue' {
     AppFooter: typeof import('./components/AppFooter.vue')['default']
     AprilTagOptions: typeof import('./components/AprilTagOptions.vue')['default']
     CameraStream: typeof import('./components/CameraStream.vue')['default']
+    Dashboard: typeof import('./components/Dashboard.vue')['default']
     Graph: typeof import('./components/Graph.vue')['default']
-    HelloWorld: typeof import('./components/HelloWorld.vue')['default']
-    Main: typeof import('./components/Main.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

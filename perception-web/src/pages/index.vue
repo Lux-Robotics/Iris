@@ -1,5 +1,5 @@
 <template>
-  <Main />
+  <Dashboard />
 </template>
 
 <script lang="ts" setup>

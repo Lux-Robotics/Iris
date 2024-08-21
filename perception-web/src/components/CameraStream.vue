@@ -1,16 +1,21 @@
 <template>
   <v-card elevation="12" min-width="400" rounded="lg" width="100%">
-    <v-toolbar density="compact">
-      <v-toolbar-title class="font-weight-bold">Camera</v-toolbar-title>
-      <v-spacer />
-      <v-chip class="ma-2" :color="fpsColor">
+    <template #title>
+      <span class="font-weight-black">Camera</span>
+    </template>
+    <template #append>
+      <v-chip :color="fpsColor">
         {{ fpsText }}
       </v-chip>
-    </v-toolbar>
-    <div class="px-4 py-4">
+    </template>
+
+    <v-divider />
+
+    <v-card-text>
       <v-img :src="streamSrc" width="100%" />
 
       <v-select
+        v-model="cameraOrientation"
         class="ma-4"
         :items="['Normal', '90°', '180°', '270°']"
         label="Orientation"
@@ -80,7 +85,7 @@
           />
         </template>
       </v-slider>
-    </div>
+    </v-card-text>
   </v-card>
 </template>
 
@@ -88,9 +93,11 @@
   import { NetworkTables, NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
   import { onMounted, ref } from 'vue'
 
-  const brightness = ref(50)
-  const exposure = ref(50)
-  const gain = ref(50)
+  const brightness = ref(0)
+  const exposure = ref(0)
+  const gain = ref(0)
+  const cameraOrientation = ref('Normal')
+
   const fps = ref(0)
   const logoSrc = new URL('@/assets/loading.jpeg', import.meta.url).href
   const streamSrcURL = 'http://localhost:5801/stream.mjpg'

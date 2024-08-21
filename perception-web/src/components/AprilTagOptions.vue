@@ -1,8 +1,10 @@
 <template>
-  <v-card elevation="12" min-width="350" rounded="lg">
-    <v-toolbar density="compact" title="Apriltag" />
-    <div class="px-4 py-4">
-
+  <v-card elevation="12" min-width="400" rounded="lg">
+    <template #title>
+      <span class="font-weight-black">AprilTag</span>
+    </template>
+    <v-divider />
+    <v-card-text>
       <v-select
         v-model="tagFamily"
         class="ma-4"
@@ -82,7 +84,7 @@
           <span class="switch-label">Refine Edges</span>
         </template>
       </v-switch>
-    </div>
+    </v-card-text>
   </v-card>
 </template>
 
@@ -135,41 +137,28 @@
     })
 
     threadsTopic.subscribe(v => {
-      if (v === null) {
-        v = 0
-      }
-      if (nThreadsRef.value !== v) {
+      if (v !== null && nThreadsRef.value !== v) {
         nThreads.value = v
         nThreadsRef.value = v
       }
     }, true)
 
     blurTopic.subscribe(v => {
-      if (v === null) {
-        v = 0.0
-      }
-      if (blurRef.value !== v) {
+      if (v !== null && blurRef.value !== v) {
         blur.value = v
         blurRef.value = v
       }
     }, true)
 
     decimateTopic.subscribe(v => {
-      if (v === null) {
-        v = 1.0
-      }
-      if (decimateRef.value !== v) {
+      if (v !== null && decimateRef.value !== v) {
         decimate.value = v
         decimateRef.value = v
       }
     }, true)
 
     apriltagFamilyTopic.subscribe(v => {
-      if (v === null) {
-        v = ''
-      }
-      if (tagFamilyRef.value !== v) {
-        console.log(v)
+      if (v !== null && tagFamilyRef.value !== v) {
         tagFamily.value = v
         tagFamilyRef.value = v
       }

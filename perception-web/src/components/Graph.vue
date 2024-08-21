@@ -1,9 +1,12 @@
 <template>
-  <v-card elevation="12" min-width="350" rounded="lg">
-    <v-toolbar density="compact" title="CPU Metrics" />
-    <div class="px-4 py-4">
+  <v-card elevation="12" min-width="400" rounded="lg">
+    <template #title>
+      <span class="font-weight-black">CPU Metrics</span>
+    </template>
+    <v-divider />
+    <v-card-text>
       <canvas id="cpuMetricsChart" height="200" width="400" />
-    </div>
+    </v-card-text>
   </v-card>
 </template>
 
