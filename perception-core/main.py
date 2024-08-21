@@ -177,6 +177,7 @@ while True:
             families=settings.apriltag3.families,
             nthreads=settings.apriltag3.threads,
             quad_decimate=settings.apriltag3.quad_decimate,
+            quad_sigma=settings.apriltag3.quad_sigma,
             refine_edges=settings.apriltag3.refine_edges,
         )
         logger.info("Detector updated: " + str(config.detector.params))

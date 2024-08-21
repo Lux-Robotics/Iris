@@ -36,7 +36,7 @@ class NTListener:
         self.blur_pub = inst.getDoubleTopic("blur").publish(
             ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True)
         )
-        self.blur_pub.set(config.settings.apriltag3.quad_blur)
+        self.blur_pub.set(config.settings.apriltag3.quad_sigma)
 
         self.n_threads_sub = inst.getIntegerTopic("threads").subscribe(0)
         self.n_threads_pub = inst.getIntegerTopic("threads").publish(
@@ -61,6 +61,18 @@ class NTListener:
                 setattr(
                     config.settings.apriltag3,
                     "quad_decimate",
+                    event.data.value.getDouble(),
+                ),
+                setattr(config, "detector_update_needed", True),
+            ),
+        )
+        inst.addListener(
+            self.blur_sub,
+            ntcore.EventFlags.kValueAll,
+            lambda event: (
+                setattr(
+                    config.settings.apriltag3,
+                    "quad_sigma",
                     event.data.value.getDouble(),
                 ),
                 setattr(config, "detector_update_needed", True),

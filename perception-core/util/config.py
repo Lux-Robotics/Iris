@@ -37,7 +37,6 @@ logger.info("Load Configuration Successful")
 # Load gstreamer pipeline
 if "pipeline" in settings.calibration:
     gstreamer_pipeline = settings.calibration.pipeline
-    print("yes")
 else:
     gstreamer_pipeline = settings["camera"]["pipeline"]
 

@@ -15,6 +15,9 @@ def process_image(max_resolution):
         return None
 
     frame = config.last_frame
+
+    # cv2.aruco.drawDetectedMarkers(frame, config.filtered_detections)
+
     scale = math.ceil(
         max(frame.shape[1] / max_resolution[0], frame.shape[0] / max_resolution[1])
     )
