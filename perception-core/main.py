@@ -90,10 +90,8 @@ if settings.foxglove_server.enabled:
     foxglove_server_thread.daemon = True
     foxglove_server_thread.start()
 
-http_stream_thread = threading.Thread(target=output.http_stream.start)
 if settings.http_stream.enabled:
-    http_stream_thread.daemon = True
-    http_stream_thread.start()
+    output.http_stream.start()
 
 while True:
     # read data from networktables
@@ -195,6 +193,9 @@ while True:
 
     if not settings.logging.enabled and not settings.foxglove_server.enabled:
         logger.info("FPS:" + str(10 / (new_frame_time - config.fps[-10])))
+
+    if settings.http_stream.enabled:
+        output.http_stream.get_frame()
 
     config.fps.append(new_frame_time)
 
