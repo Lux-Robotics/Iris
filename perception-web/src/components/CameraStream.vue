@@ -3,10 +3,10 @@
     <v-toolbar density="compact">
       <v-toolbar-title>
         <span class="font-weight-bold">Camera </span>
-        <span class="fps-info"> {{ fps }} fps</span>
+        <span class="fps-info"> {{ fps }}</span>
       </v-toolbar-title>
     </v-toolbar>    <div class="px-4 py-4">
-      <v-img src="http://localhost:5800/video" width="100%" />
+      <img :src="streamSrc" width="100%">
 
       <v-select
         class="ma-4"
@@ -84,18 +84,32 @@
 
 <script lang="ts" setup>
   import { NetworkTables, NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
-  import { onMounted, ref } from 'vue'
+  import { computed, onMounted, ref } from 'vue'
 
   const brightness = ref(50) // Initial slider value
   const exposure = ref(50) // Initial slider value
   const gain = ref(50) // Initial slider value
-  const fps = ref(0) // Initial slider value
+  const fps = ref('0 FPS') // Initial slider value
+  const logoSrc = new URL('@/assets/loading.jpeg', import.meta.url).href
+  const streamSrcURL = 'http://localhost:5801/stream.mjpg'
+  const backendConnected = ref(false)
+
+  const streamSrc = computed<string>(() => {
+    return backendConnected.value ? streamSrcURL : logoSrc
+  })
 
   onMounted(() => {
     const ntcore = NetworkTables.getInstanceByURI('127.0.0.1')
+    ntcore.addRobotConnectionListener(v => {
+      backendConnected.value = v
+    }, true)
+
     const fpsTopic: NetworkTablesTopic<number> = ntcore.createTopic('fps', NetworkTablesTypeInfos.kDouble)
     fpsTopic.subscribe(v => {
-      fps.value = v
+      if (v === null) {
+        v = 0
+      }
+      fps.value = v + ' fps'
     }, true)
   })
 </script>

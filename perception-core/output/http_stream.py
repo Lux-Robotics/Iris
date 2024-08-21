@@ -8,19 +8,15 @@ mjpeg_server: cscore.MjpegServer = None
 
 def start():
     global mjpeg_server
-    resx, resy = settings["http_stream"]["max_res"]
+    resx, resy = settings.http_stream.max_res
     camera.setResolution(resx, resy)
     mjpeg_server = cscore.MjpegServer("httpserver", 5801)
     mjpeg_server.setSource(camera)
     print("stream started")
 
 
-def put_frame(img):
-    camera.putFrame(img)
-
-
 def get_frame():
-    camera.putFrame(process_image(settings["http_stream"]["max_res"])[0])
+    camera.putFrame(process_image(settings.http_stream.max_res)[0])
 
 
 def set_resolution(width, height):
