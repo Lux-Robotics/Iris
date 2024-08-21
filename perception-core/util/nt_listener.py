@@ -21,19 +21,27 @@ class NTListener:
         self.family_sub = inst.getStringTopic("tagFamily").subscribe(
             ""
         )  # 'tag16h5', 'tag25h9', 'tag36h11'
-        self.family_pub = inst.getStringTopic("tagFamily").publish()
+        self.family_pub = inst.getStringTopic("tagFamily").publish(
+            ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True)
+        )
         self.family_pub.set(config.settings.apriltag3.families)
 
         self.decimate_sub = inst.getDoubleTopic("decimate").subscribe(0.0)
-        self.decimate_pub = inst.getDoubleTopic("decimate").publish()
+        self.decimate_pub = inst.getDoubleTopic("decimate").publish(
+            ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True)
+        )
         self.decimate_pub.set(config.settings.apriltag3.quad_decimate)
 
         self.blur_sub = inst.getDoubleTopic("blur").subscribe(0.0)
-        self.blur_pub = inst.getDoubleTopic("blur").publish()
+        self.blur_pub = inst.getDoubleTopic("blur").publish(
+            ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True)
+        )
         self.blur_pub.set(config.settings.apriltag3.quad_blur)
 
         self.n_threads_sub = inst.getIntegerTopic("threads").subscribe(0)
-        self.n_threads_pub = inst.getIntegerTopic("threads").publish()
+        self.n_threads_pub = inst.getIntegerTopic("threads").publish(
+            ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True)
+        )
         self.n_threads_pub.set(config.settings.apriltag3.threads)
 
         inst.addListener(

@@ -174,7 +174,7 @@ while True:
 
     if config.detector_update_needed:
         config.detector = pyapriltags.Detector(
-            families="tag36h11",
+            families=settings.apriltag3.families,
             nthreads=settings.apriltag3.threads,
             quad_decimate=settings.apriltag3.quad_decimate,
             refine_edges=settings.apriltag3.refine_edges,

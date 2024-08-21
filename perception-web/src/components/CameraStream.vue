@@ -86,12 +86,12 @@
 
 <script lang="ts" setup>
   import { NetworkTables, NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
-  import { computed, onMounted, ref } from 'vue'
+  import { onMounted, ref } from 'vue'
 
-  const brightness = ref(50) // Initial slider value
-  const exposure = ref(50) // Initial slider value
-  const gain = ref(50) // Initial slider value
-  const fps = ref(0) // Initial slider value
+  const brightness = ref(50)
+  const exposure = ref(50)
+  const gain = ref(50)
+  const fps = ref(0)
   const logoSrc = new URL('@/assets/loading.jpeg', import.meta.url).href
   const streamSrcURL = 'http://localhost:5801/stream.mjpg'
   const backendConnected = ref(false)
