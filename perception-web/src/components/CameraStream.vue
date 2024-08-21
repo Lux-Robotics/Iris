@@ -1,12 +1,14 @@
 <template>
   <v-card elevation="12" min-width="400" rounded="lg" width="100%">
     <v-toolbar density="compact">
-      <v-toolbar-title>
-        <span class="font-weight-bold">Camera </span>
-        <span class="fps-info"> {{ fps }}</span>
-      </v-toolbar-title>
-    </v-toolbar>    <div class="px-4 py-4">
-      <img :src="streamSrc" width="100%">
+      <v-toolbar-title class="font-weight-bold">Camera</v-toolbar-title>
+      <v-spacer />
+      <v-chip class="ma-2" :color="fpsColor">
+        {{ fpsText }}
+      </v-chip>
+    </v-toolbar>
+    <div class="px-4 py-4">
+      <v-img :src="streamSrc" width="100%" />
 
       <v-select
         class="ma-4"
@@ -89,13 +91,29 @@
   const brightness = ref(50) // Initial slider value
   const exposure = ref(50) // Initial slider value
   const gain = ref(50) // Initial slider value
-  const fps = ref('0 FPS') // Initial slider value
+  const fps = ref(0) // Initial slider value
   const logoSrc = new URL('@/assets/loading.jpeg', import.meta.url).href
   const streamSrcURL = 'http://localhost:5801/stream.mjpg'
   const backendConnected = ref(false)
 
   const streamSrc = computed<string>(() => {
     return backendConnected.value ? streamSrcURL : logoSrc
+  })
+
+  const fpsText = computed<string>(() => {
+    return backendConnected.value ? fps.value.toFixed(2) + ' FPS' : 'Disconnected'
+  })
+
+  const fpsColor = computed<string>(() => {
+    if (!backendConnected.value) {
+      return 'red'
+    } else if (fps.value > 40) {
+      return 'green'
+    } else if (fps.value > 20) {
+      return 'yellow'
+    } else {
+      return 'red'
+    }
   })
 
   onMounted(() => {
@@ -109,7 +127,7 @@
       if (v === null) {
         v = 0
       }
-      fps.value = v + ' fps'
+      fps.value = v
     }, true)
   })
 </script>
@@ -117,9 +135,6 @@
 <style>
 .slider-label {
   display: inline-block;
-  width: 100px; /* Adjust this value as needed */
-}
-.fps-info {
-  font-size: 0.8em; /* Adjust the size as needed */
+  width: 100px;
 }
 </style>
