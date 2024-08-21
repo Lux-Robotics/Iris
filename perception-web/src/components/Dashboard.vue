@@ -1,12 +1,12 @@
 <template>
   <div>
     <v-container>
-      <v-row>
+      <v-row dense>
         <v-col cols="12" md="7">
           <CameraStream />
         </v-col>
         <v-col cols="12" md="5">
-          <v-row>
+          <v-row dense>
             <v-col cols="12">
               <AprilTagOptions />
             </v-col>

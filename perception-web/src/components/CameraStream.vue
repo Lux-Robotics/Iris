@@ -16,7 +16,7 @@
 
       <v-select
         v-model="cameraOrientation"
-        class="ma-4"
+        class="mt-4"
         :items="['Normal', '90°', '180°', '270°']"
         label="Orientation"
         variant="outlined"
@@ -24,7 +24,6 @@
 
       <v-slider
         v-model="brightness"
-        class="ma-4"
         hide-details
         :max="255"
         :step="1"
@@ -45,7 +44,7 @@
       </v-slider>
       <v-slider
         v-model="exposure"
-        class="ma-4"
+        class="my-4"
         hide-details
         :max="255"
         :step="1"
@@ -66,7 +65,6 @@
       </v-slider>
       <v-slider
         v-model="gain"
-        class="ma-4"
         hide-details
         :max="255"
         :step="1"

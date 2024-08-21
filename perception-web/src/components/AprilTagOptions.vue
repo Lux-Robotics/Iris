@@ -1,13 +1,11 @@
 <template>
   <v-card elevation="12" min-width="400" rounded="lg">
     <template #title>
-      <span class="font-weight-black">AprilTag</span>
+      <span class="font-weight-black">AprilTag Options</span>
     </template>
     <v-divider />
     <v-card-text>
       <v-select
-        v-model="tagFamily"
-        class="ma-4"
         :items="tagFamilies"
         label="AprilTag Family"
         variant="outlined"
@@ -15,14 +13,13 @@
 
       <v-slider
         v-model="decimate"
-        class="ma-4"
         hide-details
-        :max="3"
+        :max="6"
         :min="1"
-        :step="0.5"
+        :step="1"
       >
         <template #label>
-          <span class="slider-label">Decimate</span>
+          <span class="options-label">Decimate</span>
         </template>
         <template #append>
           <v-text-field
@@ -37,13 +34,13 @@
       </v-slider>
       <v-slider
         v-model="blur"
-        class="ma-4"
+        class="my-4"
         hide-details
         :max="4"
-        :step="1"
+        :step="0.1"
       >
         <template #label>
-          <span class="slider-label">Gaussian Blur</span>
+          <span class="options-label">Gaussian Blur</span>
         </template>
         <template #append>
           <v-text-field
@@ -58,14 +55,14 @@
       </v-slider>
       <v-slider
         v-model="nThreads"
-        class="ma-4"
+        class="my-4"
         hide-details
         :max="8"
         :min="1"
         :step="1"
       >
         <template #label>
-          <span class="slider-label">CPU Threads</span>
+          <span class="options-label">CPU Threads</span>
         </template>
         <template #append>
           <v-text-field
@@ -79,7 +76,7 @@
         </template>
       </v-slider>
 
-      <v-switch class="ma-4" hide-details>
+      <v-switch class="mx-4" hide-details>
         <template #label>
           <span class="switch-label">Refine Edges</span>
         </template>
@@ -167,8 +164,8 @@
 </script>
 
 <style>
-.slider-label {
+.options-label {
   display: inline-block;
-  width: 200px;
+  width: 110px;
 }
 </style>
