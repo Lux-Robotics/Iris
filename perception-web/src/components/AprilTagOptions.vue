@@ -6,6 +6,7 @@
     <v-divider />
     <v-card-text>
       <v-select
+        v-model="tagFamily"
         :items="tagFamilies"
         label="AprilTag Family"
         variant="outlined"

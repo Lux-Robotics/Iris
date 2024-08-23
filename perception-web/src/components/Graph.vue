@@ -20,8 +20,8 @@
     name: 'CpuMetricsComponent',
     setup () {
       const chartRef = ref(null)
-      let cpuMetricsChart = null
-      let updateInterval = null
+      let cpuMetricsChart: Chart | null = null
+      let updateInterval: number | null = null
       let elapsedTime = 0
 
       const getRandomInt = (min, max) => {
