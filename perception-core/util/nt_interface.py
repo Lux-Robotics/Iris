@@ -4,8 +4,8 @@ from typing import List
 
 import ntcore
 
-import util.config as config
-from util.config import settings
+import util.state as state
+from util.state import settings
 from util.vision_types import Pose, TagObservation
 
 
@@ -31,7 +31,7 @@ class NTInterface:
         )
         self.fps_pub = self.output_table.getDoubleTopic("fps").publish()
         self.version_pub = self.output_table.getStringTopic("version").publish()
-        self.version_pub.set(settings.version)
+        self.version_pub.set(state.version)
 
         self.config_table = ntcore.NetworkTableInstance.getDefault().getTable(
             "/Perception/config"
@@ -59,7 +59,7 @@ class NTInterface:
             observation_data.append(wpi_pose0.rotation().getQuaternion().Z())
             errors.append(pose0.error)
         try:
-            fps = 9 / (config.fps[-1] - config.fps[-10])
+            fps = state.fps
         except:
             fps = 0
         observation_data_2 = []
@@ -81,7 +81,7 @@ class NTInterface:
         self.tags_pub.set([tag.tag_id for tag in tags], math.floor(timestamp * 1000000))
 
     def get_states(self):
-        config.ignored_tags = self.tagignore_sub.get([])
+        state.ignored_tags = self.tagignore_sub.get([])
 
         control_data = self.control_data_sub.get(0)
         (
@@ -94,4 +94,4 @@ class NTInterface:
         ) = [(control_data & (1 << bit)) > 0 for bit in range(5, -1, -1)]
 
         if robot_enabled:
-            config.robot_last_enabled = time.time()
+            state.robot_last_enabled = time.time()

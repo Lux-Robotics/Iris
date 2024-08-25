@@ -1,13 +1,13 @@
 import numpy as np
 import pyapriltags
 
-import util.config as config
+import util.state as state
 from util.vision_types import TagObservation
 
 
 def find_corners(image):
     # Detect AprilTags in the image
-    detections = config.detector.detect(image)
+    detections = state.detector.detect(image)
     if len(detections) == 0:
         return []
 

@@ -4,19 +4,19 @@ import time
 import cv2
 import numpy as np
 
-import util.config as config
+import util.state as state
 
 
 def process_image(max_resolution):
     current_time = time.time()
-    if config.filtered_detections is None or config.last_frame is None:
+    if state.filtered_detections is None or state.last_frame is None:
         # Timeout so thread doesn't hog CPU
         time.sleep(0.005)
         return None
 
-    frame = config.last_frame
+    frame = state.last_frame
 
-    # cv2.aruco.drawDetectedMarkers(frame, config.filtered_detections)
+    # cv2.aruco.drawDetectedMarkers(frame, state.filtered_detections)
 
     scale = math.ceil(
         max(frame.shape[1] / max_resolution[0], frame.shape[0] / max_resolution[1])
@@ -30,14 +30,14 @@ def process_image(max_resolution):
 
 def process_detections(scale):
     current_time = time.time()
-    if config.filtered_detections is None or config.last_frame is None:
+    if state.filtered_detections is None or state.last_frame is None:
         # Timeout so thread doesn't hog CPU
         time.sleep(0.005)
         return None, None, None, None
 
     filtered_detections, ignored_detections = (
-        config.filtered_detections,
-        config.ignored_detections,
+        state.filtered_detections,
+        state.ignored_detections,
     )
 
     detections_array = np.array(

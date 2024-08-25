@@ -11,7 +11,9 @@ declare module 'vue' {
     AprilTagOptions: typeof import('./components/AprilTagOptions.vue')['default']
     CameraStream: typeof import('./components/CameraStream.vue')['default']
     Graph: typeof import('./components/Graph.vue')['default']
+    NetworkSettings: typeof import('./components/settings/NetworkSettings.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SystemInfo: typeof import('./components/settings/SystemInfo.vue')['default']
   }
 }

@@ -8,3 +8,9 @@
 // @use 'vuetify/settings' with (
 //   $color-pack: false
 // );
+
+.edit-settings {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* optional: space between components */
+}

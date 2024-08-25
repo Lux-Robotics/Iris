@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-import util.config as config
+import util.state as state
 from util.vision_types import Pose
 
 
@@ -13,18 +13,18 @@ def get_distances(detections):
         corners = detection.corners.reshape((4, 2))
         world_coords = np.array(
             [
-                [-config.apriltag_size / 2, config.apriltag_size / 2, 0],
-                [config.apriltag_size / 2, config.apriltag_size / 2, 0],
-                [config.apriltag_size / 2, -config.apriltag_size / 2, 0],
-                [-config.apriltag_size / 2, -config.apriltag_size / 2, 0],
+                [-state.apriltag_size / 2, state.apriltag_size / 2, 0],
+                [state.apriltag_size / 2, state.apriltag_size / 2, 0],
+                [state.apriltag_size / 2, -state.apriltag_size / 2, 0],
+                [-state.apriltag_size / 2, -state.apriltag_size / 2, 0],
             ]
         )
 
         _, rvecs, tvecs, errors = cv2.solvePnPGeneric(
             world_coords,
             corners,
-            np.array(config.settings.calibration.cameraMatrix),
-            distCoeffs=np.array(config.settings.calibration.distCoeffs),
+            np.array(state.settings.calibration.cameraMatrix),
+            distCoeffs=np.array(state.settings.calibration.distCoeffs),
             flags=cv2.SOLVEPNP_AP3P,
         )
 
@@ -56,18 +56,18 @@ def solvepnp_singletag(detections):
     if len(detections) == 0:
         return ()
     for detection in detections:
-        if detection.tag_id not in config.tag_world_coords:
+        if detection.tag_id not in state.tag_world_coords:
             continue
-        if detection.tag_id in config.ignored_tags:
+        if detection.tag_id in state.ignored_tags:
             continue
         corners = detection.corners.reshape((4, 2))
-        world_coords = config.tag_world_coords[detection.tag_id].get_corners()
+        world_coords = state.tag_world_coords[detection.tag_id].get_corners()
 
         _, rvecs, tvecs, errors = cv2.solvePnPGeneric(
             world_coords,
             corners,
-            np.array(config.settings.calibration.cameraMatrix),
-            distCoeffs=np.array(config.settings.calibration.distCoeffs),
+            np.array(state.settings.calibration.cameraMatrix),
+            distCoeffs=np.array(state.settings.calibration.distCoeffs),
             flags=cv2.SOLVEPNP_AP3P,
         )
         if len(rvecs) > 1:
@@ -85,14 +85,14 @@ def solvepnp_multitag(detections):
     for detection in detections:
         corners = np.vstack((corners, detection.corners.reshape((4, 2))))
         world_coords = np.vstack(
-            (world_coords, config.tag_world_coords[detection.tag_id].get_corners())
+            (world_coords, state.tag_world_coords[detection.tag_id].get_corners())
         )
 
     _, rvecs, tvecs, errors = cv2.solvePnPGeneric(
         world_coords,
         corners,
-        np.array(config.settings.calibration.cameraMatrix),
-        distCoeffs=np.array(config.settings.calibration.distCoeffs),
+        np.array(state.settings.calibration.cameraMatrix),
+        distCoeffs=np.array(state.settings.calibration.distCoeffs),
         flags=cv2.SOLVEPNP_SQPNP,
     )
     if len(rvecs) > 1:
@@ -108,14 +108,14 @@ def solvepnp_ransac(detections):
     for detection in detections:
         corners = np.vstack((corners, detection.corners.reshape((4, 2))))
         world_coords = np.vstack(
-            (world_coords, config.tag_world_coords[detection.tag_id].get_corners())
+            (world_coords, state.tag_world_coords[detection.tag_id].get_corners())
         )
 
     retval, rvec, tvec, inliers = cv2.solvePnPRansac(
         world_coords,
         corners,
-        np.array(config.settings.calibration.cameraMatrix),
-        distCoeffs=np.array(config.settings.calibration.distCoeffs),
+        np.array(state.settings.calibration.cameraMatrix),
+        distCoeffs=np.array(state.settings.calibration.distCoeffs),
         flags=cv2.SOLVEPNP_SQPNP,
     )
 

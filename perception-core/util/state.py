@@ -1,10 +1,9 @@
 import json
 import logging
+import subprocess
 
-import numpy as np
 import pyapriltags
 from dynaconf import Dynaconf
-from dynaconf.utils.boxing import DynaBox
 from wpimath.geometry import *
 
 from util.vision_types import TagCoordinates
@@ -26,11 +25,40 @@ def load_calibration(settings):
     return {"calibration": calibration}
 
 
+def get_git_info():
+    try:
+        # Run the git command to get the latest tag description
+        result = subprocess.run(
+            ["git", "describe", "--tags"],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        description = result.stdout.strip()
+        parts = description.split("-")
+        last_tagged_version = parts[0]
+        current_commit = parts[2][1:]  # Remove the 'g' prefix
+
+        return last_tagged_version, current_commit
+
+    except subprocess.CalledProcessError as e:
+        logging.error(
+            f"An error occurred while fetching the git description: {e.stderr}"
+        )
+        return "Unknown", "Unknown"
+    except IndexError:
+        logging.error("Invalid git description format")
+        return "Unknown", "Unknown"
+
+
 settings = Dynaconf(
     envvar_prefix="DYNACONF",
-    settings_files=["config.toml", "version.json"],
+    settings_files=["config.toml"],
     post_hooks=[load_calibration],
 )
+
+version, git_hash = get_git_info()
 
 logger.info("Load Configuration Successful")
 
@@ -52,8 +80,11 @@ detector_update_needed = False
 last_frame = None
 filtered_detections = None
 ignored_detections = None
+
 last_frame_time = 0.0
-fps = [0 for x in range(10)]
+fps: float = 0.0
+frame_times: list[float] = []
+
 poses = []
 tags2d = []
 last_logged_timestamp = 0.0
@@ -92,6 +123,16 @@ for tag in tags:
     tag_world_coords[tag["ID"]] = TagCoordinates(tag_pose, apriltag_size)
 
 logger.info("Load Field Map Successful")
+
+
+def get_server_ip():
+    return (
+        "10."
+        + str(settings.team_number // 100)
+        + "."
+        + str(settings.team_number % 100)
+        + ".2"
+    )
 
 
 # TODO: remove

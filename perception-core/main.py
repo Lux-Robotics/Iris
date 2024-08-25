@@ -1,18 +1,18 @@
-import pyapriltags
-
-from util.nt_listener import NTListener
 import argparse
 import sys
 import threading
 import time
 
+import pyapriltags
+
 import output.foxglove_logger as out
 import output.foxglove_server
 import output.http_stream
-from util.config import settings, logger
 from util.filter_tags import filter_tags
 from util.nt_interface import NTInterface
+from util.nt_listener import NTListener
 from util.pose_estimator import *
+from util.state import settings, logger
 
 parser = argparse.ArgumentParser("peninsula_perception")
 parser.add_argument(
@@ -51,9 +51,9 @@ def init_camera():
         if settings.capture == "opencv":
             camera = cv2.VideoCapture(0)
             # camera.set(cv2.CAP_PROP_FRAME_WIDTH, resx)
-            # camera.set(cv2.CAP_PROP_FRAME_HEIGHT, config.resy)
+            # camera.set(cv2.CAP_PROP_FRAME_HEIGHT, state.resy)
         elif settings.capture == "gstreamer":
-            camera = cv2.VideoCapture(config.gstreamer_pipeline, cv2.CAP_GSTREAMER)
+            camera = cv2.VideoCapture(state.gstreamer_pipeline, cv2.CAP_GSTREAMER)
         else:
             # Mode parameter not valid
             logger.error("Program mode invalid")
@@ -79,7 +79,7 @@ except Exception as e:
 nt_instance = None
 
 if settings.use_networktables:
-    nt_instance = NTInterface(settings.server_ip)
+    nt_instance = NTInterface(state.get_server_ip())
 
 nt_listener = NTListener()
 
@@ -101,6 +101,17 @@ while True:
     ret, frame = camera.read()
     new_frame_time = time.time()
 
+    state.frame_times.append(new_frame_time)
+    # FPS Calculation
+    if len(state.frame_times) >= 10:
+        state.fps = 9 / (state.frame_times[-1] - state.frame_times[-10])
+    elif len(state.frame_times) > 1:
+        state.fps = (len(state.frame_times) - 1) / (
+            state.frame_times[-1] - state.frame_times[0]
+        )
+    else:
+        state.fps = 0
+
     # Latency compensation estimate
     new_frame_time -= (1 / settings.camera.fps) / 2
 
@@ -110,8 +121,8 @@ while True:
             logger.warning("video input not detected")
 
             # Attempt to reinitialize camera after 0.1 seconds
-            config.bad_frames += 1
-            if config.bad_frames > 10:
+            state.bad_frames += 1
+            if state.bad_frames > 10:
                 break
 
             time.sleep(0.1)
@@ -123,10 +134,7 @@ while True:
             continue
 
         else:
-            info = logger.info(
-                "Average FPS: "
-                + str(1 / ((config.fps[-1] - config.fps[11]) / len(config.fps[10:])))
-            )
+            info = logger.info("Average FPS: " + str(state.fps))
             break
 
     if settings.detector == "aruco":
@@ -172,33 +180,31 @@ while True:
 
     nt_listener.update_data(new_frame_time)
 
-    if config.detector_update_needed:
-        config.detector = pyapriltags.Detector(
+    if state.detector_update_needed:
+        state.detector = pyapriltags.Detector(
             families=settings.apriltag3.families,
             nthreads=settings.apriltag3.threads,
             quad_decimate=settings.apriltag3.quad_decimate,
             quad_sigma=settings.apriltag3.quad_sigma,
             refine_edges=settings.apriltag3.refine_edges,
         )
-        logger.info("Detector updated: " + str(config.detector.params))
-        config.detector_update_needed = False
+        logger.info("Detector updated: " + str(state.detector.params))
+        state.detector_update_needed = False
 
     (
-        config.last_frame,
-        config.filtered_detections,
-        config.ignored_detections,
-        config.poses,
-        config.last_frame_time,
+        state.last_frame,
+        state.filtered_detections,
+        state.ignored_detections,
+        state.poses,
+        state.last_frame_time,
     ) = (frame, filtered_detections, ignored_detections, poses, new_frame_time)
-    config.new_data = True
+    state.new_data = True
 
     if not settings.logging.enabled and not settings.foxglove_server.enabled:
-        logger.info("FPS:" + str(10 / (new_frame_time - config.fps[-10])))
+        logger.info("FPS:" + str(state.fps))
 
     if settings.http_stream.enabled:
         output.http_stream.get_frame()
-
-    config.fps.append(new_frame_time)
 
     if settings.logging.enabled and not logging_thread.is_alive():
         logger.error("Logging thread unalived")

@@ -1,93 +1,5 @@
-<template>
-  <v-card elevation="12" min-width="400" rounded="lg" width="100%">
-    <template #title>
-      <span class="font-weight-black">Camera</span>
-    </template>
-    <template #append>
-      <v-chip :color="fpsColor">
-        {{ fpsText }}
-      </v-chip>
-    </template>
-
-    <v-divider />
-
-    <v-card-text>
-      <v-img :src="streamSrc" width="100%" />
-
-      <v-select
-        v-model="cameraOrientation"
-        class="mt-4"
-        :items="['Normal', '90°', '180°', '270°']"
-        label="Orientation"
-        variant="outlined"
-      />
-
-      <v-slider
-        v-model="brightness"
-        hide-details
-        :max="255"
-        :step="1"
-      >
-        <template #label>
-          <span class="slider-label">Brightness</span>
-        </template>
-        <template #append>
-          <v-text-field
-            v-model="brightness"
-            density="compact"
-            hide-details
-            style="width: 80px"
-            type="number"
-            variant="outlined"
-          />
-        </template>
-      </v-slider>
-      <v-slider
-        v-model="exposure"
-        class="my-4"
-        hide-details
-        :max="255"
-        :step="1"
-      >
-        <template #label>
-          <span class="slider-label">Exposure</span>
-        </template>
-        <template #append>
-          <v-text-field
-            v-model="exposure"
-            density="compact"
-            hide-details
-            style="width: 80px"
-            type="number"
-            variant="outlined"
-          />
-        </template>
-      </v-slider>
-      <v-slider
-        v-model="gain"
-        hide-details
-        :max="255"
-        :step="1"
-      >
-        <template #label>
-          <span class="slider-label">Sensor Gain</span>
-        </template>
-        <template #append>
-          <v-text-field
-            v-model="gain"
-            density="compact"
-            hide-details
-            style="width: 80px"
-            type="number"
-            variant="outlined"
-          />
-        </template>
-      </v-slider>
-    </v-card-text>
-  </v-card>
-</template>
-
 <script lang="ts" setup>
+  import { backendConnected } from '@/nt-listener'
   import { NetworkTables, NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
   import { onMounted, ref } from 'vue'
 
@@ -99,7 +11,6 @@
   const fps = ref(0)
   const logoSrc = new URL('@/assets/loading.jpeg', import.meta.url).href
   const streamSrcURL = 'http://localhost:5801/stream.mjpg'
-  const backendConnected = ref(false)
 
   const streamSrc = computed<string>(() => {
     return backendConnected.value ? streamSrcURL : logoSrc
@@ -123,9 +34,6 @@
 
   onMounted(() => {
     const ntcore = NetworkTables.getInstanceByURI('127.0.0.1')
-    ntcore.addRobotConnectionListener(v => {
-      backendConnected.value = v
-    }, true)
 
     const fpsTopic: NetworkTablesTopic<number> = ntcore.createTopic('fps', NetworkTablesTypeInfos.kDouble)
     fpsTopic.subscribe(v => {
@@ -136,6 +44,98 @@
     }, true)
   })
 </script>
+
+<template>
+  <v-card elevation="12" min-width="400" rounded="lg" width="100%">
+    <template #title>
+      <span class="font-weight-black">Camera</span>
+    </template>
+    <template #append>
+      <v-chip :color="fpsColor">
+        {{ fpsText }}
+      </v-chip>
+    </template>
+
+    <v-divider />
+
+    <v-card-text>
+      <v-img :src="streamSrc" width="100%" />
+
+      <v-select
+        v-model="cameraOrientation"
+        class="mt-4"
+        :items="['Normal', '90°', '180°', '270°']"
+        label="Display Orientation"
+        variant="outlined"
+      />
+
+      <v-slider
+        v-model="brightness"
+        hide-details
+        :max="288"
+        :min="1"
+        :step="1"
+      >
+        <template #label>
+          <span class="slider-label">Brightness</span>
+        </template>
+        <template #append>
+          <v-text-field
+            v-model="brightness"
+            density="compact"
+            hide-details
+            style="width: 80px"
+            type="number"
+            variant="outlined"
+          />
+        </template>
+      </v-slider>
+      <v-slider
+        v-model="exposure"
+        class="my-4"
+        hide-details
+        :max="910"
+        :min="4"
+        :step="1"
+      >
+        <template #label>
+          <span class="slider-label">Exposure</span>
+        </template>
+        <template #append>
+          <v-text-field
+            v-model="exposure"
+            density="compact"
+            hide-details
+            style="width: 80px"
+            type="number"
+            variant="outlined"
+          />
+        </template>
+      </v-slider>
+      <v-slider
+        v-model="gain"
+        hide-details
+        :max="248"
+        :min="16"
+        :step="1"
+      >
+        <template #label>
+          <span class="slider-label">Sensor Gain</span>
+        </template>
+        <template #append>
+          <v-text-field
+            v-model="gain"
+            density="compact"
+            hide-details
+            style="width: 80px"
+            type="number"
+            variant="outlined"
+          />
+        </template>
+      </v-slider>
+    </v-card-text>
+  </v-card>
+</template>
 
 <style>
 .slider-label {

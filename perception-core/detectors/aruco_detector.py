@@ -1,6 +1,6 @@
 import cv2
 
-from util.config import settings
+from util.state import settings
 from util.vision_types import TagObservation
 
 # Detect tags in the 16h5 family

@@ -19,13 +19,13 @@ from google.protobuf.descriptor import FileDescriptor
 from google.protobuf.descriptor_pb2 import FileDescriptorSet
 
 import output.pipeline
-import util.config as config
+import util.state as state
 from output.float_message_pb2 import FloatMessage
 from output.foxglove_image import get_frame, get_image
 from output.foxglove_pose import get_pose, get_field
 from output.foxglove_utils import run_cancellable
 from output.foxglove_utils import timestamp
-from util.config import settings, logger
+from util.state import settings, logger
 
 
 def build_file_descriptor_set(
@@ -242,11 +242,11 @@ async def main():
                 ann, ignored_ann, fps = get_frame(
                     now, points, ids, ignored_points, ignored_ids
                 )
-                if len(config.poses) > 0:
-                    pose = get_pose(now, config.poses[0], "camera")
+                if len(state.poses) > 0:
+                    pose = get_pose(now, state.poses[0], "camera")
                     await server.send_message(pose_pub, now, pose.SerializeToString())
-                if len(config.poses) > 1:
-                    ambiguity = get_pose(now, config.poses[1], "ambiguity")
+                if len(state.poses) > 1:
+                    ambiguity = get_pose(now, state.poses[1], "ambiguity")
                     await server.send_message(
                         ambiguity_pose_pub, now, ambiguity.SerializeToString()
                     )
@@ -258,7 +258,7 @@ async def main():
                     field_reset = False
                 if config_reset:
                     await server.send_message(
-                        config_pub, now, config.config_json.encode("utf8")
+                        config_pub, now, state.config_json.encode("utf8")
                     )
                 await server.send_message(image_pub, now, img.SerializeToString())
                 await server.send_message(annotations_pub, now, ann.SerializeToString())

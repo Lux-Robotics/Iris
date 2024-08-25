@@ -3,7 +3,7 @@ from foxglove_schemas_protobuf.CompressedImage_pb2 import CompressedImage
 from foxglove_schemas_protobuf.ImageAnnotations_pb2 import ImageAnnotations
 from mcap_protobuf.writer import Writer
 
-import util.config as config
+import util.state as state
 from output.float_message_pb2 import FloatMessage
 from output.foxglove_utils import timestamp, points
 
@@ -32,7 +32,7 @@ def get_frame(now: int, points_array, ids, ignored_points_array, ignored_ids) ->
     return (
         ann,
         ignored_ann,
-        FloatMessage(number=9 / (config.fps[-1] - config.fps[-10])),
+        FloatMessage(number=state.fps),
     )
 
 

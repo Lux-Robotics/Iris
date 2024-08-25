@@ -8,11 +8,11 @@ from foxglove_schemas_protobuf.Log_pb2 import Log
 from mcap_protobuf.writer import Writer
 
 import output.pipeline
-import util.config as config
+import util.state as state
 from output.foxglove_image import write_frame
 from output.foxglove_pose import write_pose, setup_field
 from output.foxglove_utils import timestamp
-from util.config import settings, logger
+from util.state import settings, logger
 
 
 class FoxgloveLoggingHandler(logging.Handler):
@@ -74,28 +74,28 @@ def main(log_dir: str):
         foxglove_handler.setLevel(logging.DEBUG)
         logger.addHandler(foxglove_handler)
         setup_field(start_time, writer)
-        # config.logger.info(config.config_json)
+        # state.logger.info(state.config_json)
         if free_bytes < safety_margin:
-            config.logger.error("Disk too full, video logging disabled")
+            state.logger.error("Disk too full, video logging disabled")
 
         while True:
-            capture_time = int(config.last_frame_time * 1e9)
+            capture_time = int(state.last_frame_time * 1e9)
             current_time = time.time()
             try:
-                if not config.new_data:
+                if not state.new_data:
                     time.sleep(0.002)
                     continue
 
-                config.new_data = False
+                state.new_data = False
 
                 if (
-                    current_time - config.robot_last_enabled < 5.0
-                    or current_time - config.last_logged_timestamp > 0.5
+                    current_time - state.robot_last_enabled < 5.0
+                    or current_time - state.last_logged_timestamp > 0.5
                 ):
                     frame, scale = output.pipeline.process_image(
                         settings.logging.max_res
                     )
-                    config.last_logged_timestamp = current_time
+                    state.last_logged_timestamp = current_time
                 else:
                     frame = None
 
@@ -132,10 +132,10 @@ def main(log_dir: str):
                     writer,
                     free_bytes < safety_margin,
                 )
-                if len(config.poses) > 0:
-                    write_pose(capture_time, config.poses[0], "camera", writer)
-                if len(config.poses) > 1:
-                    write_pose(capture_time, config.poses[1], "ambiguity", writer)
+                if len(state.poses) > 0:
+                    write_pose(capture_time, state.poses[0], "camera", writer)
+                if len(state.poses) > 1:
+                    write_pose(capture_time, state.poses[1], "ambiguity", writer)
             except Exception as e:
                 logger.exception(e)
 

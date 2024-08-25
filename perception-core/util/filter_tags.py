@@ -1,6 +1,6 @@
 from typing import List
 
-import util.config as config
+import util.state as state
 from util.vision_types import TagObservation
 
 
@@ -10,10 +10,10 @@ def filter_tags(
     filtered_detections = []
     ignored_detections = []
     for detection in detections:
-        if detection.tag_id not in config.tag_world_coords:
+        if detection.tag_id not in state.tag_world_coords:
             continue
 
-        if detection.tag_id in config.ignored_tags:
+        if detection.tag_id in state.ignored_tags:
             ignored_detections.append(detection)
 
         else:

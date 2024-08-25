@@ -3,7 +3,7 @@ device_id = "test"
 # Map of apriltag location, copied from wpilib
 map = "maps/2024-crescendo.json"
 # Robot IP Address
-server_ip = "10.60.36.2"
+team_number = 6036
 
 test_video = "testdata/2024speaker.webm"
 use_networktables = true
@@ -23,6 +23,9 @@ calibration_file = "calibration/002-7_1600x1200.json"
 pipeline = "v4l2src device=/dev/video0 extra_controls=\"c,exposure_dynamic_framerate=1\" ! image/jpeg,format=MJPG,width=1280,height=720 ! jpegdec ! appsink drop=1"
 # Camera fps, used to estimate latency
 fps = 50
+brightness = 200
+exposure = 800
+gain = 16
 
 [aruco]
 # Do initial detection on a downscaled image, refine on original
