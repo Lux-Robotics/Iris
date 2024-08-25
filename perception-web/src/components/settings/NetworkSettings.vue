@@ -13,17 +13,19 @@
         @input="validate"
       >
         <template #append-inner>
-          <v-btn
-            v-if="robotServerIP !== robotServerIPRef"
-            class="text-capitalize"
-            color="secondary"
-            density="compact"
-            :disabled="!backendConnected || !ipValid"
-            slim
-            text="save"
-            variant="tonal"
-            @click="updateServerIP"
-          />
+          <v-slide-y-transition>
+            <v-btn
+              v-if="robotServerIP !== robotServerIPRef"
+              class="text-capitalize"
+              color="secondary"
+              density="compact"
+              :disabled="!backendConnected || !ipValid"
+              slim
+              text="save"
+              variant="tonal"
+              @click="updateServerIP"
+            />
+          </v-slide-y-transition>
         </template>
       </v-text-field>
       <v-divider class="mb-4" />
@@ -95,3 +97,12 @@
   })
 
 </script>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+  opacity: 0;
+}
+</style>
