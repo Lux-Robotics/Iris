@@ -87,7 +87,8 @@
 </template>
 
 <script lang="ts" setup>
-  import { NetworkTables, NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
+  import { ntcore } from '@/nt-listener'
+  import { NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
   import { onMounted, ref, watch } from 'vue'
 
   const tagFamilies = ['tag36h11', 'tag25h9', 'tag16h5']
@@ -103,8 +104,6 @@
   const tagFamilyRef = ref()
 
   onMounted(() => {
-    const ntcore = NetworkTables.getInstanceByURI('127.0.0.1')
-
     const threadsTopic: NetworkTablesTopic<number> = ntcore.createTopic('threads', NetworkTablesTypeInfos.kInteger)
     const blurTopic: NetworkTablesTopic<number> = ntcore.createTopic('blur', NetworkTablesTypeInfos.kDouble)
     const decimateTopic: NetworkTablesTopic<number> = ntcore.createTopic('decimate', NetworkTablesTypeInfos.kDouble)

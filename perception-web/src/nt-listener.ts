@@ -2,9 +2,11 @@ import { NetworkTables } from 'ntcore-ts-client'
 import { ref } from 'vue'
 const backendConnected = ref(false)
 
-const ntcore = NetworkTables.getInstanceByURI('127.0.0.1')
+// TODO: make this based on backend ip
+const backendURI: string = '127.0.0.1'
+const ntcore = NetworkTables.getInstanceByURI(backendURI)
 ntcore.addRobotConnectionListener(v => {
   backendConnected.value = v
 }, true)
 
-export { ntcore, backendConnected }
+export { ntcore, backendConnected, backendURI }

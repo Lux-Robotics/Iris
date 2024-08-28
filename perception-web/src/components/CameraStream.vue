@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-  import { backendConnected } from '@/nt-listener'
-  import { NetworkTables, NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
+  import { backendConnected, backendURI, ntcore } from '@/nt-listener'
+  import { NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
   import { onMounted, ref } from 'vue'
 
   const brightness = ref(0)
@@ -10,7 +10,7 @@
 
   const fps = ref(0)
   const logoSrc = new URL('@/assets/loading.jpeg', import.meta.url).href
-  const streamSrcURL = 'http://localhost:5801/stream.mjpg'
+  const streamSrcURL = 'http://' + backendURI + ':5801/stream.mjpg'
 
   const streamSrc = computed<string>(() => {
     return backendConnected.value ? streamSrcURL : logoSrc
@@ -33,8 +33,6 @@
   })
 
   onMounted(() => {
-    const ntcore = NetworkTables.getInstanceByURI('127.0.0.1')
-
     const fpsTopic: NetworkTablesTopic<number> = ntcore.createTopic('fps', NetworkTablesTypeInfos.kDouble)
     fpsTopic.subscribe(v => {
       if (v === null) {

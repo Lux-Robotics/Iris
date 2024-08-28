@@ -16,14 +16,17 @@ def process_image(max_resolution):
 
     frame = state.last_frame
 
-    # cv2.aruco.drawDetectedMarkers(frame, state.filtered_detections)
-
     scale = math.ceil(
         max(frame.shape[1] / max_resolution[0], frame.shape[0] / max_resolution[1])
     )
     frame = cv2.resize(
         frame, dsize=(int(frame.shape[1] / scale), int(frame.shape[0] / scale))
     )
+
+    for detection in state.filtered_detections:
+        cv2.aruco.drawDetectedMarkers(
+            frame, np.array([detection.corners / scale]), np.array([[detection.tag_id]])
+        )
 
     return frame, scale
 
