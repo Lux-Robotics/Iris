@@ -11,118 +11,110 @@
 </template>
 
 <script lang="ts">
-  import { onMounted, onUnmounted, ref } from 'vue'
-  import { Chart, registerables } from 'chart.js'
+import { onMounted, onUnmounted, ref } from 'vue'
+import { Chart, registerables } from 'chart.js'
 
-  Chart.register(...registerables)
+Chart.register(...registerables)
 
-  export default {
-    name: 'CpuMetricsComponent',
-    setup () {
-      const chartRef = ref(null)
-      let cpuMetricsChart: Chart | null = null
-      let updateInterval: number | null = null
-      let elapsedTime = 0
+export default {
+  name: 'CpuMetricsComponent',
+  setup() {
+    const chartRef = ref(null)
+    let cpuMetricsChart: Chart | null = null
+    let updateInterval: number | null = null
+    let elapsedTime = 0
 
-      const getRandomInt = (min, max) => {
-        return Math.floor(Math.random() * (max - min + 1)) + min
+    const getRandomInt = (min: number, max: number) => {
+      return Math.floor(Math.random() * (max - min + 1)) + min
+    }
+
+    const addData = () => {
+      elapsedTime += 1
+      const time = `${elapsedTime}s`
+      const newLoad = getRandomInt(10, 100) // Simulate CPU load
+      const newTemp = getRandomInt(40, 60) // Simulate CPU temperature
+
+      if (cpuMetricsChart === null) {
+        return
       }
 
-      const addData = () => {
-        elapsedTime += 15
-        const time = `${elapsedTime}s`
-        const newLoad = getRandomInt(10, 100) // Simulate CPU load
-        const newTemp = getRandomInt(40, 60) // Simulate CPU temperature
+      cpuMetricsChart.data.labels.push(time)
+      cpuMetricsChart.data.datasets[0].data.push(newLoad)
+      cpuMetricsChart.data.datasets[1].data.push(newTemp)
 
-        if (cpuMetricsChart.data.labels.length > 10) {
-          cpuMetricsChart.data.labels.shift()
-          cpuMetricsChart.data.datasets[0].data.shift()
-          cpuMetricsChart.data.datasets[1].data.shift()
-        }
+      cpuMetricsChart.update()
+    }
 
-        cpuMetricsChart.data.labels.push(time)
-        cpuMetricsChart.data.datasets[0].data.push(newLoad)
-        cpuMetricsChart.data.datasets[1].data.push(newTemp)
-
-        cpuMetricsChart.update()
-      }
-
-      onMounted(() => {
-        const ctx = document.getElementById('cpuMetricsChart').getContext('2d')
-        cpuMetricsChart = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: ['0s'],
-            datasets: [
-              {
-                label: 'CPU Load (%)',
-                data: [getRandomInt(10, 100)],
-                backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                borderColor: 'rgba(255, 159, 64, 1)',
-                borderWidth: 1,
-                fill: false,
-                tension: 0.1,
-                yAxisID: 'y-load',
-              },
-              {
-                label: 'CPU Temperature (°C)',
-                data: [getRandomInt(40, 60)],
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1,
-                fill: false,
-                tension: 0.1,
-                yAxisID: 'y-temp',
-              },
-            ],
+    onMounted(() => {
+      const ctx = document.getElementById('cpuMetricsChart').getContext('2d')
+      cpuMetricsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['0s'],
+          datasets: [
+            {
+              label: 'CPU Load (%)',
+              data: [getRandomInt(10, 100)],
+              borderColor: 'rgba(255, 159, 64, 1)',
+              borderWidth: 1,
+              radius: 0,
+              yAxisID: 'y-load',
+            },
+            {
+              label: 'CPU Temperature (°C)',
+              data: [getRandomInt(40, 60)],
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1,
+              radius: 0,
+              yAxisID: 'y-temp',
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            intersect: false
           },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              'y-load': {
-                type: 'linear',
-                position: 'left',
-                beginAtZero: true,
-                max: 100,
-                title: {
-                  display: true,
-                  text: 'Load (%)',
-                },
+          scales: {
+            'y-load': {
+              type: 'linear',
+              position: 'left',
+              title: {
+                display: true,
+                text: 'Load (%)',
               },
-              'y-temp': {
-                type: 'linear',
-                position: 'right',
-                beginAtZero: false,
-                min: 40,
-                max: 60,
-                title: {
-                  display: true,
-                  text: 'Temperature (°C)',
-                },
+            },
+            'y-temp': {
+              type: 'linear',
+              position: 'right',
+              title: {
+                display: true,
+                text: 'Temperature (°C)',
               },
-              x: {
-                title: {
-                  display: true,
-                  text: 'Time (s)',
-                },
+            },
+            x: {
+              title: {
+                display: true,
+                text: 'Time (s)',
               },
             },
           },
-        })
-
-        updateInterval = setInterval(addData, 15000)
+        },
       })
 
-      onUnmounted(() => {
-        clearInterval(updateInterval)
-      })
+      updateInterval = setInterval(addData, 100)
+    })
 
-      return {
-        chartRef,
-      }
-    },
-  }
+    onUnmounted(() => {
+      clearInterval(updateInterval)
+    })
+
+    return {
+      chartRef,
+    }
+  },
+}
 </script>
 
 <style scoped>

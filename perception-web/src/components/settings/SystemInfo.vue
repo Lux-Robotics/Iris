@@ -34,12 +34,7 @@
             <a href="https://github.com" target="_blank">https://example.com/updates</a>
           </div>
           <v-spacer />
-          <v-btn
-            class="text-none"
-            color="secondary"
-            text="Select Update .zip"
-            variant="tonal"
-          />
+          <v-btn class="text-none" color="secondary" text="Select Update .zip" variant="tonal" />
         </div>
       </template>
     </v-card>
@@ -47,61 +42,61 @@
 </template>
 
 <script lang="ts" setup>
-  import { onMounted, ref } from 'vue'
-  import { NetworkTablesTypeInfos } from 'ntcore-ts-client'
-  import { ntcore } from '@/nt-listener'
+import { onMounted, ref } from 'vue'
+import { NetworkTablesTypeInfos } from 'ntcore-ts-client'
+import { ntcore } from '@/nt-listener'
 
-  const hardwareInfo = ref('Unknown')
-  const version = ref('Unknown')
-  const commitHash = ref('Unknown')
-  const uptime = ref('00:00')
+const hardwareInfo = ref('Unknown')
+const version = ref('Unknown')
+const commitHash = ref('Unknown')
+const uptime = ref('00:00')
 
-  function formatTime (numSeconds: number) {
-    const days = Math.floor(numSeconds / 86400)
-    const hours = Math.floor((numSeconds % 86400) / 3600)
-    const minutes = Math.floor((numSeconds % 3600) / 60)
-    const seconds = numSeconds % 60
-    let result = ''
-    if (days > 0) {
-      result += days + ':'
-    }
-    if (days > 0 || hours > 0) {
-      result += (hours < 10 ? '0' : '') + hours + ':'
-    }
-    result += (minutes < 10 ? '0' : '') + minutes + ':'
-    result += (seconds < 10 ? '0' : '') + seconds
-    return result
+function formatTime(numSeconds: number) {
+  const days = Math.floor(numSeconds / 86400)
+  const hours = Math.floor((numSeconds % 86400) / 3600)
+  const minutes = Math.floor((numSeconds % 3600) / 60)
+  const seconds = numSeconds % 60
+  let result = ''
+  if (days > 0) {
+    result += days + ':'
   }
+  if (days > 0 || hours > 0) {
+    result += (hours < 10 ? '0' : '') + hours + ':'
+  }
+  result += (minutes < 10 ? '0' : '') + minutes + ':'
+  result += (seconds < 10 ? '0' : '') + seconds
+  return result
+}
 
-  onMounted(() => {
-    ntcore.createTopic<string>('hardwareInfo', NetworkTablesTypeInfos.kString).subscribe(
-      v => {
-        if (v !== null) {
-          hardwareInfo.value = v
-        }
+onMounted(() => {
+  ntcore.createTopic<string>('hardwareInfo', NetworkTablesTypeInfos.kString).subscribe(
+    v => {
+      if (v !== null) {
+        hardwareInfo.value = v
       }
-    )
-    ntcore.createTopic<string>('version', NetworkTablesTypeInfos.kString).subscribe(
-      v => {
-        if (v !== null) {
-          version.value = v
-        }
+    }
+  )
+  ntcore.createTopic<string>('version', NetworkTablesTypeInfos.kString).subscribe(
+    v => {
+      if (v !== null) {
+        version.value = v
       }
-    )
-    ntcore.createTopic<string>('gitCommitHash', NetworkTablesTypeInfos.kString).subscribe(
-      v => {
-        if (v !== null) {
-          commitHash.value = v
-        }
+    }
+  )
+  ntcore.createTopic<string>('gitCommitHash', NetworkTablesTypeInfos.kString).subscribe(
+    v => {
+      if (v !== null) {
+        commitHash.value = v
       }
-    )
-    ntcore.createTopic<number>('uptime', NetworkTablesTypeInfos.kInteger).subscribe(
-      v => {
-        if (v !== null) {
-          uptime.value = formatTime(v)
-        }
+    }
+  )
+  ntcore.createTopic<number>('uptime', NetworkTablesTypeInfos.kInteger).subscribe(
+    v => {
+      if (v !== null) {
+        uptime.value = formatTime(v)
       }
-    )
-  })
+    }
+  )
+})
 
 </script>

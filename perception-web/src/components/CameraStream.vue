@@ -1,46 +1,46 @@
 <script lang="ts" setup>
-  import { backendConnected, backendURI, ntcore } from '@/nt-listener'
-  import { NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
-  import { onMounted, ref } from 'vue'
+import { backendConnected, backendURI, ntcore } from '@/nt-listener'
+import { NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
+import { onMounted, ref } from 'vue'
 
-  const brightness = ref(0)
-  const exposure = ref(0)
-  const gain = ref(0)
-  const cameraOrientation = ref('Normal')
+const brightness = ref(0)
+const exposure = ref(0)
+const gain = ref(0)
+const cameraOrientation = ref('Normal')
 
-  const fps = ref(0)
-  const logoSrc = new URL('@/assets/loading.jpeg', import.meta.url).href
-  const streamSrcURL = 'http://' + backendURI + ':5801/stream.mjpg'
+const fps = ref(0)
+const logoSrc = new URL('@/assets/loading.jpeg', import.meta.url).href
+const streamSrcURL = 'http://' + backendURI + ':5801/stream.mjpg'
 
-  const streamSrc = computed<string>(() => {
-    return backendConnected.value ? streamSrcURL : logoSrc
-  })
+const streamSrc = computed<string>(() => {
+  return backendConnected.value ? streamSrcURL : logoSrc
+})
 
-  const fpsText = computed<string>(() => {
-    return backendConnected.value ? fps.value.toFixed(2) + ' FPS' : 'Disconnected'
-  })
+const fpsText = computed<string>(() => {
+  return backendConnected.value ? fps.value.toFixed(2) + ' FPS' : 'Disconnected'
+})
 
-  const fpsColor = computed<string>(() => {
-    if (!backendConnected.value) {
-      return 'red'
-    } else if (fps.value > 40) {
-      return 'green'
-    } else if (fps.value > 20) {
-      return 'yellow'
-    } else {
-      return 'red'
+const fpsColor = computed<string>(() => {
+  if (!backendConnected.value) {
+    return 'red'
+  } else if (fps.value > 40) {
+    return 'green'
+  } else if (fps.value > 20) {
+    return 'yellow'
+  } else {
+    return 'red'
+  }
+})
+
+onMounted(() => {
+  const fpsTopic: NetworkTablesTopic<number> = ntcore.createTopic('fps', NetworkTablesTypeInfos.kDouble)
+  fpsTopic.subscribe(v => {
+    if (v === null) {
+      v = 0
     }
-  })
-
-  onMounted(() => {
-    const fpsTopic: NetworkTablesTopic<number> = ntcore.createTopic('fps', NetworkTablesTypeInfos.kDouble)
-    fpsTopic.subscribe(v => {
-      if (v === null) {
-        v = 0
-      }
-      fps.value = v
-    }, true)
-  })
+    fps.value = v
+  }, true)
+})
 </script>
 
 <template>
@@ -59,76 +59,34 @@
     <v-card-text>
       <v-img :src="streamSrc" width="100%" />
 
-      <v-select
-        v-model="cameraOrientation"
-        class="mt-4"
-        :items="['Normal', '90°', '180°', '270°']"
-        label="Display Orientation"
-        variant="outlined"
-      />
+      <v-select v-model="cameraOrientation" class="mt-4" :items="['Normal', '90°', '180°', '270°']"
+        label="Display Orientation" variant="outlined" />
 
-      <v-slider
-        v-model="brightness"
-        hide-details
-        :max="288"
-        :min="1"
-        :step="1"
-      >
+      <v-slider v-model="brightness" hide-details :max="288" :min="1" :step="1">
         <template #label>
           <span class="slider-label">Brightness</span>
         </template>
         <template #append>
-          <v-text-field
-            v-model="brightness"
-            density="compact"
-            hide-details
-            style="width: 80px"
-            type="number"
-            variant="outlined"
-          />
+          <v-text-field v-model="brightness" density="compact" hide-details style="width: 80px" type="number"
+            variant="outlined" />
         </template>
       </v-slider>
-      <v-slider
-        v-model="exposure"
-        class="my-4"
-        hide-details
-        :max="910"
-        :min="4"
-        :step="1"
-      >
+      <v-slider v-model="exposure" class="my-4" hide-details :max="910" :min="4" :step="1">
         <template #label>
           <span class="slider-label">Exposure</span>
         </template>
         <template #append>
-          <v-text-field
-            v-model="exposure"
-            density="compact"
-            hide-details
-            style="width: 80px"
-            type="number"
-            variant="outlined"
-          />
+          <v-text-field v-model="exposure" density="compact" hide-details style="width: 80px" type="number"
+            variant="outlined" />
         </template>
       </v-slider>
-      <v-slider
-        v-model="gain"
-        hide-details
-        :max="248"
-        :min="16"
-        :step="1"
-      >
+      <v-slider v-model="gain" hide-details :max="248" :min="16" :step="1">
         <template #label>
           <span class="slider-label">Sensor Gain</span>
         </template>
         <template #append>
-          <v-text-field
-            v-model="gain"
-            density="compact"
-            hide-details
-            style="width: 80px"
-            type="number"
-            variant="outlined"
-          />
+          <v-text-field v-model="gain" density="compact" hide-details style="width: 80px" type="number"
+            variant="outlined" />
         </template>
       </v-slider>
     </v-card-text>
