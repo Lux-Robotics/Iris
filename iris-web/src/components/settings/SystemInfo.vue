@@ -37,9 +37,8 @@
           <v-btn
             class="text-none"
             color="primary"
-            elevation="2"
             text="Select Update .zip"
-            variant="tonal"
+            variant="flat"
           />
         </div>
       </template>

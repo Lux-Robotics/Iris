@@ -53,9 +53,8 @@
         <v-btn
           class="text-capitalize"
           color="primary"
-          elevation="2"
           text="Edit Hostname"
-          variant="tonal"
+          variant="flat"
         />
       </div>
       <v-divider class="my-4" />
@@ -69,11 +68,11 @@
           </span>
         </div>
         <v-btn
+          border
           class="text-capitalize"
           color="primary"
-          elevation="2"
           text="Edit IP configuration"
-          variant="tonal"
+          variant="flat"
         />
       </div>
     </template>

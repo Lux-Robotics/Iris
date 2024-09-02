@@ -44,7 +44,7 @@
 </script>
 
 <template>
-  <v-card elevation="12" min-width="400" rounded="lg">
+  <v-card border min-width="400">
     <template #title>
       <span class="font-weight-black">Camera</span>
     </template>
@@ -62,6 +62,7 @@
       <v-select
         v-model="cameraOrientation"
         class="mt-4"
+        color="secondary"
         :items="['Normal', '90°', '180°', '270°']"
         label="Display Orientation"
         variant="outlined"
@@ -69,6 +70,7 @@
 
       <v-slider
         v-model="brightness"
+        color="secondary"
         hide-details
         :max="288"
         :min="1"
@@ -80,6 +82,7 @@
         <template #append>
           <v-text-field
             v-model="brightness"
+            color="secondary"
             density="compact"
             hide-details
             style="width: 80px"
@@ -91,6 +94,7 @@
       <v-slider
         v-model="exposure"
         class="my-4"
+        color="secondary"
         hide-details
         :max="910"
         :min="4"
@@ -102,6 +106,7 @@
         <template #append>
           <v-text-field
             v-model="exposure"
+            color="secondary"
             density="compact"
             hide-details
             style="width: 80px"
@@ -112,6 +117,7 @@
       </v-slider>
       <v-slider
         v-model="gain"
+        color="secondary"
         hide-details
         :max="248"
         :min="16"
@@ -123,6 +129,7 @@
         <template #append>
           <v-text-field
             v-model="gain"
+            color="secondary"
             density="compact"
             hide-details
             style="width: 80px"
@@ -135,7 +142,7 @@
   </v-card>
 </template>
 
-<style>
+<style scoped>
 .slider-label {
   display: inline-block;
   width: 100px;

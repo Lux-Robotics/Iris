@@ -1,14 +1,26 @@
 <template>
-  <v-card elevation="12" min-width="400" rounded="lg">
+  <v-card border min-width="400">
     <template #title>
       <span class="font-weight-black">AprilTag Options</span>
     </template>
     <v-divider />
     <v-card-text>
-      <v-select :items="['AprilTag 3','Aruco']" label="Detector" variant="outlined" />
-      <v-select v-model="tagFamily" :items="tagFamilies" label="AprilTag Family" variant="outlined" />
+      <v-select
+        color="secondary"
+        :items="['AprilTag 3','Aruco']"
+        label="Detector"
+        variant="outlined"
+      />
+      <v-select
+        v-model="tagFamily"
+        color="secondary"
+        :items="tagFamilies"
+        label="AprilTag Family"
+        variant="outlined"
+      />
       <v-slider
         v-model="decimate"
+        color="secondary"
         hide-details
         :max="6"
         :min="1"
@@ -20,6 +32,7 @@
         <template #append>
           <v-text-field
             v-model="decimate"
+            color="secondary"
             density="compact"
             hide-details
             style="width: 80px"
@@ -31,6 +44,7 @@
       <v-slider
         v-model="blur"
         class="my-4"
+        color="secondary"
         hide-details
         :max="4"
         :step="0.1"
@@ -41,6 +55,7 @@
         <template #append>
           <v-text-field
             v-model="blur"
+            color="secondary"
             density="compact"
             hide-details
             style="width: 80px"
@@ -52,6 +67,7 @@
       <v-slider
         v-model="nThreads"
         class="my-4"
+        color="secondary"
         hide-details
         :max="8"
         :min="1"
@@ -63,6 +79,7 @@
         <template #append>
           <v-text-field
             v-model="nThreads"
+            color="secondary"
             density="compact"
             hide-details
             style="width: 80px"
@@ -71,7 +88,11 @@
           />
         </template>
       </v-slider>
-      <v-text-field label="Tag ID Filter" variant="outlined" />
+      <v-text-field
+        color="secondary"
+        label="Tag ID Filter"
+        variant="outlined"
+      />
     </v-card-text>
   </v-card>
 </template>

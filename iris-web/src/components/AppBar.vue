@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar density="compact">
+  <v-app-bar border color="surface" density="compact" elevation="0">
     <template #prepend>
       <v-app-bar-nav-icon @click="drawer = !drawer" />
       <v-icon icon="mdi-camera-iris" />
@@ -9,7 +9,7 @@
     <v-btn color="red" prepend-icon="mdi-restart">Restart Service</v-btn>
     <v-btn color="red" prepend-icon="mdi-power" variant="outlined">Restart Device</v-btn>
   </v-app-bar>
-  <v-navigation-drawer v-model="drawer" mobile-breakpoint="md" width="250">
+  <v-navigation-drawer v-model="drawer" color="background" mobile-breakpoint="md" width="250">
     <v-list>
       <v-list-item link prepend-icon="mdi-camera" title="Dashboard" to="/" />
       <v-list-item link prepend-icon="mdi-grid" title="Camera Calibration" to="/calibration" />
@@ -25,3 +25,10 @@
 
   const drawer = ref(null)
 </script>
+
+<style scoped>
+.v-list-item--active {
+  background-color: #5A4FCF !important; /* Your accent color */
+  color: white !important;
+}
+</style>
