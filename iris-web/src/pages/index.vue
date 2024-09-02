@@ -1,16 +1,13 @@
 <template>
   <div class="ma-2">
     <v-row dense>
-      <v-col cols="12" md="7">
+      <v-col cols="12" lg="7" md="12" xl="9">
         <CameraStream />
       </v-col>
-      <v-col cols="12" md="5">
+      <v-col cols="12" lg="5" md="12" xl="3">
         <v-row dense>
           <v-col cols="12">
             <AprilTagOptions />
-          </v-col>
-          <v-col cols="12">
-            <Graph />
           </v-col>
         </v-row>
       </v-col>

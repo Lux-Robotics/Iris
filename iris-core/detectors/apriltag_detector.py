@@ -14,6 +14,8 @@ def find_corners(image):
     # change corner order to match aruco
     result = []
     for detection in detections:
+        if detection.decision_margin < state.settings.apriltag3.decision_margin:
+            continue
         ordered_corners = np.vstack((detection.corners[2:], detection.corners[:2]))[
             ::-1
         ]

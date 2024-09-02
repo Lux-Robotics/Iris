@@ -50,6 +50,7 @@ refine_decode = false
 refine_pose = false
 debug = false
 quad_contours = true
+decision_margin = 35
 
 [logging]
 enabled = false
