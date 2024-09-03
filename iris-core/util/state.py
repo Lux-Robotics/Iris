@@ -2,6 +2,7 @@ import json
 import logging
 import subprocess
 
+import cv2
 import pyapriltags
 from dynaconf import Dynaconf
 from wpimath.geometry import *
@@ -69,12 +70,28 @@ else:
     gstreamer_pipeline = settings["camera"]["pipeline"]
 
 # not constants
-detector = pyapriltags.Detector(
+apriltag3_detector = pyapriltags.Detector(
     families=settings.apriltag3.families,
     nthreads=settings.apriltag3.threads,
     quad_decimate=settings.apriltag3.quad_decimate,
     refine_edges=settings.apriltag3.refine_edges,
 )
+
+aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_APRILTAG_36h11)
+
+aruco_detection_params = cv2.aruco.DetectorParameters()
+aruco_detection_params.useAruco3Detection = settings.aruco.aruco3
+aruco_detection_params.aprilTagQuadDecimate = settings.apriltag3.quad_decimate
+aruco_detection_params.cornerRefinementMethod = (
+    cv2.aruco.CORNER_REFINE_SUBPIX
+    if settings.aruco.corner_refinement
+    else cv2.aruco.CORNER_REFINE_NONE
+)
+aruco_detection_params.relativeCornerRefinmentWinSize = (
+    settings.aruco.relative_refinement_window
+)
+aruco_detection_params.cornerRefinementWinSize = settings.aruco.max_refinement_window
+
 detector_update_needed = False
 
 last_frame = None

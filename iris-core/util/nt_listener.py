@@ -56,6 +56,9 @@ class NTListener:
         )
 
         # apriltag settings
+        self.detector_sub, self.detector_pub = _add_attribute(
+            inst.getStringTopic("detector"), state.settings.detector
+        )
         self.family_sub, self.family_pub = _add_attribute(
             inst.getStringTopic("tagFamily"), state.settings.apriltag3.families
         )
@@ -70,6 +73,14 @@ class NTListener:
         )
 
         # TODO: switch to MultiSubscriber?
+        inst.addListener(
+            self.detector_sub,
+            ntcore.EventFlags.kValueAll,
+            lambda event: (
+                setattr(state.settings, "detector", event.data.value.getString()),
+                setattr(state, "detector_update_needed", True),
+            ),
+        )
         inst.addListener(
             self.family_sub,
             ntcore.EventFlags.kValueAll,

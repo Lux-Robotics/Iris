@@ -44,7 +44,7 @@
 </script>
 
 <template>
-  <v-card border min-width="400">
+  <v-card border min-width="300">
     <template #title>
       <span class="font-weight-black">Camera</span>
     </template>

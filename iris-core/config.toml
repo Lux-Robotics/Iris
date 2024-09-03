@@ -34,7 +34,7 @@ decimate = 1
 # Use newer aruco3 algorithm
 aruco3 = false
 # none, subpix
-corner_refinement = "subpix"
+corner_refinement = true
 # Corner refinement window size for subpix
 relative_refinement_window = 1
 max_refinement_window = 5

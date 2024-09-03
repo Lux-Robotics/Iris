@@ -5,6 +5,9 @@ import time
 
 import pyapriltags
 
+import detectors.apriltag_detector
+import detectors.aruco_detector
+
 import output.foxglove_logger as out
 import output.foxglove_server
 import output.http_stream
@@ -35,14 +38,6 @@ if settings.logging.enabled:
 
 # make sure logging thread has started
 time.sleep(0.2)
-
-# Import apriltag detector
-try:
-    module = __import__("detectors." + settings.detector + "_detector", fromlist=[""])
-    find_corners = getattr(module, "find_corners")
-except ImportError:
-    logger.error("The specified detector does not exist")
-    sys.exit()
 
 
 # Initialize video capture
@@ -138,9 +133,13 @@ while True:
             break
 
     if settings.detector == "aruco":
-        detections = find_corners(frame)
+        detections = detectors.aruco_detector.find_corners(frame)
+    elif settings.detector == "apriltag":
+        detections = detectors.apriltag_detector.find_corners(
+            cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        )
     else:
-        detections = find_corners(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
+        detections = []
 
     filtered_detections, ignored_detections = filter_tags(detections)
 
@@ -181,14 +180,22 @@ while True:
     nt_listener.update_data(new_frame_time)
 
     if state.detector_update_needed:
-        state.detector = pyapriltags.Detector(
-            families=settings.apriltag3.families,
-            nthreads=settings.apriltag3.threads,
-            quad_decimate=settings.apriltag3.quad_decimate,
-            quad_sigma=settings.apriltag3.quad_sigma,
-            refine_edges=settings.apriltag3.refine_edges,
-        )
-        logger.info("Detector updated: " + str(state.detector.params))
+        if settings.detector == "apriltag":
+            state.apriltag3_detector = pyapriltags.Detector(
+                families=settings.apriltag3.families,
+                nthreads=settings.apriltag3.threads,
+                quad_decimate=settings.apriltag3.quad_decimate,
+                quad_sigma=settings.apriltag3.quad_sigma,
+                refine_edges=settings.apriltag3.refine_edges,
+            )
+            logger.info("Detector updated: " + str(state.apriltag3_detector.params))
+
+        elif settings.detector == "aruco":  # Aruco
+            state.aruco_detection_params.aprilTagQuadDecimate = (
+                settings.apriltag3.quad_decimate
+            )
+            logger.info("Detector updated: " + str(state.aruco_detection_params))
+
         state.detector_update_needed = False
 
     (

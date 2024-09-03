@@ -7,7 +7,7 @@ from util.vision_types import TagObservation
 
 def find_corners(image):
     # Detect AprilTags in the image
-    detections = state.detector.detect(image)
+    detections = state.apriltag3_detector.detect(image)
     if len(detections) == 0:
         return []
 

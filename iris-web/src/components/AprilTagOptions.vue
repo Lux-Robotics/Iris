@@ -1,19 +1,22 @@
 <template>
-  <v-card border min-width="400">
+  <v-card border min-width="300">
     <template #title>
       <span class="font-weight-black">AprilTag Options</span>
     </template>
     <v-divider />
     <v-card-text>
       <v-select
+        v-model="detector"
         color="secondary"
-        :items="['AprilTag 3','Aruco']"
+        item-props
+        :items="detectors"
         label="Detector"
         variant="outlined"
       />
       <v-select
         v-model="tagFamily"
         color="secondary"
+        item-props
         :items="tagFamilies"
         label="AprilTag Family"
         variant="outlined"
@@ -102,23 +105,59 @@
   import { NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
   import { onMounted, ref, watch } from 'vue'
 
-  const tagFamilies = ['tag36h11', 'tag25h9', 'tag16h5']
+  const detectors = [
+    {
+      title: 'AprilTag 3',
+      value: 'apriltag',
+      subtitle: 'More accurate corners, lower framerate',
+    },
+    {
+      title: 'Aruco',
+      value: 'aruco',
+      subtitle: 'Less accurate corners, higher framerate',
+    },
+    {
+      title: 'Disabled',
+      value: 'disabled',
+      subtitle: 'Disable AprilTag detection',
+    },
+  ]
+  const tagFamilies = [
+    {
+      title: 'tag36h11',
+      subtitle: 'Used in FRC 2024 and later',
+    },
+    'tag25h9',
+    {
+      title: 'tag16h5',
+      subtitle: 'Used in FRC 2023',
+    },
+  ]
 
   const decimate = ref(1.0)
   const blur = ref(0.0)
   const nThreads = ref(1)
   const tagFamily = ref()
+  const detector = ref()
 
   const decimateRef = ref(1.0)
   const blurRef = ref(0.0)
   const nThreadsRef = ref(1)
   const tagFamilyRef = ref()
+  const detectorRef = ref()
 
   onMounted(() => {
     const threadsTopic: NetworkTablesTopic<number> = ntcore.createTopic('threads', NetworkTablesTypeInfos.kInteger)
     const blurTopic: NetworkTablesTopic<number> = ntcore.createTopic('blur', NetworkTablesTypeInfos.kDouble)
     const decimateTopic: NetworkTablesTopic<number> = ntcore.createTopic('decimate', NetworkTablesTypeInfos.kDouble)
     const apriltagFamilyTopic: NetworkTablesTopic<string> = ntcore.createTopic('tagFamily', NetworkTablesTypeInfos.kString)
+    const detectorTopic: NetworkTablesTopic<string> = ntcore.createTopic('detector', NetworkTablesTypeInfos.kString)
+
+    watch(detector, async newDetector => {
+      detectorRef.value = newDetector
+      detectorTopic.publish()
+      detectorTopic.setValue(newDetector)
+    })
 
     watch(nThreads, async newNThreads => {
       nThreadsRef.value = newNThreads
@@ -143,6 +182,13 @@
       apriltagFamilyTopic.publish()
       apriltagFamilyTopic.setValue(newTagFamily)
     })
+
+    detectorTopic.subscribe(v => {
+      if (v !== null && detectorRef.value !== v) {
+        detector.value = v
+        detectorRef.value = v
+      }
+    }, true)
 
     threadsTopic.subscribe(v => {
       if (v !== null && nThreadsRef.value !== v) {
