@@ -96,9 +96,7 @@ async def main():
         async def on_unsubscribe(self, server: FoxgloveServer, channel_id: ChannelId):
             print("Last client unsubscribed from", channel_id)
 
-    async with FoxgloveServer(
-        "0.0.0.0", 8765, "Peninsula Perception", logger=logger
-    ) as server:
+    async with FoxgloveServer("0.0.0.0", 8765, "Iris", logger=logger) as server:
         server.set_listener(Listener())
         ambiguity_pose_pub = await server.add_channel(
             {

@@ -10,10 +10,10 @@ from google.protobuf.duration_pb2 import Duration
 from mcap_protobuf.writer import Writer
 
 from output.foxglove_utils import timestamp
-from util.vision_types import Pose as PerceptionPose
+from util.vision_types import Pose as IrisPose
 
 
-def get_pose(now: int, pose: PerceptionPose, frame_id: str) -> FrameTransform:
+def get_pose(now: int, pose: IrisPose, frame_id: str) -> FrameTransform:
     object_pose = pose.get_object_pose()
     position = Vector3(
         x=object_pose.translation().X(),
@@ -35,7 +35,7 @@ def get_pose(now: int, pose: PerceptionPose, frame_id: str) -> FrameTransform:
     )
 
 
-def write_pose(now: int, pose: PerceptionPose, frame_id: str, writer: Writer) -> None:
+def write_pose(now: int, pose: IrisPose, frame_id: str, writer: Writer) -> None:
     writer.write_message(
         topic="/" + frame_id + "/pose",
         log_time=now,

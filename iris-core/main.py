@@ -16,12 +16,11 @@ import output.foxglove_logger as out
 import output.foxglove_server
 import output.http_stream
 from util.filter_tags import filter_tags
-from util.nt_interface import NTInterface
-from util.nt_listener import NTListener
+from util.nt_interface import NTInterface, NTListener
 from util.pose_estimator import *
 from util.state import settings, logger, exec_dir
 
-parser = argparse.ArgumentParser("peninsula_perception")
+parser = argparse.ArgumentParser("iris")
 parser.add_argument(
     "--mode", help="Toggle for operation modes", type=int, default=0, required=False
 )
