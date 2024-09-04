@@ -1,13 +1,9 @@
-pyapriltags
-vidgear
-uvicorn
-starlette
-simplejpeg
-numpy
+numpy>=1.0.0,<2.0.0
 opencv-contrib-python
 flask
 robotpy-wpimath
 pyntcore
+robotpy-cscore
 dynaconf
 
 mcap

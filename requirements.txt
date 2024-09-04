@@ -1,9 +1,4 @@
-pyapriltags
-vidgear
-uvicorn
-starlette
-simplejpeg
-numpy
+numpy>=1.0.0,<2.0.0
 flask
 dynaconf
 
