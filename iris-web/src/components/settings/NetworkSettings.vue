@@ -11,6 +11,7 @@
         density="compact"
         :rules="rules"
         variant="outlined"
+        @blur="robotServerIP = robotServerIPRef"
         @input="validate"
       >
         <template #append-inner>
@@ -55,8 +56,33 @@
           color="primary"
           text="Edit Hostname"
           variant="flat"
+          @click="hostnameDialog = true"
         />
       </div>
+      <v-dialog
+        v-model="hostnameDialog"
+        opacity="15%"
+        width="auto"
+      >
+        <v-card
+          max-width="300"
+          min-width="300"
+          prepend-icon="mdi-router-network"
+          title="Update Hostname"
+        >
+          <template #default>
+            <v-text-field class="mx-6" label="New hostname" suffix=".local" variant="underlined" />
+          </template>
+          <template #actions>
+            <v-btn class="text-none" color="error" @click="hostnameDialog = false">
+              Cancel
+            </v-btn>
+            <v-btn class="text-none" color="primary" variant="flat" @click="hostnameDialog = false">
+              Save
+            </v-btn>
+          </template>
+        </v-card>
+      </v-dialog>
       <v-divider class="my-4" />
       <div class="edit-settings">
         <div>
@@ -73,14 +99,65 @@
           color="primary"
           text="Edit IP configuration"
           variant="flat"
+          @click="IPDialog = true"
         />
       </div>
+      <v-dialog
+        v-model="IPDialog"
+        opacity="15%"
+        width="auto"
+      >
+        <v-card
+          max-width="300"
+          min-width="300"
+          prepend-icon="mdi-router-network"
+          title="Update IP Configuration"
+        >
+          <template #default>
+            <v-select
+              v-model="ipAssignmentMethod"
+              class="mx-6"
+              :items="[{title: 'DHCP', value: 'dhcp'}, {title: 'Static', value: 'static'}, {title: 'Static (Advanced)', value: 'static-advanced'}]"
+              label="IP Assignment Mode"
+              variant="underlined"
+            />
+            <v-text-field
+              class="mx-6"
+              :disabled="ipAssignmentMethod === 'dhcp'"
+              label="IP address"
+              :prefix="ipPrefix"
+              variant="underlined"
+            />
+            <v-text-field
+              v-if="ipAssignmentMethod === 'static-advanced'"
+              class="mx-6"
+              label="Gateway"
+              :prefix="ipPrefix"
+              variant="underlined"
+            />
+            <v-text-field
+              v-if="ipAssignmentMethod === 'static-advanced'"
+              class="mx-6"
+              label="Subnet mask"
+              variant="underlined"
+            />
+          </template>
+          <template #actions>
+            <v-btn class="text-none" color="error" @click="IPDialog = false">
+              Cancel
+            </v-btn>
+            <v-btn class="text-none" color="primary" variant="flat" @click="IPDialog = false">
+              Save
+            </v-btn>
+          </template>
+        </v-card>
+      </v-dialog>
     </template>
   </v-card>
 </template>
 
 <script lang="ts" setup>
-  import { onMounted, ref } from 'vue'
+  import { computed, onMounted, ref } from 'vue'
   import { NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
   import { backendConnected, ntcore } from '@/nt-listener'
 
@@ -89,6 +166,21 @@
   const ipValid = ref(false)
 
   const robotServerIPTopic: NetworkTablesTopic<number> = ntcore.createTopic('teamNumber', NetworkTablesTypeInfos.kInteger)
+
+  const hostnameDialog = ref(false)
+  const IPDialog = ref(false)
+
+  const ipAssignmentMethod = ref('dhcp')
+
+  const ipPrefix = computed<string>(() => {
+    const teamNum = parseInt(robotServerIPRef.value, 10)
+    if (isNaN(teamNum)) {
+      return ''
+    }
+    const p1 = Math.floor(teamNum / 100)
+    const p2 = teamNum % 100
+    return `10.${p1}.${p2}.`
+  })
 
   const updateServerIP = () => {
     if (backendConnected.value) {
