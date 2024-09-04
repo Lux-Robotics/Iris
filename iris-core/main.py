@@ -19,7 +19,7 @@ from util.filter_tags import filter_tags
 from util.nt_interface import NTInterface
 from util.nt_listener import NTListener
 from util.pose_estimator import *
-from util.state import settings, logger
+from util.state import settings, logger, exec_dir
 
 parser = argparse.ArgumentParser("peninsula_perception")
 parser.add_argument(
@@ -58,9 +58,9 @@ def init_camera():
             logger.error("Program mode invalid")
             sys.exit()
     elif args.mode == 1:
-        camera = cv2.VideoCapture(settings.test_video)
+        camera = cv2.VideoCapture(os.path.join(exec_dir, settings.test_video))
     elif args.mode == 2:
-        camera = cv2.VideoCapture(settings.test_video)
+        camera = cv2.VideoCapture(os.path.join(exec_dir, settings.test_video))
     else:
         # Mode parameter not valid
         logger.error("Program mode invalid")

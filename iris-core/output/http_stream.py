@@ -11,7 +11,7 @@ def start():
     global mjpeg_server
     resx, resy = settings.http_stream.max_res
     camera.setResolution(resx, resy)
-    mjpeg_server = cscore.MjpegServer("httpserver", 5801)
+    mjpeg_server = cscore.MjpegServer("httpserver", 1180)
     mjpeg_server.setSource(camera)
     state.logger.info("Started Camera Stream")
 

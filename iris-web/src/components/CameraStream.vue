@@ -10,7 +10,7 @@
 
   const fps = ref(0)
   const logoSrc = new URL('@/assets/loading.jpeg', import.meta.url).href
-  const streamSrcURL = 'http://' + backendURI + ':5801/stream.mjpg'
+  const streamSrcURL = 'http://' + backendURI + ':1180/stream.mjpg'
 
   const streamSrc = computed<string>(() => {
     return backendConnected.value ? streamSrcURL : logoSrc
