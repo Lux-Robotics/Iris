@@ -14,16 +14,21 @@
       <v-list-item link prepend-icon="mdi-camera" title="Dashboard" to="/" />
       <v-list-item link prepend-icon="mdi-grid" title="Camera Calibration" to="/calibration" />
       <v-list-item link prepend-icon="mdi-file" title="Logs" to="/logs" />
-      <v-list-item link prepend-icon="mdi-book-open" title="Documentation" to="/docs" />
+      <!--      <v-list-item link prepend-icon="mdi-book-open" title="Documentation" to="/docs" />-->
       <v-list-item link prepend-icon="mdi-cog" title="Settings" to="/settings" />
     </v-list>
   </v-navigation-drawer>
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue'
+  import { onMounted, ref } from 'vue'
+  import { useDisplay } from 'vuetify'
 
-  const drawer = ref(null)
+  const drawer = ref(false)
+
+  onMounted(() => {
+    drawer.value = useDisplay().mdAndUp.value
+  })
 </script>
 
 <style scoped>

@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import subprocess
 
 import cv2
@@ -8,6 +9,8 @@ from dynaconf import Dynaconf
 from wpimath.geometry import *
 
 from util.vision_types import TagCoordinates
+
+exec_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 logging.basicConfig(
     level="INFO",
@@ -21,7 +24,7 @@ logger.info("Logger initialized")
 
 def load_calibration(settings):
     """Hook to load calibration data into settings."""
-    with open(settings.camera.calibration_file, "r") as c:
+    with open(os.path.join(exec_dir, settings.camera.calibration_file), "r") as c:
         calibration = json.load(c)
     return {"calibration": calibration}
 
@@ -113,7 +116,7 @@ robot_last_enabled = False
 # Define apriltag locations
 apriltag_size = 0.1651  # 36h11
 
-m = open(settings.map, "r")
+m = open(os.path.join(exec_dir, settings.map), "r")
 tags = json.load(m)["tags"]
 m.close()
 

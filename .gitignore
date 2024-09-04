@@ -173,6 +173,8 @@ __pycache__
 *.mcap
 profiler.out
 
+networktables.json
+
 # rust
 # Compiled files
 /target/

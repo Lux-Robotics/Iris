@@ -1,7 +1,11 @@
 import argparse
 import sys
+import os
 import threading
 import time
+
+# Add parent directory to path for module imports
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 import pyapriltags
 
