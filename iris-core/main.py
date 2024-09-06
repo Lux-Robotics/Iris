@@ -210,7 +210,7 @@ while True:
     ) = (frame, filtered_detections, ignored_detections, poses, new_frame_time)
     state.new_data = True
 
-    if not settings.logging.enabled and not settings.foxglove_server.enabled:
+    if args.mode == 2:
         logger.info("FPS:" + str(state.fps))
 
     if settings.http_stream.enabled:

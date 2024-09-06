@@ -7,6 +7,8 @@ from util.vision_types import Pose, TagObservation
 import ntcore
 from ntcore import Topic, Publisher, Subscriber, NetworkTableInstance
 
+import util.v4l2_ctrls
+
 import util.state as state
 
 
@@ -139,13 +141,13 @@ class NTListener:
 
         # camera settings
         self.brightness_sub, self.brightness_pub = _add_attribute(
-            inst.getDoubleTopic("brightness"), state.settings.camera.brightness
+            inst.getIntegerTopic("brightness"), state.settings.camera.brightness
         )
         self.exposure_sub, self.exposure_pub = _add_attribute(
-            inst.getDoubleTopic("exposure"), state.settings.camera.exposure
+            inst.getIntegerTopic("exposure"), state.settings.camera.exposure
         )
         self.gain_sub, self.gain_pub = _add_attribute(
-            inst.getDoubleTopic("gain"), state.settings.camera.gain
+            inst.getIntegerTopic("gain"), state.settings.camera.gain
         )
 
         # apriltag settings
@@ -222,6 +224,21 @@ class NTListener:
             self.team_sub,
             ntcore.EventFlags.kValueAll,
             update_server_address,
+        )
+
+        inst.addListener(
+            self.gain_sub, ntcore.EventFlags.kValueAll, util.v4l2_ctrls.update_gain
+        )
+
+        inst.addListener(
+            self.brightness_sub,
+            ntcore.EventFlags.kValueAll,
+            util.v4l2_ctrls.update_brightness,
+        )
+        inst.addListener(
+            self.exposure_sub,
+            ntcore.EventFlags.kValueAll,
+            util.v4l2_ctrls.update_exposure,
         )
 
     # TODO: add timestamps, latency

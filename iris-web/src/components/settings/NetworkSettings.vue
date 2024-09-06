@@ -48,7 +48,7 @@
           <span>
             Iris is using the hostname "iris.local". This will be the camera name sent to the robot
             and
-            you can access this dashboard at "http://iris.local:5800"
+            you can access this dashboard at "http://iris.local"
           </span>
         </div>
         <v-btn
@@ -68,10 +68,17 @@
           max-width="300"
           min-width="300"
           prepend-icon="mdi-router-network"
-          title="Update Hostname"
+          subtitle="Applied after device restart"
+          title="Hostname"
         >
           <template #default>
-            <v-text-field class="mx-6" label="New hostname" suffix=".local" variant="underlined" />
+            <v-text-field
+              class="mx-6"
+              label="New hostname"
+              placeholder="iris"
+              suffix=".local"
+              variant="underlined"
+            />
           </template>
           <template #actions>
             <v-btn class="text-none" color="error" @click="hostnameDialog = false">
@@ -94,7 +101,6 @@
           </span>
         </div>
         <v-btn
-          border
           class="text-capitalize"
           color="primary"
           text="Edit IP configuration"
@@ -111,6 +117,7 @@
           max-width="300"
           min-width="300"
           prepend-icon="mdi-router-network"
+          subtitle="Applied after device restart"
           title="Update IP Configuration"
         >
           <template #default>
