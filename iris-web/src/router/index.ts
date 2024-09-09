@@ -9,8 +9,9 @@ import index from '@/pages/index.vue'
 import logs from '@/pages/logs.vue'
 import docs from '@/pages/docs.vue'
 import settings from '@/pages/settings.vue'
+import { createWebHashHistory } from 'vue-router'
 // Composables
-import { createRouter, createWebHistory } from 'vue-router/auto'
+import { createRouter } from 'vue-router/auto'
 import { setupLayouts } from 'virtual:generated-layouts'
 
 const routes = [
@@ -22,7 +23,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(),
   routes: setupLayouts(routes),
 })
 
