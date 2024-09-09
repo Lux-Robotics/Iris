@@ -48,7 +48,7 @@ time.sleep(0.2)
 def init_camera():
     if args.mode == 0:
         if settings.capture == "opencv":
-            camera = cv2.VideoCapture(0)
+            camera = cv2.VideoCapture(11)
             # camera.set(cv2.CAP_PROP_FRAME_WIDTH, resx)
             # camera.set(cv2.CAP_PROP_FRAME_HEIGHT, state.resy)
         elif settings.capture == "gstreamer":
@@ -84,7 +84,9 @@ nt_listener = NTListener()
 
 prev_frame_time = 0
 
-foxglove_server_thread = threading.Thread(target=output.foxglove_server.start, daemon=True)
+foxglove_server_thread = threading.Thread(
+    target=output.foxglove_server.start, daemon=True
+)
 if settings.foxglove_server.enabled:
     foxglove_server_thread.start()
 

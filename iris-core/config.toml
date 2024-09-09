@@ -64,7 +64,7 @@ enabled = true
 # jpeg encoding quality (0-100)
 quality = 90
 # Maximum stream resolution (integer downscaled)
-max_res = [960, 540]
+max_res = [640, 400]
 
 [foxglove_server]
 enabled = false
