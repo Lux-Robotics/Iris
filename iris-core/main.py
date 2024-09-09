@@ -12,8 +12,9 @@ import pyapriltags
 import detectors.apriltag_detector
 import detectors.aruco_detector
 
-import output.foxglove_logger as out
+import output.foxglove_logger
 import output.foxglove_server
+import output.web_server
 import output.http_stream
 from util.filter_tags import filter_tags
 from util.nt_interface import NTInterface, NTListener
@@ -34,7 +35,7 @@ if args.mode == 2:
     settings.foxglove_server.enabled = False
     settings.use_networktables = False
 
-logging_thread = threading.Thread(target=out.start)
+logging_thread = threading.Thread(target=output.foxglove_logger.start)
 if settings.logging.enabled:
     logging_thread.daemon = True
     logging_thread.start()
@@ -83,13 +84,14 @@ nt_listener = NTListener()
 
 prev_frame_time = 0
 
-foxglove_server_thread = threading.Thread(target=output.foxglove_server.start)
+foxglove_server_thread = threading.Thread(target=output.foxglove_server.start, daemon=True)
 if settings.foxglove_server.enabled:
-    foxglove_server_thread.daemon = True
     foxglove_server_thread.start()
 
+web_server_thread = threading.Thread(target=output.web_server.start, daemon=True)
 if settings.http_stream.enabled:
     output.http_stream.start()
+    web_server_thread.start()
 
 while True:
     # read data from networktables
