@@ -1,11 +1,15 @@
 numpy>=1.0.0,<2.0.0
-flask
-dynaconf
+fastapi~=0.114.0
+uvicorn~=0.30.6
+dynaconf~=3.2.6
 
 mcap
 protobuf3
-mcap-protobuf-support
+mcap-protobuf-support~=0.5.1
 foxglove-schemas-protobuf
 foxglove-websocket
-typing
-asyncio
+typing~=3.7.4.3
+asyncio~=3.4.3
+
+argparse~=1.4.0
+protobuf~=5.28.0
