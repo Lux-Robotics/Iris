@@ -32,17 +32,22 @@ def load_calibration(settings):
 def get_git_info():
     try:
         # Run the git command to get the latest tag description
-        result = subprocess.run(
+        tag_result = subprocess.run(
             ["git", "describe", "--tags"],
             check=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
         )
-        description = result.stdout.strip()
-        parts = description.split("-")
-        last_tagged_version = parts[0]
-        current_commit = parts[2][1:]  # Remove the 'g' prefix
+        description = tag_result.stdout.strip()
+        last_tagged_version = description.split("-")[0]
+        hash_result = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        current_commit = hash_result.stdout.strip()
 
         return last_tagged_version, current_commit
 
