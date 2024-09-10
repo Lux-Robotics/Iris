@@ -74,21 +74,29 @@
   }
 
   onMounted(() => {
-    ntcore.createTopic<string>('hardwareInfo', NetworkTablesTypeInfos.kString).subscribe(
+    const hardwareInfoTopic = ntcore.createTopic<string>('hardwareInfo', NetworkTablesTypeInfos.kString)
+    const versionTopic = ntcore.createTopic<string>('version', NetworkTablesTypeInfos.kString)
+    const commitHashTopic = ntcore.createTopic<string>('gitCommitHash', NetworkTablesTypeInfos.kString)
+
+    hardwareInfo.value = hardwareInfoTopic.getValue() ?? 'Unknown'
+    version.value = versionTopic.getValue() ?? 'Unknown'
+    commitHash.value = commitHashTopic.getValue() ?? 'Unknown'
+
+    hardwareInfoTopic.subscribe(
       v => {
         if (v !== null) {
           hardwareInfo.value = v
         }
       }
     )
-    ntcore.createTopic<string>('version', NetworkTablesTypeInfos.kString).subscribe(
+    versionTopic.subscribe(
       v => {
         if (v !== null) {
           version.value = v
         }
       }
     )
-    ntcore.createTopic<string>('gitCommitHash', NetworkTablesTypeInfos.kString).subscribe(
+    commitHashTopic.subscribe(
       v => {
         if (v !== null) {
           commitHash.value = v
