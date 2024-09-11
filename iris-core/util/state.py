@@ -1,3 +1,4 @@
+import enum
 import json
 import logging
 import os
@@ -5,10 +6,17 @@ import subprocess
 
 import cv2
 import pyapriltags
-from dynaconf import Dynaconf
+from dynaconf import Dynaconf, loaders
+from dynaconf.utils.boxing import DynaBox
 from wpimath.geometry import *
 
 from util.vision_types import TagCoordinates
+
+
+class Platform(enum.Enum):
+    IRIS = 1
+    DEV = 2
+
 
 exec_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -58,13 +66,31 @@ def get_git_info():
         return "Unknown", "Unknown"
 
 
+def get_platform():
+    kernel_release = subprocess.run(
+        ["uname", "-s"], capture_output=True, text=True
+    ).stdout.strip()
+    return Platform.IRIS if "rk2312" in kernel_release else Platform.DEV
+
+
+def get_device_id():
+    return subprocess.run(["hostname"], capture_output=True, text=True).stdout.strip()
+
+
+if os.path.exists(os.path.join(exec_dir, "config.toml")):
+    config_path = "config.toml"
+else:
+    config_path = "default_config.toml"
+
 settings = Dynaconf(
     envvar_prefix="DYNACONF",
-    settings_files=["config.toml"],
+    settings_files=[config_path],
     post_hooks=[load_calibration],
 )
 
 version, git_hash = get_git_info()
+platform: Platform = get_platform()
+device_id: str = get_device_id()
 
 logger.info("Load Configuration Successful")
 
@@ -157,7 +183,6 @@ def get_server_ip():
     )
 
 
-# TODO: remove
 # condense config variables into a json
 def is_serializable(v):
     try:
@@ -194,4 +219,19 @@ def to_json():
     return json.dumps(module_vars, indent=4)
 
 
+def save_settings():
+    log_exclude = ["CALIBRATION"]
+
+    out = {
+        k.lower(): v
+        for k, v in settings.as_dict().items()
+        if k not in log_exclude
+        and not k.startswith("__")
+        and not callable(v)
+        and is_serializable(v)
+    }
+    loaders.write(os.path.join(exec_dir, "config.toml"), DynaBox(out).to_dict())
+
+
 config_json = to_json()
+save_settings()

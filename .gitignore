@@ -172,6 +172,7 @@ __pycache__
 *.rrd
 *.mcap
 profiler.out
+/iris-core/config.toml
 
 networktables.json
 

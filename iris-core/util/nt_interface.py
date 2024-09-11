@@ -2,13 +2,12 @@ import math
 import time
 from typing import List
 
-from util.state import settings
+from util.state import save_settings
 from util.vision_types import Pose, TagObservation
 import ntcore
 from ntcore import Topic, Publisher, Subscriber, NetworkTableInstance
 
 import util.v4l2_ctrls
-
 import util.state as state
 
 
@@ -26,6 +25,7 @@ def update_server_address(event):
     state.settings.team_number = team_number
     NetworkTableInstance.getDefault().setServer(state.get_server_ip())
     state.logger.info("Set server to '" + state.get_server_ip() + "'")
+    state.save_settings()
 
 
 class NTInterface:
@@ -34,7 +34,7 @@ class NTInterface:
         inst = NetworkTableInstance.getDefault()
         inst.setServer(ip)
         inst.startClient4("Iris")
-        self.output_table = inst.getTable("/Iris/" + settings.device_id)
+        self.output_table = inst.getTable("/Iris/" + state.device_id)
         _, self.observations0_pub = _add_attribute(
             self.output_table.getDoubleArrayTopic("observations0"), []
         )
@@ -174,6 +174,7 @@ class NTListener:
             lambda event: (
                 setattr(state.settings, "detector", event.data.value.getString()),
                 setattr(state, "detector_update_needed", True),
+                save_settings(),
             ),
         )
         inst.addListener(
@@ -184,6 +185,7 @@ class NTListener:
                     state.settings.apriltag3, "families", event.data.value.getString()
                 ),
                 setattr(state, "detector_update_needed", True),
+                save_settings(),
             ),
         )
         inst.addListener(
@@ -196,6 +198,7 @@ class NTListener:
                     event.data.value.getDouble(),
                 ),
                 setattr(state, "detector_update_needed", True),
+                save_settings(),
             ),
         )
         inst.addListener(
@@ -208,6 +211,7 @@ class NTListener:
                     event.data.value.getDouble(),
                 ),
                 setattr(state, "detector_update_needed", True),
+                save_settings(),
             ),
         )
         inst.addListener(
@@ -218,6 +222,7 @@ class NTListener:
                     state.settings.apriltag3, "threads", event.data.value.getInteger()
                 ),
                 setattr(state, "detector_update_needed", True),
+                save_settings(),
             ),
         )
         inst.addListener(

@@ -19,7 +19,7 @@ import output.http_stream
 from util.filter_tags import filter_tags
 from util.nt_interface import NTInterface, NTListener
 from util.pose_estimator import *
-from util.state import settings, logger, exec_dir
+from util.state import settings, logger, exec_dir, Platform
 
 parser = argparse.ArgumentParser("iris")
 parser.add_argument(
@@ -47,26 +47,26 @@ time.sleep(0.2)
 # Initialize video capture
 def init_camera():
     if args.mode == 0:
-        if settings.capture == "opencv":
-            camera = cv2.VideoCapture(11)
+        if state.platform == Platform.IRIS:
+            return cv2.VideoCapture(11)
+        elif state.platform == Platform.DEV:
+            return cv2.VideoCapture(0)
             # camera.set(cv2.CAP_PROP_FRAME_WIDTH, resx)
             # camera.set(cv2.CAP_PROP_FRAME_HEIGHT, state.resy)
         elif settings.capture == "gstreamer":
-            camera = cv2.VideoCapture(state.gstreamer_pipeline, cv2.CAP_GSTREAMER)
+            return cv2.VideoCapture(state.gstreamer_pipeline, cv2.CAP_GSTREAMER)
         else:
             # Mode parameter not valid
             logger.error("Program mode invalid")
             sys.exit()
     elif args.mode == 1:
-        camera = cv2.VideoCapture(os.path.join(exec_dir, settings.test_video))
+        return cv2.VideoCapture(os.path.join(exec_dir, settings.test_video))
     elif args.mode == 2:
-        camera = cv2.VideoCapture(os.path.join(exec_dir, settings.test_video))
+        return cv2.VideoCapture(os.path.join(exec_dir, settings.test_video))
     else:
         # Mode parameter not valid
         logger.error("Program mode invalid")
         sys.exit()
-
-    return camera
 
 
 try:

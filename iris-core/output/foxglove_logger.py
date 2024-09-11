@@ -62,7 +62,7 @@ def main(log_dir: str):
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
 
-    log_name = generate_filename(log_dir, "log-" + settings.device_id + "-")
+    log_name = generate_filename(log_dir, "log-" + state.device_id + "-")
 
     with open(os.path.join(log_dir, log_name), "wb") as f, Writer(f) as writer:
         # check if disk is too full

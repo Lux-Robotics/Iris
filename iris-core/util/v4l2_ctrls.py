@@ -2,6 +2,7 @@ import subprocess
 
 from ntcore import Event
 
+import util.state
 from util.state import logger, settings
 
 device_path = "/dev/v4l-subdev2"
@@ -19,6 +20,7 @@ def change_ctrl(ctrl: str, value: int):
             ],
             stderr=subprocess.STDOUT,
         )
+        util.state.save_settings()
 
     except Exception as e:
         logger.error(e)
