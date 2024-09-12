@@ -9,7 +9,12 @@ declare module 'vue' {
   export interface GlobalComponents {
     AppBar: typeof import('./components/AppBar.vue')['default']
     AprilTagOptions: typeof import('./components/AprilTagOptions.vue')['default']
+    Calibrate: typeof import('./components/calibration/Calibrate.vue')['default']
+    CameraCard: typeof import('./components/dashboard/CameraCard.vue')['default']
+    CameraOptions: typeof import('./components/CameraOptions.vue')['default']
     CameraStream: typeof import('./components/CameraStream.vue')['default']
+    CameraTile: typeof import('./components/dashboard/CameraTile.vue')['default']
+    CameraWidget: typeof import('./components/dashboard/CameraWidget.vue')['default']
     Graph: typeof import('./components/Graph.vue')['default']
     NetworkSettings: typeof import('./components/settings/NetworkSettings.vue')['default']
     RealTimeGraph: typeof import('./components/dashboard/RealTimeGraph.vue')['default']

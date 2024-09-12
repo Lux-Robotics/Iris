@@ -31,7 +31,7 @@
           <div>
             <h3>Offline Software Update</h3>
             <span>Updates can be found at </span>
-            <a href="https://github.com" target="_blank">https://example.com/updates</a>
+            <a href="https://github.com/" target="_blank">https://example.com/updates</a>
           </div>
           <v-spacer />
           <v-btn

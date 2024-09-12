@@ -81,12 +81,14 @@
             />
           </template>
           <template #actions>
-            <v-btn class="text-none" color="error" @click="hostnameDialog = false">
-              Cancel
-            </v-btn>
-            <v-btn class="text-none" color="primary" variant="flat" @click="hostnameDialog = false">
-              Save
-            </v-btn>
+            <v-btn class="text-none" color="error" text="Cancel" @click="hostnameDialog = false" />
+            <v-btn
+              class="text-none"
+              color="primary"
+              text="Save"
+              variant="flat"
+              @click="hostnameDialog = false"
+            />
           </template>
         </v-card>
       </v-dialog>
@@ -150,12 +152,14 @@
             />
           </template>
           <template #actions>
-            <v-btn class="text-none" color="error" @click="IPDialog = false">
-              Cancel
-            </v-btn>
-            <v-btn class="text-none" color="primary" variant="flat" @click="IPDialog = false">
-              Save
-            </v-btn>
+            <v-btn class="text-none" color="error" text="Cancel" @click="IPDialog = false" />
+            <v-btn
+              class="text-none"
+              color="primary"
+              text="Save"
+              variant="flat"
+              @click="IPDialog = false"
+            />
           </template>
         </v-card>
       </v-dialog>
