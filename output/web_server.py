@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 import os
 
 
-class HostnameMessage(BaseModel):
+class HostnameConfig(BaseModel):
     hostname: str
 
 
@@ -24,7 +24,7 @@ app = FastAPI()
 
 
 @app.post("/api/hostname")
-def update_hostname(new_hostname: HostnameMessage):
+def update_hostname(new_hostname: HostnameConfig):
     if platform == Platform.IRIS:
         try:
             subprocess.run(
@@ -39,7 +39,7 @@ def update_hostname(new_hostname: HostnameMessage):
     return {"status": "ok"}
 
 
-@app.get("/api/hostname", response_model=HostnameMessage)
+@app.get("/api/hostname", response_model=HostnameConfig)
 def get_hostname():
     return {"hostname": device_id}
 
@@ -132,7 +132,7 @@ def get_ip_config():
 
 app.mount(
     "/",
-    StaticFiles(directory=os.path.join(exec_dir, "..", "iris-web", "dist"), html=True),
+    StaticFiles(directory=os.path.join(exec_dir, "iris-web", "dist"), html=True),
     name="static",
 )
 # app.include_router(api_router, prefix="/api")

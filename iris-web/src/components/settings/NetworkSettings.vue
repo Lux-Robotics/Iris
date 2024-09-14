@@ -222,12 +222,12 @@
     ipValid.value = true
   }
 
-  interface HostnameMessage {
+  interface HostnameConfig {
     hostname: string;
   }
 
   async function requestHostnameUpdate () {
-    const message: HostnameMessage = { hostname: hostname.value }
+    const message: HostnameConfig = { hostname: hostname.value }
     try {
       const response = await axios.post('http://' + backendURI + ':' + apiPort + '/api/hostname', message)
       console.log('Success:', response.data)
