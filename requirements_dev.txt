@@ -16,5 +16,4 @@ typing~=3.7.4.3
 asyncio~=3.4.3
 
 argparse~=1.4.0
-pyapriltags~=3.4.2.3
 protobuf~=5.28.0

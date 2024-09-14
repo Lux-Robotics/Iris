@@ -68,7 +68,7 @@ def get_git_info():
 
 def get_platform():
     kernel_release = subprocess.run(
-        ["uname", "-s"], capture_output=True, text=True
+        ["uname", "-r"], capture_output=True, text=True
     ).stdout.strip()
     return Platform.IRIS if "rk2312" in kernel_release else Platform.DEV
 
