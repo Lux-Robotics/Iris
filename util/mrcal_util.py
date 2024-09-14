@@ -38,7 +38,7 @@ def generate_calibration_images(model_name: str, dir: str):
 
 
 def calibrate_cameras(image_dir: str, object_spacing: float = 0.012, gridn: int = 13):
-    name = uuid.uuid4()
+    name = str(uuid.uuid4())
     logger.info("Starting calibration: " + name)
     try:
         with open("/tmp/corners_" + name + ".vnl", "w") as corners_cache:
