@@ -1,9 +1,13 @@
 import subprocess
+import uuid
 
+import cv2
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
+import util.mrcal_util
+from util import state
 from util.state import exec_dir, settings, platform, Platform, device_id
 from fastapi.staticfiles import StaticFiles
 import os
@@ -129,6 +133,16 @@ def get_ip_config():
     except Exception:
         raise HTTPException(status_code=500, detail="Failed to get IP configuration")
 
+@app.post("/api/take-snapshot")
+def take_snapshot():
+    frame = state.last_frame
+    name = uuid.uuid4()
+    if frame is not None:
+        cv2.imwrite(os.path.join(state.exec_dir, "testdata", str(name) + '.png'), frame)
+
+@app.post("/api/calibrate")
+def calibrate():
+    util.mrcal_util.calibrate_cameras(os.path.join(state.exec_dir, "testdata"))
 
 app.mount(
     "/",
