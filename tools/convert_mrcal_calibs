@@ -1,4 +1,4 @@
-# Tool to convert mrcal calibration to a normal .json
+#!/usr/bin/env python3
 
 import argparse
 import json
@@ -9,6 +9,7 @@ import mrcal
 parser = argparse.ArgumentParser("mrcal_converter")
 
 parser.add_argument("filepath", help="Path to your .cameramodel file", type=str)
+parser.add_argument("outputpath", help="Output filepath", type=str)
 args = parser.parse_args()
 
 try:
@@ -16,8 +17,6 @@ try:
 except:
     print("Error loading calibration file:", args.filepath)
     sys.exit()
-
-id_num = input("Input camera identification number (ex. 002-1): ")
 
 model_type, intrinsics_mrcal = model.intrinsics()
 
@@ -37,6 +36,15 @@ calibration_out = {
     "distCoeffs": distortions_opencv,
 }
 
-out = open("calibration/" + id_num + "_" + str(x_res) + "x" + str(y_res) + ".json", "w")
-out.write(json.dumps(calibration_out, indent=2))
-out.close()
+# Read the first few lines of the input file
+with open(args.filepath, 'r') as file:
+    file_header = ''.join([next(file) for _ in range(5)])
+
+# Write the output to a TOML file
+with open(args.outputpath, "w") as out:
+    out.write("# Original file first lines:\n")
+    out.write(file_header)
+    out.write("\n")
+    out.write("# Calibration data\n")
+    out.write(toml.dumps(calibration_out))
+
