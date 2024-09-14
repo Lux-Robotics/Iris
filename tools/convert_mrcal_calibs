@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import argparse
-import json
 import sys
+import toml
 
 import mrcal
 
@@ -42,9 +42,7 @@ with open(args.filepath, 'r') as file:
 
 # Write the output to a TOML file
 with open(args.outputpath, "w") as out:
-    out.write("# Original file first lines:\n")
     out.write(file_header)
     out.write("\n")
-    out.write("# Calibration data\n")
     out.write(toml.dumps(calibration_out))
 
