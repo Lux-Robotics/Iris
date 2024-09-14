@@ -36,6 +36,7 @@
 </script>
 
 <template>
+  <!--  <v-card color="background" min-width="300" variant="flat">-->
   <v-card border min-width="300">
     <template #title>
       <span class="font-weight-black">Camera</span>
@@ -50,10 +51,12 @@
 
     <v-card-text>
       <CameraStream />
-      <CameraOptions />
     </v-card-text>
   </v-card>
 </template>
 
 <style scoped>
+.stream-container {
+position: relative;
+}
 </style>

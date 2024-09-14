@@ -61,39 +61,38 @@
 <template>
   <v-select
     v-model="cameraOrientation"
-    class="mt-4"
     color="secondary"
     :items="['Normal', '90°', '180°', '270°']"
     label="Display Orientation"
     variant="outlined"
   />
 
-  <v-slider
-    v-model="brightness"
-    color="secondary"
-    hide-details
-    :max="288"
-    :min="1"
-    :step="1"
-  >
-    <template #label>
-      <span class="slider-label">Brightness</span>
-    </template>
-    <template #append>
-      <v-text-field
-        v-model="brightness"
-        color="secondary"
-        density="compact"
-        hide-details
-        style="width: 80px"
-        type="number"
-        variant="outlined"
-      />
-    </template>
-  </v-slider>
+  <!--  <v-slider-->
+  <!--    v-model="brightness"-->
+  <!--    color="secondary"-->
+  <!--    hide-details-->
+  <!--    :max="288"-->
+  <!--    :min="1"-->
+  <!--    :step="1"-->
+  <!--  >-->
+  <!--    <template #label>-->
+  <!--      <span class="slider-label">Brightness</span>-->
+  <!--    </template>-->
+  <!--    <template #append>-->
+  <!--      <v-text-field-->
+  <!--        v-model="brightness"-->
+  <!--        color="secondary"-->
+  <!--        density="compact"-->
+  <!--        hide-details-->
+  <!--        style="width: 80px"-->
+  <!--        type="number"-->
+  <!--        variant="outlined"-->
+  <!--      />-->
+  <!--    </template>-->
+  <!--  </v-slider>-->
   <v-slider
     v-model="exposure"
-    class="my-4"
+    class="mb-4"
     color="secondary"
     hide-details
     :max="910"

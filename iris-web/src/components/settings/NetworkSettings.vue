@@ -73,6 +73,7 @@
         >
           <template #default>
             <v-text-field
+              v-model="hostname"
               class="mx-6"
               label="New hostname"
               placeholder="iris"
@@ -87,7 +88,7 @@
               color="primary"
               text="Save"
               variant="flat"
-              @click="hostnameDialog = false"
+              @click="hostnameDialog = false; requestHostnameUpdate()"
             />
           </template>
         </v-card>
@@ -168,9 +169,10 @@
 </template>
 
 <script lang="ts" setup>
+  import axios from 'axios'
   import { computed, onMounted, ref } from 'vue'
   import { NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
-  import { backendConnected, ntcore } from '@/nt-listener'
+  import { apiPort, backendConnected, backendURI, ntcore } from '@/nt-listener'
 
   const robotServerIP = ref('')
   const robotServerIPRef = ref('')
@@ -180,6 +182,9 @@
 
   const hostnameDialog = ref(false)
   const IPDialog = ref(false)
+
+  const hostname = ref('')
+  // const hostnameRef = ref('')
 
   const ipAssignmentMethod = ref('dhcp')
 
@@ -215,6 +220,28 @@
       }
     }
     ipValid.value = true
+  }
+
+  interface HostnameMessage {
+    hostname: string;
+  }
+
+  async function requestHostnameUpdate () {
+    const message: HostnameMessage = { hostname: hostname.value }
+    try {
+      const response = await axios.post('http://' + backendURI + ':' + apiPort + '/api/hostname', message)
+      console.log('Success:', response.data)
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          console.error('Error:', error.response.data)
+        } else {
+          console.error('Error:', error.message)
+        }
+      } else {
+        console.error('Unexpected error:', error)
+      }
+    }
   }
 
   onMounted(() => {

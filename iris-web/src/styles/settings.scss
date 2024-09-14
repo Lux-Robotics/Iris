@@ -14,3 +14,8 @@
   align-items: center;
   gap: 10px;
 }
+
+.scrollable-area {
+  height: calc(100vh - 48px);
+  overflow-y: auto;
+}

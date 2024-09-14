@@ -19,7 +19,7 @@
 </script>
 
 <template>
-  <v-img :src="streamSrc" width="100%" />
+  <v-img :src="streamSrc" />
 </template>
 
 <style scoped>
