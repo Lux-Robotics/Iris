@@ -168,7 +168,9 @@ class NTListener:
         )
 
         # calibration
-        _, self.calibration_progress_pub = _add_attribute(inst.getIntegerTopic("calibrationProgress"), 0)
+        _, self.calibration_progress_pub = _add_attribute(
+            inst.getIntegerTopic("calibrationProgress"), 0
+        )
 
         # TODO: switch to MultiSubscriber?
         inst.addListener(

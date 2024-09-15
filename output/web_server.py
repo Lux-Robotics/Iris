@@ -205,13 +205,18 @@ def save_calibration(calib_config: CalibrationConfig):
 
 
 app.mount(
+    "/processed-calibration",
+    StaticFiles(directory="/tmp/calibration"),
+    name="processed-calibration",
+)
+# app.mount("/current-calibration", StaticFiles(directory="/tmp/calibration"), name="current-calibration")
+
+
+app.mount(
     "/",
     StaticFiles(directory=os.path.join(exec_dir, "iris-web", "dist"), html=True),
     name="static",
 )
-
-app.mount("/processed-calibration", StaticFiles(directory="/tmp/calibration"), name="processed-calibration")
-# app.mount("/current-calibration", StaticFiles(directory="/tmp/calibration"), name="current-calibration")
 
 
 def start():
