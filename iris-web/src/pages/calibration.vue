@@ -1,9 +1,12 @@
 <script setup lang="ts">
-  import { apiURI } from '@/nt-listener'
+  import { apiURI, ntcore } from '@/nt-listener'
   import axios from 'axios'
+  import { NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
+  import { onMounted } from 'vue'
 
   const calibrationDialog = ref(false)
   const page = ref(1)
+  const progress = ref(0)
 
   function takeSnapshot () {
     axios.post(apiURI + '/api/take-snapshot', {})
@@ -29,6 +32,15 @@
       })
     page.value += 1
   }
+
+  onMounted(() => {
+    const progressTopic: NetworkTablesTopic<number> = ntcore.createTopic('calibrationProgress', NetworkTablesTypeInfos.kInteger)
+    progressTopic.subscribe(v => {
+      if (v !== null) {
+        progress.value = v
+      }
+    })
+  })
 </script>
 
 <template>
@@ -65,6 +77,41 @@
             <CameraOptions />
           </v-col>
         </v-row>
+        <div v-if="page === 2">
+          <v-stepper elevation="0" :model-value="progress">
+            <v-stepper-header>
+              <v-stepper-item
+                color="primary"
+                title="Compute Corners"
+                value="1"
+              />
+
+              <v-divider />
+
+              <v-stepper-item
+                color="primary"
+                title="Solve"
+                value="2"
+              />
+
+              <v-divider />
+
+              <v-stepper-item
+                color="primary"
+                title="Convert Calibration"
+                value="3"
+              />
+
+              <v-divider />
+
+              <v-stepper-item
+                color="primary"
+                title="Generate Graphs"
+                value="4"
+              />
+            </v-stepper-header>
+          </v-stepper>
+        </div>
       </div>
       <v-divider />
       <template #actions>
@@ -79,11 +126,11 @@
           v-if="page > 1"
           class="text-none"
           color="error"
-          text="Back"
+          text="Restart Calibration"
           @click="page--"
         />
         <v-btn
-          v-if="page < 3"
+          v-if="page === 1"
           class="text-none"
           color="primary"
           text="Calibrate"
@@ -91,7 +138,7 @@
           @click="calibrate"
         />
         <v-btn
-          v-if="page === 3"
+          v-if="page === 2"
           class="text-none"
           color="primary"
           text="Save"

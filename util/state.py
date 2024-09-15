@@ -140,6 +140,8 @@ new_data = False
 bad_frames = 0
 
 robot_last_enabled = False
+# 0 = calibration mode off, 1-4 = progress
+calibration_progress = 0
 
 # Define apriltag locations
 apriltag_size = 0.1651  # 36h11

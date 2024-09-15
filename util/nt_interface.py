@@ -167,6 +167,9 @@ class NTListener:
             inst.getIntegerTopic("threads"), state.settings.apriltag3.threads
         )
 
+        # calibration
+        _, self.calibration_progress_pub = _add_attribute(inst.getIntegerTopic("calibrationProgress"), 0)
+
         # TODO: switch to MultiSubscriber?
         inst.addListener(
             self.detector_sub,
@@ -251,6 +254,7 @@ class NTListener:
         # Update fps
         self.fps_pub.set(state.fps)
         self.uptime_pub.set(int(state.frame_times[-1] - state.frame_times[0]))
+        self.calibration_progress_pub.set(state.calibration_progress)
 
     def periodic(self, timestamp: float):
         self.update_data(timestamp)

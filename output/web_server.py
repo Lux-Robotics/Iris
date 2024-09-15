@@ -1,6 +1,7 @@
 import shutil
 import subprocess
 import uuid
+from nis import match
 
 import cv2
 import uvicorn
@@ -141,6 +142,7 @@ def get_ip_config():
 
 @app.post("/api/take-snapshot")
 def take_snapshot():
+    state.calibration_progress = 0
     try:
         if not os.path.exists("/tmp/snapshots"):
             os.makedirs("/tmp/snapshots", exist_ok=True)
@@ -155,6 +157,7 @@ def take_snapshot():
 
 @app.post("/api/clear-snapshots")
 def clear_snapshots():
+    state.calibration_progress = 0
     try:
         if os.path.exists("/tmp/snapshots"):
             shutil.rmtree("/tmp/snapshots")
@@ -166,14 +169,17 @@ def clear_snapshots():
 
 @app.post("/api/calibrate")
 def calibrate():
+    state.calibration_progress = 1
     ret = util.mrcal_util.calibrate_cameras("/tmp/snapshots")
     if not ret:
+        state.calibration_progress = -abs(state.calibration_progress)
         return HTTPException(status_code=500, detail="Calibration failed")
     return {"status": "ok"}
 
 
 @app.post("/api/save-calibration")
 def save_calibration(calib_config: CalibrationConfig):
+    state.calibration_progress = 0
     src_directory = "/tmp/calibration"
     dest_directory = os.path.join(exec_dir, "calibration", calib_config.filename)
     # Check if the source directory is empty
