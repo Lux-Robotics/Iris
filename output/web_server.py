@@ -32,6 +32,9 @@ class CalibrationConfig(BaseModel):
 app = FastAPI()
 # api_router = APIRouter()
 
+os.makedirs("/tmp/calibration", exist_ok=True)
+os.makedirs("/tmp/snapshots", exist_ok=True)
+
 
 @app.post("/api/hostname")
 def update_hostname(new_hostname: HostnameConfig):
@@ -206,6 +209,9 @@ app.mount(
     StaticFiles(directory=os.path.join(exec_dir, "iris-web", "dist"), html=True),
     name="static",
 )
+
+app.mount("/processed-calibration", StaticFiles(directory="/tmp/calibration"), name="processed-calibration")
+# app.mount("/current-calibration", StaticFiles(directory="/tmp/calibration"), name="current-calibration")
 
 
 def start():

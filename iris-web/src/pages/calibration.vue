@@ -150,6 +150,14 @@
               />
             </div>
           </v-stepper>
+          <div v-if="progress === 4">
+            <v-img
+              aspect-ratio="1"
+              class="svg-background"
+              max-width="100%"
+              :src="apiURI + '/processed-calibration/projection_uncertainty.svg'"
+            />
+          </div>
         </div>
       </div>
       <v-divider />
@@ -189,4 +197,10 @@
   </v-dialog>
 </template>
 
-<style scoped></style>
+<style scoped>
+.svg-background {
+  background-color: white;
+  width: 100%;
+  height: auto;
+}
+</style>
