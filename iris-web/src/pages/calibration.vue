@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { apiURI, backendURI } from '@/nt-listener'
+  import { apiURI } from '@/nt-listener'
   import axios from 'axios'
 
   const calibrationDialog = ref(false)

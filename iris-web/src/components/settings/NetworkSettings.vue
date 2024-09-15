@@ -172,7 +172,7 @@
   import axios from 'axios'
   import { computed, onMounted, ref } from 'vue'
   import { NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
-  import { apiURI, backendConnected, backendURI, ntcore } from '@/nt-listener'
+  import { apiURI, backendConnected, ntcore } from '@/nt-listener'
 
   const robotServerIP = ref('')
   const robotServerIPRef = ref('')
