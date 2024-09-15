@@ -9,8 +9,13 @@
     await axios.post('https://' + backendURI + ':' + apiPort + '/api/take-snapshot')
   }
 
-  async function clearSnapshots () {
-    await axios.post('https://' + backendURI + ':' + apiPort + '/api/clear-snapshots')
+  // async function clearSnapshots () {
+  //   await axios.post('https://' + backendURI + ':' + apiPort + '/api/clear-snapshots')
+  // }
+
+  async function calibrate () {
+    await axios.post('https://' + backendURI + ':' + apiPort + '/api/calibrate')
+    page.value += 1
   }
 </script>
 
@@ -69,9 +74,9 @@
           v-if="page < 3"
           class="text-none"
           color="primary"
-          text="Next"
+          text="Calibrate"
           variant="flat"
-          @click="page++"
+          @click="calibrate"
         />
         <v-btn
           v-if="page === 3"
