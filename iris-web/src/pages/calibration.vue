@@ -6,15 +6,15 @@
   const page = ref(1)
 
   async function takeSnapshot () {
-    await axios.post('https://' + backendURI + ':' + apiPort + '/api/take-snapshot')
+    await axios.post('http://' + backendURI + ':' + apiPort + '/api/take-snapshot')
   }
 
   // async function clearSnapshots () {
-  //   await axios.post('https://' + backendURI + ':' + apiPort + '/api/clear-snapshots')
+  //   await axios.post('http://' + backendURI + ':' + apiPort + '/api/clear-snapshots')
   // }
 
   async function calibrate () {
-    await axios.post('https://' + backendURI + ':' + apiPort + '/api/calibrate')
+    await axios.post('http://' + backendURI + ':' + apiPort + '/api/calibrate')
     page.value += 1
   }
 </script>
