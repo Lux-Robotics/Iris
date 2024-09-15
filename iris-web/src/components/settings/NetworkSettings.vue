@@ -172,7 +172,7 @@
   import axios from 'axios'
   import { computed, onMounted, ref } from 'vue'
   import { NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
-  import { apiPort, backendConnected, backendURI, ntcore } from '@/nt-listener'
+  import { apiURI, backendConnected, backendURI, ntcore } from '@/nt-listener'
 
   const robotServerIP = ref('')
   const robotServerIPRef = ref('')
@@ -229,7 +229,7 @@
   async function requestHostnameUpdate () {
     const message: HostnameConfig = { hostname: hostname.value }
     try {
-      const response = await axios.post('http://' + backendURI + ':' + apiPort + '/api/hostname', message)
+      const response = await axios.post(apiURI + '/api/hostname', message)
       console.log('Success:', response.data)
     } catch (error) {
       if (axios.isAxiosError(error)) {

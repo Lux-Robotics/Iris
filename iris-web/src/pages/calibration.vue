@@ -1,12 +1,12 @@
 <script setup lang="ts">
-  import { apiPort, backendURI } from '@/nt-listener'
+  import { apiURI, backendURI } from '@/nt-listener'
   import axios from 'axios'
 
   const calibrationDialog = ref(false)
   const page = ref(1)
 
   function takeSnapshot () {
-    axios.post('http://' + backendURI + ':' + apiPort + '/api/take-snapshot')
+    axios.post(apiURI + '/api/take-snapshot', {})
       .then(response => {
         console.log(response.data)
       })
@@ -20,7 +20,7 @@
   // }
 
   function calibrate () {
-    axios.post('http://' + backendURI + ':' + apiPort + '/api/calibrate')
+    axios.post(apiURI + '/api/calibrate', {})
       .then(response => {
         console.log(response.data)
       })
