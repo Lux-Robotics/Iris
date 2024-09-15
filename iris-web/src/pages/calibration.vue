@@ -150,12 +150,18 @@
               />
             </div>
           </v-stepper>
-          <div v-if="progress === 4">
+          <div v-if="progress === 4" class="edit-settings">
             <v-img
               aspect-ratio="1"
               class="svg-background"
               max-width="100%"
               :src="apiURI + '/processed-calibration/projection_uncertainty.svg'"
+            />
+            <v-img
+              aspect-ratio="1"
+              class="svg-background"
+              max-width="100%"
+              :src="apiURI + '/processed-calibration/residuals.svg'"
             />
           </div>
         </div>
