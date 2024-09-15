@@ -5,16 +5,28 @@
   const calibrationDialog = ref(false)
   const page = ref(1)
 
-  async function takeSnapshot () {
-    await axios.post('http://' + backendURI + ':' + apiPort + '/api/take-snapshot')
+  function takeSnapshot () {
+    axios.post('http://' + backendURI + ':' + apiPort + '/api/take-snapshot')
+      .then(response => {
+        console.log(response.data)
+      })
+      .catch(error => {
+        console.error('Error occurred:', error)
+      })
   }
 
   // async function clearSnapshots () {
   //   await axios.post('http://' + backendURI + ':' + apiPort + '/api/clear-snapshots')
   // }
 
-  async function calibrate () {
-    await axios.post('http://' + backendURI + ':' + apiPort + '/api/calibrate')
+  function calibrate () {
+    axios.post('http://' + backendURI + ':' + apiPort + '/api/calibrate')
+      .then(response => {
+        console.log(response.data)
+      })
+      .catch(error => {
+        console.error('Error occurred:', error)
+      })
     page.value += 1
   }
 </script>
