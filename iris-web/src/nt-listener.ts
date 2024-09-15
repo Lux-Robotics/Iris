@@ -4,7 +4,7 @@ const backendConnected = ref(false)
 
 // TODO: make this based on backend ip
 const backendURI: string = window.location.hostname
-const apiPort: number = 5800
+const apiPort: number = parseInt(window.location.port)
 const ntcore = NetworkTables.getInstanceByURI(backendURI)
 ntcore.addRobotConnectionListener(v => {
   backendConnected.value = v
