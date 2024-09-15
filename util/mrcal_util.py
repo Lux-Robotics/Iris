@@ -87,6 +87,20 @@ def calibrate_cameras(image_dir: str, object_spacing: float = 0.012, gridn: int 
     except subprocess.CalledProcessError:
         logger.error("Calibration failed")
         return False
+    logger.info("Converting calibration")
+    try:
+        subprocess.run(
+            [
+                os.path.join(exec_dir, "scripts", "convert_mrcal_calibs"),
+                "camera-0.cameramodel",
+                "calibration.toml",
+            ],
+            check=True,
+            cwd=dir_path,
+        )
+    except subprocess.CalledProcessError:
+        logger.error("Conversion failed")
+        return False
     logger.info("Generating graphs")
     try:
         generate_calibration_images(dir_path)

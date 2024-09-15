@@ -24,6 +24,10 @@ class IPConfig(BaseModel):
     gateway: str
 
 
+class CalibrationConfig(BaseModel):
+    filename: str
+
+
 app = FastAPI()
 # api_router = APIRouter()
 
@@ -143,9 +147,7 @@ def take_snapshot():
         frame = state.last_frame
         name = uuid.uuid4()
         if frame is not None:
-            cv2.imwrite(
-                os.path.join("/tmp/snapshots", str(name) + ".png"), frame
-            )
+            cv2.imwrite(os.path.join("/tmp/snapshots", str(name) + ".png"), frame)
     except Exception:
         return HTTPException(status_code=500, detail="Failed to take snapshot")
     return {"status": "ok"}
@@ -171,10 +173,25 @@ def calibrate():
 
 
 @app.post("/api/save-calibration")
-def save_calibration():
-    # ret = util.mrcal_util.calibrate_cameras("/tmp/snapshots")
-    # if not ret:
-    #     return HTTPException(status_code=500, detail="Calibration failed")
+def save_calibration(calib_config: CalibrationConfig):
+    src_directory = "/tmp/calibration"
+    dest_directory = os.path.join(exec_dir, "calibration", calib_config.filename)
+    # Check if the source directory is empty
+    if not os.listdir(src_directory):
+        print(f"The directory {src_directory} is empty.")
+        return
+
+    # Make sure the destination directory exists
+    if not os.path.exists(dest_directory):
+        os.makedirs(dest_directory)
+
+    # List the files in the source directory and copy .svg and .toml files
+    for item in os.listdir(src_directory):
+        if item.endswith(".svg") or item.endswith(".toml"):
+            src_file = os.path.join(src_directory, item)
+            dest_file = os.path.join(dest_directory, item)
+            shutil.copy2(src_file, dest_file)
+            print(f"Copied {src_file} to {dest_file}")
     return {"status": "ok"}
 
 
