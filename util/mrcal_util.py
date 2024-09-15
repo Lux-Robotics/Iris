@@ -3,6 +3,7 @@ import shutil
 import subprocess
 
 from util.state import logger, exec_dir
+import util.state as state
 
 
 def generate_calibration_images(dir: str):
@@ -69,6 +70,7 @@ def calibrate_cameras(image_dir: str, object_spacing: float = 0.012, gridn: int 
     except subprocess.CalledProcessError:
         logger.error("Failed to compute corners cache")
         return False
+    state.calibration_progress = 1
     try:
         subprocess.run(
             [
@@ -87,6 +89,7 @@ def calibrate_cameras(image_dir: str, object_spacing: float = 0.012, gridn: int 
     except subprocess.CalledProcessError:
         logger.error("Calibration failed")
         return False
+    state.calibration_progress = 2
     logger.info("Converting calibration")
     try:
         subprocess.run(
@@ -101,6 +104,7 @@ def calibrate_cameras(image_dir: str, object_spacing: float = 0.012, gridn: int 
     except subprocess.CalledProcessError:
         logger.error("Conversion failed")
         return False
+    state.calibration_progress = 3
     logger.info("Generating graphs")
     try:
         generate_calibration_images(dir_path)

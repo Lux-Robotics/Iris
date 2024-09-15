@@ -169,7 +169,7 @@ def clear_snapshots():
 
 @app.post("/api/calibrate")
 def calibrate():
-    state.calibration_progress = 1
+    state.calibration_progress = 0
     ret = util.mrcal_util.calibrate_cameras("/tmp/snapshots")
     if not ret:
         state.calibration_progress = -abs(state.calibration_progress)
