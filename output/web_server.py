@@ -138,11 +138,13 @@ def get_ip_config():
 @app.post("/api/take-snapshot")
 def take_snapshot():
     try:
+        if not os.path.exists("/tmp/snapshots"):
+            os.makedirs("/tmp/snapshots", exist_ok=True)
         frame = state.last_frame
         name = uuid.uuid4()
         if frame is not None:
             cv2.imwrite(
-                os.path.join(state.exec_dir, "testdata", str(name) + ".png"), frame
+                os.path.join("/tmp/snapshots", str(name) + ".png"), frame
             )
     except Exception:
         return HTTPException(status_code=500, detail="Failed to take snapshot")
