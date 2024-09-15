@@ -1,6 +1,17 @@
 <script setup lang="ts">
+  import { apiPort, backendURI } from '@/nt-listener'
+  import axios from 'axios'
+
   const calibrationDialog = ref(false)
   const page = ref(1)
+
+  async function takeSnapshot () {
+    await axios.post('https://' + backendURI + ':' + apiPort + '/api/take-snapshot')
+  }
+
+  async function clearSnapshots () {
+    await axios.post('https://' + backendURI + ':' + apiPort + '/api/clear-snapshots')
+  }
 </script>
 
 <template>
@@ -12,26 +23,31 @@
     @click="calibrationDialog = true; page = 1"
   />
 
-  <v-dialog v-model="calibrationDialog" max-width="600" min-width="300" opacity="5%">
+  <v-dialog v-model="calibrationDialog" max-width="1200" min-width="300" opacity="5%">
     <v-card border>
       <template #title>
         <span>Calibrate Camera</span>
       </template>
       <v-divider />
       <div class="ma-2">
-        <CameraStream v-if="page < 3" />
-        <CameraOptions v-if="page === 1" />
-        <div v-if="page === 2" class="my-2">
-          <v-btn
-            block
-            class="text-none"
-            color="primary"
-            prepend-icon="mdi-camera"
-            text="Capture Image"
-            variant="flat"
-            @click=""
-          />
-        </div>
+        <v-row v-if="page === 1" dense>
+          <v-col cols="12" md="8" sm="12">
+            <CameraStream />
+          </v-col>
+          <v-col cols="12" md="4" sm="12">
+            <v-btn
+              block
+              class="text-none"
+              color="primary"
+              prepend-icon="mdi-camera"
+              text="Take Snapshot"
+              variant="flat"
+              @click="takeSnapshot"
+            />
+            <v-spacer class="py-2" />
+            <CameraOptions />
+          </v-col>
+        </v-row>
       </div>
       <v-divider />
       <template #actions>

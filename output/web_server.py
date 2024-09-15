@@ -1,3 +1,4 @@
+import shutil
 import subprocess
 import uuid
 
@@ -133,23 +134,53 @@ def get_ip_config():
     except Exception:
         raise HTTPException(status_code=500, detail="Failed to get IP configuration")
 
+
 @app.post("/api/take-snapshot")
 def take_snapshot():
-    frame = state.last_frame
-    name = uuid.uuid4()
-    if frame is not None:
-        cv2.imwrite(os.path.join(state.exec_dir, "testdata", str(name) + '.png'), frame)
+    try:
+        frame = state.last_frame
+        name = uuid.uuid4()
+        if frame is not None:
+            cv2.imwrite(
+                os.path.join(state.exec_dir, "testdata", str(name) + ".png"), frame
+            )
+    except Exception:
+        return HTTPException(status_code=500, detail="Failed to take snapshot")
+    return {"status": "ok"}
+
+
+@app.post("/api/clear-snapshots")
+def clear_snapshots():
+    try:
+        if os.path.exists("/tmp/snapshots"):
+            shutil.rmtree("/tmp/snapshots")
+        os.makedirs("/tmp/snapshots", exist_ok=True)
+    except Exception:
+        return HTTPException(status_code=500, detail="Failed to clear snapshot")
+    return {"status": "ok"}
+
 
 @app.post("/api/calibrate")
 def calibrate():
-    util.mrcal_util.calibrate_cameras(os.path.join(state.exec_dir, "testdata"))
+    ret = util.mrcal_util.calibrate_cameras("/tmp/snapshots")
+    if not ret:
+        return HTTPException(status_code=500, detail="Calibration failed")
+    return {"status": "ok"}
+
+
+@app.post("/api/save-calibration")
+def save_calibration():
+    # ret = util.mrcal_util.calibrate_cameras("/tmp/snapshots")
+    # if not ret:
+    #     return HTTPException(status_code=500, detail="Calibration failed")
+    return {"status": "ok"}
+
 
 app.mount(
     "/",
     StaticFiles(directory=os.path.join(exec_dir, "iris-web", "dist"), html=True),
     name="static",
 )
-# app.include_router(api_router, prefix="/api")
 
 
 def start():
