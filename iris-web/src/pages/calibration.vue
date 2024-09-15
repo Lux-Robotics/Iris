@@ -79,9 +79,10 @@
         </v-row>
         <div v-if="page === 2">
           <v-stepper elevation="0" :model-value="progress">
-            <v-stepper-header>
+            <v-stepper-header v-if="$vuetify.display.mdAndUp">
               <v-stepper-item
                 color="primary"
+                :complete="progress>0"
                 title="Compute Corners"
                 value="1"
               />
@@ -90,6 +91,7 @@
 
               <v-stepper-item
                 color="primary"
+                :complete="progress>1"
                 title="Solve"
                 value="2"
               />
@@ -98,6 +100,7 @@
 
               <v-stepper-item
                 color="primary"
+                :complete="progress>2"
                 title="Convert Calibration"
                 value="3"
               />
@@ -106,10 +109,46 @@
 
               <v-stepper-item
                 color="primary"
+                :complete="progress>3"
                 title="Generate Graphs"
                 value="4"
               />
             </v-stepper-header>
+            <div v-if="$vuetify.display.smAndDown">
+              <v-stepper-item
+                color="primary"
+                :complete="progress>0"
+                title="Compute Corners"
+                value="1"
+              />
+
+              <v-divider />
+
+              <v-stepper-item
+                color="primary"
+                :complete="progress>1"
+                title="Solve"
+                value="2"
+              />
+
+              <v-divider />
+
+              <v-stepper-item
+                color="primary"
+                :complete="progress>2"
+                title="Convert Calibration"
+                value="3"
+              />
+
+              <v-divider />
+
+              <v-stepper-item
+                color="primary"
+                :complete="progress>3"
+                title="Generate Graphs"
+                value="4"
+              />
+            </div>
           </v-stepper>
         </div>
       </div>

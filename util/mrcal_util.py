@@ -112,4 +112,5 @@ def calibrate_cameras(image_dir: str, object_spacing: float = 0.012, gridn: int 
         logger.error("Failed to generate graphs")
         return False
     logger.info("Calibration complete")
+    state.calibration_progress = 4
     return True
