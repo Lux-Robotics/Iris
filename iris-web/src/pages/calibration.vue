@@ -150,20 +150,12 @@
               />
             </div>
           </v-stepper>
-          <div v-if="progress === 4" class="edit-settings">
+          <v-container v-if="progress === 4" max-width="800">
             <v-img
-              aspect-ratio="1"
               class="svg-background"
-              max-width="100%"
               :src="apiURI + '/processed-calibration/projection_uncertainty.svg'"
             />
-            <v-img
-              aspect-ratio="1"
-              class="svg-background"
-              max-width="100%"
-              :src="apiURI + '/processed-calibration/residuals.svg'"
-            />
-          </div>
+          </v-container>
         </div>
       </div>
       <v-divider />
@@ -206,7 +198,5 @@
 <style scoped>
 .svg-background {
   background-color: white;
-  width: 100%;
-  height: auto;
 }
 </style>
