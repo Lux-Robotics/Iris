@@ -1,15 +1,14 @@
 import shutil
 import subprocess
 import uuid
-from nis import match
 
 import cv2
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-import util.mrcal_util
 from util import state
+from util.calibration_util import get_snapshots, calibrate_cameras
 from util.state import exec_dir, settings, platform, Platform, device_id
 from fastapi.staticfiles import StaticFiles
 import os
@@ -35,6 +34,7 @@ app = FastAPI()
 os.makedirs("/tmp/calibration", exist_ok=True)
 os.makedirs("/tmp/snapshots", exist_ok=True)
 
+state.snapshots = get_snapshots()
 
 @app.post("/api/hostname")
 def update_hostname(new_hostname: HostnameConfig):
@@ -153,6 +153,7 @@ def take_snapshot():
         name = uuid.uuid4()
         if frame is not None:
             cv2.imwrite(os.path.join("/tmp/snapshots", str(name) + ".png"), frame)
+        state.snapshots = get_snapshots()
     except Exception:
         return HTTPException(status_code=500, detail="Failed to take snapshot")
     return {"status": "ok"}
@@ -165,6 +166,7 @@ def clear_snapshots():
         if os.path.exists("/tmp/snapshots"):
             shutil.rmtree("/tmp/snapshots")
         os.makedirs("/tmp/snapshots", exist_ok=True)
+        state.snapshots = get_snapshots()
     except Exception:
         return HTTPException(status_code=500, detail="Failed to clear snapshot")
     return {"status": "ok"}
@@ -172,10 +174,14 @@ def clear_snapshots():
 
 @app.post("/api/calibrate")
 def calibrate():
+    state.calibration_failed = False
     state.calibration_progress = 0
-    ret = util.mrcal_util.calibrate_cameras("/tmp/snapshots")
+    if len(state.snapshots) < 1:
+        state.calibration_failed = state.calibration_progress
+        return HTTPException(status_code=500, detail="Calibration failed")
+    ret = calibrate_cameras("/tmp/snapshots")
     if not ret:
-        state.calibration_progress = -abs(state.calibration_progress)
+        state.calibration_failed = state.calibration_progress
         return HTTPException(status_code=500, detail="Calibration failed")
     return {"status": "ok"}
 
@@ -209,7 +215,8 @@ app.mount(
     StaticFiles(directory="/tmp/calibration"),
     name="processed-calibration",
 )
-# app.mount("/current-calibration", StaticFiles(directory="/tmp/calibration"), name="current-calibration")
+
+app.mount("/snapshots", StaticFiles(directory="/tmp/snapshots"), name="snapshots")
 
 
 app.mount(

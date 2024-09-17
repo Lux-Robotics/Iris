@@ -171,6 +171,8 @@ class NTListener:
         _, self.calibration_progress_pub = _add_attribute(
             inst.getIntegerTopic("calibrationProgress"), 0
         )
+        _, self.calibration_failed_pub = _add_attribute(inst.getIntegerTopic("calibrationFailed"), -1)
+        _, self.snapshots_pub = _add_attribute(inst.getStringArrayTopic("snapshots"), state.snapshots)
 
         # TODO: switch to MultiSubscriber?
         inst.addListener(
@@ -257,6 +259,8 @@ class NTListener:
         self.fps_pub.set(state.fps)
         self.uptime_pub.set(int(state.frame_times[-1] - state.frame_times[0]))
         self.calibration_progress_pub.set(state.calibration_progress)
+        self.calibration_failed_pub.set(state.calibration_progress)
+        self.snapshots_pub.set(state.snapshots)
 
     def periodic(self, timestamp: float):
         self.update_data(timestamp)
