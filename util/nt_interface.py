@@ -2,8 +2,10 @@ import math
 import time
 from typing import List
 
+from wpimath.geometry import Pose3d
+
 from util.state import save_settings
-from util.vision_types import Pose, TagObservation
+from util.vision_types import Pose, TagObservation, IrisPose, IrisTarget
 import ntcore
 from ntcore import Topic, Publisher, Subscriber, NetworkTableInstance
 
@@ -32,21 +34,26 @@ class NTInterface:
     # Initiate Connection
     def __init__(self, ip: str) -> None:
         inst = NetworkTableInstance.getDefault()
+        # inst = NTListener.inst
         inst.setServer(ip)
         inst.startClient4("Iris")
         self.output_table = inst.getTable("/Iris/" + state.device_id)
-        _, self.observations0_pub = _add_attribute(
-            self.output_table.getDoubleArrayTopic("observations0"), []
-        )
-        _, self.observations1_pub = _add_attribute(
-            self.output_table.getDoubleArrayTopic("observations1"), []
-        )
         _, self.errors_pub = _add_attribute(
-            self.output_table.getDoubleArrayTopic("errors"), []
+            self.output_table.getDoubleTopic("reprojection_error"), 0.0
         )
+
+        self.camera_pose_pub = self.output_table.getStructTopic(
+            "camera_pose", Pose3d
+        ).publish(ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=False))
+
+        self.targets_pub = self.output_table.getStructArrayTopic(
+            "targets", IrisTarget
+        ).publish(ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=False))
+
         _, self.tags_pub = _add_attribute(
-            self.output_table.getIntegerArrayTopic("tag_ids"), []
+            self.output_table.getIntegerArrayTopic("tags_seen"), []
         )
+
         self.fps_pub = self.output_table.getDoubleTopic("fps").publish()
         _, self.version_pub = _add_attribute(
             inst.getStringTopic("version"), state.version
@@ -62,41 +69,21 @@ class NTInterface:
         )
 
     def publish_data(
-        self, pose0: Pose, pose1: Pose, tags: List[TagObservation], timestamp: float
+        self,
+        pose0: Pose,
+        pose1: Pose,
+        targets: List[IrisTarget],
+        tags: List[TagObservation],
+        timestamp: float,
     ) -> None:
-        errors = []
-        observation_data = []
         if pose0 is not None:
-            wpi_pose0 = pose0.get_wpilib()
-            observation_data.append(wpi_pose0.translation().X())
-            observation_data.append(wpi_pose0.translation().Y())
-            observation_data.append(wpi_pose0.translation().Z())
-            observation_data.append(wpi_pose0.rotation().getQuaternion().W())
-            observation_data.append(wpi_pose0.rotation().getQuaternion().X())
-            observation_data.append(wpi_pose0.rotation().getQuaternion().Y())
-            observation_data.append(wpi_pose0.rotation().getQuaternion().Z())
-            errors.append(pose0.error)
-        try:
-            fps = state.fps
-        except:
-            fps = 0
-        observation_data_2 = []
-        if pose1 is not None:
-            wpi_pose1 = pose1.get_wpilib()
-            observation_data_2.append(wpi_pose1.translation().X())
-            observation_data_2.append(wpi_pose1.translation().Y())
-            observation_data_2.append(wpi_pose1.translation().Z())
-            observation_data_2.append(wpi_pose1.rotation().getQuaternion().W())
-            observation_data_2.append(wpi_pose1.rotation().getQuaternion().X())
-            observation_data_2.append(wpi_pose1.rotation().getQuaternion().Y())
-            observation_data_2.append(wpi_pose1.rotation().getQuaternion().Z())
-            errors.append(pose1.error)
-
-        self.observations0_pub.set(observation_data, math.floor(timestamp * 1000000))
-        self.observations1_pub.set(observation_data_2, math.floor(timestamp * 1000000))
-        self.errors_pub.set(errors, math.floor(timestamp * 1000000))
-        self.fps_pub.set(fps, math.floor(timestamp * 1000000))
+            self.camera_pose_pub.set(
+                pose0.get_wpilib(), math.floor(timestamp * 1000000)
+            )
+            self.errors_pub.set(pose0.error, math.floor(timestamp * 1000000))
+        self.fps_pub.set(state.fps, math.floor(timestamp * 1000000))
         self.tags_pub.set([tag.tag_id for tag in tags], math.floor(timestamp * 1000000))
+        self.targets_pub.set(targets, math.floor(timestamp * 1000000))
 
     def get_states(self):
         state.ignored_tags = self.tagignore_sub.get([])
@@ -116,8 +103,11 @@ class NTInterface:
 
 
 class NTListener:
+    # inst = ntcore.NetworkTableInstance.create()
+
     def __init__(self):
         inst = ntcore.NetworkTableInstance.create()
+        # inst = self.inst
         inst.startServer()
 
         # device config
@@ -171,8 +161,12 @@ class NTListener:
         _, self.calibration_progress_pub = _add_attribute(
             inst.getIntegerTopic("calibrationProgress"), 0
         )
-        _, self.calibration_failed_pub = _add_attribute(inst.getIntegerTopic("calibrationFailed"), -1)
-        _, self.snapshots_pub = _add_attribute(inst.getStringArrayTopic("snapshots"), state.snapshots)
+        _, self.calibration_failed_pub = _add_attribute(
+            inst.getIntegerTopic("calibrationFailed"), -1
+        )
+        _, self.snapshots_pub = _add_attribute(
+            inst.getStringArrayTopic("snapshots"), state.snapshots
+        )
 
         # TODO: switch to MultiSubscriber?
         inst.addListener(

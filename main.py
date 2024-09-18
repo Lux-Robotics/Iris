@@ -25,10 +25,15 @@ parser = argparse.ArgumentParser("iris")
 parser.add_argument(
     "--mode", help="Toggle for operation modes", type=int, default=0, required=False
 )
+parser.add_argument(
+    "--video", help="Video path", type=str, default=None, required=False
+)
 args = parser.parse_args()
 
 # Start logging thread
 
+if args.video is not None:
+    args.mode = 1
 if args.mode == 2:
     settings.logging.enabled = False
     settings.http_stream.enabled = False
@@ -59,6 +64,8 @@ def init_camera():
             # Mode parameter not valid
             logger.error("Program mode invalid")
             sys.exit()
+    elif args.video is not None:
+        return cv2.VideoCapture(args.video)
     elif args.mode == 1:
         return cv2.VideoCapture(os.path.join(exec_dir, settings.test_video))
     elif args.mode == 2:
@@ -151,6 +158,7 @@ while True:
     filtered_detections, ignored_detections = filter_tags(detections)
 
     poses = tuple()
+    targets = []
 
     # Solve for pose
     try:
@@ -168,6 +176,9 @@ while True:
             logger.error("Pose estimation mode invalid")
             sys.exit(-1)
 
+        for detection in detections:
+            targets.append(get_tag_angle_offset(detection))
+
     except AssertionError:
         logger.warning("SolvePNP failed with assertion error")
     except Exception as e:
@@ -178,6 +189,7 @@ while True:
             nt_instance.publish_data(
                 poses[0] if len(poses) > 0 else None,
                 poses[1] if len(poses) > 1 else None,
+                targets,
                 detections,
                 new_frame_time,
             )

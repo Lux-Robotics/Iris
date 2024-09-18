@@ -6,10 +6,12 @@ import glob
 from util.state import logger, exec_dir
 import util.state as state
 
+
 def get_snapshots(directory: str = "/tmp/snapshots"):
     if not os.path.exists(directory):
         return []
-    return [os.path.basename(f) for f in glob.glob(os.path.join(directory, '*.png'))]
+    return [os.path.basename(f) for f in glob.glob(os.path.join(directory, "*.png"))]
+
 
 def generate_calibration_images(dir: str):
     subprocess.run(

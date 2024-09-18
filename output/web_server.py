@@ -36,6 +36,7 @@ os.makedirs("/tmp/snapshots", exist_ok=True)
 
 state.snapshots = get_snapshots()
 
+
 @app.post("/api/hostname")
 def update_hostname(new_hostname: HostnameConfig):
     if platform == Platform.IRIS:

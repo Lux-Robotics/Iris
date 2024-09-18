@@ -1,8 +1,9 @@
 import cv2
 import numpy as np
+from wpimath.geometry import Rotation2d
 
 import util.state as state
-from util.vision_types import Pose
+from util.vision_types import Pose, TagObservation, IrisTarget
 
 
 def get_distances(detections):
@@ -37,19 +38,26 @@ def get_distances(detections):
     return distances, centerX, centerY
 
 
-def get_angle_offsets(x, y, intrinsics):
-    f_x = intrinsics[0, 0]
-    f_y = intrinsics[1, 1]
-    c_x = intrinsics[0, 2]
-    c_y = intrinsics[1, 2]
+def get_angle_offset(x: float, y: float):
+    K = np.array(state.settings.calibration.cameraMatrix)
+    D = np.array(state.settings.calibration.distCoeffs)
 
-    dx = x - c_x
-    dy = y - c_y
+    # Undistort the image points
+    undistorted_points = cv2.undistortPoints(np.array([[x, y]]), K, D, P=K)
 
-    t_x = np.degrees(np.arctan(dx / f_x))
-    t_y = np.degrees(np.arctan(dy / f_y))
+    # Camera intrinsic parameters
+    fx = K[0, 0]
+    fy = K[1, 1]
+    cx = K[0, 2]
+    cy = K[1, 2]
 
-    return t_x, t_y
+    x = undistorted_points[0, 0, 0]
+    y = undistorted_points[0, 0, 1]
+
+    angle_x = np.arctan((x - cx) / fx)
+    angle_y = np.arctan((y - cy) / fy)
+
+    return angle_x, angle_y
 
 
 def solvepnp_singletag(detections):
@@ -76,6 +84,20 @@ def solvepnp_singletag(detections):
             )
         else:
             return (Pose(rvecs[0], tvecs[0], errors[0]),)
+
+
+def get_tag_angle_offset(detection: TagObservation) -> IrisTarget:
+    poses = solvepnp_singletag([detection])
+    center_point = np.mean(detection.corners.reshape((4, 2)), axis=0)
+    t_x, t_y = get_angle_offset(center_point[0], center_point[1])
+    return IrisTarget(
+        len(poses) > 1,
+        poses[0].getIrisPose(),
+        poses[1].getIrisPose() if len(poses) > 1 else None,
+        Rotation2d(t_x),
+        Rotation2d(t_y),
+        detection.tag_id,
+    )
 
 
 def solvepnp_multitag(detections):
