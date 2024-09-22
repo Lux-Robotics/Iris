@@ -1,0 +1,33 @@
+name: Build iris-web
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install Dependencies
+        run: |
+          cd iris-web
+          npm install
+
+      - name: Build Project
+        run: |
+          cd iris-web
+          npm run build
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: iris-web/dist
