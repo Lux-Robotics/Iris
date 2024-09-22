@@ -53,13 +53,18 @@ time.sleep(0.2)
 def init_camera():
     if args.mode == 0:
         if state.platform == Platform.IRIS:
+            if settings.capture == "gstreamer":
+                cap = cv2.VideoCapture(0)
+                cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc("M", "J", "P", "G"))
+                cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1600)
+                cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1200)
+                cap.set(cv2.CAP_PROP_FPS, 50)
+                return cap
             return cv2.VideoCapture(11)
         elif state.platform == Platform.DEV:
             return cv2.VideoCapture(0)
             # camera.set(cv2.CAP_PROP_FRAME_WIDTH, resx)
             # camera.set(cv2.CAP_PROP_FRAME_HEIGHT, state.resy)
-        elif settings.capture == "gstreamer":
-            return cv2.VideoCapture(state.gstreamer_pipeline, cv2.CAP_GSTREAMER)
         else:
             # Mode parameter not valid
             logger.error("Program mode invalid")
@@ -193,8 +198,8 @@ while True:
                 detections,
                 new_frame_time,
             )
-        except Exception:
-            logger.warning("Failed to publish nt4 data")
+        except Exception as e:
+            logger.warning("Failed to publish nt4 data" + str(e))
 
     nt_listener.update_data(new_frame_time)
 

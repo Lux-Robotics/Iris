@@ -5,7 +5,7 @@ from typing import List
 from wpimath.geometry import Pose3d
 
 from util.state import save_settings
-from util.vision_types import Pose, TagObservation, IrisPose, IrisTarget
+from util.vision_types import Pose, TagObservation, IrisTarget, IrisResult
 import ntcore
 from ntcore import Topic, Publisher, Subscriber, NetworkTableInstance
 
@@ -38,25 +38,18 @@ class NTInterface:
         inst.setServer(ip)
         inst.startClient4("Iris")
         self.output_table = inst.getTable("/Iris/" + state.device_id)
-        _, self.errors_pub = _add_attribute(
-            self.output_table.getDoubleTopic("reprojection_error"), 0.0
-        )
 
-        self.camera_pose_pub = self.output_table.getStructTopic(
-            "camera_pose", Pose3d
+        self.pose_est_pub = self.output_table.getStructTopic(
+            "cameraPose", IrisResult
         ).publish(ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=False))
 
         self.targets_pub = self.output_table.getStructArrayTopic(
             "targets", IrisTarget
         ).publish(ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=False))
 
-        _, self.tags_pub = _add_attribute(
-            self.output_table.getIntegerArrayTopic("tags_seen"), []
-        )
-
         self.fps_pub = self.output_table.getDoubleTopic("fps").publish()
         _, self.version_pub = _add_attribute(
-            inst.getStringTopic("version"), state.version
+            self.output_table.getStringTopic("version"), state.version
         )
 
         self.config_table = inst.getTable("/Iris/config")
@@ -77,12 +70,16 @@ class NTInterface:
         timestamp: float,
     ) -> None:
         if pose0 is not None:
-            self.camera_pose_pub.set(
-                pose0.get_wpilib(), math.floor(timestamp * 1000000)
+            self.pose_est_pub.set(
+                IrisResult(
+                    pose0.get_wpilib(),
+                    pose0.error,
+                    pose1.get_wpilib() if pose1 is not None else Pose3d(),
+                    pose1.error if pose1 is not None else -1,
+                ),
+                math.floor(timestamp * 1000000),
             )
-            self.errors_pub.set(pose0.error, math.floor(timestamp * 1000000))
         self.fps_pub.set(state.fps, math.floor(timestamp * 1000000))
-        self.tags_pub.set([tag.tag_id for tag in tags], math.floor(timestamp * 1000000))
         self.targets_pub.set(targets, math.floor(timestamp * 1000000))
 
     def get_states(self):
@@ -103,11 +100,10 @@ class NTInterface:
 
 
 class NTListener:
-    # inst = ntcore.NetworkTableInstance.create()
+    inst = ntcore.NetworkTableInstance.create()
 
     def __init__(self):
-        inst = ntcore.NetworkTableInstance.create()
-        # inst = self.inst
+        inst = self.inst
         inst.startServer()
 
         # device config

@@ -91,12 +91,13 @@ def get_tag_angle_offset(detection: TagObservation) -> IrisTarget:
     center_point = np.mean(detection.corners.reshape((4, 2)), axis=0)
     t_x, t_y = get_angle_offset(center_point[0], center_point[1])
     return IrisTarget(
-        len(poses) > 1,
-        poses[0].getIrisPose(),
-        poses[1].getIrisPose() if len(poses) > 1 else None,
+        detection.tag_id,
+        poses[0].get_transform(),
+        poses[0].error,
+        poses[1].get_transform() if len(poses) > 1 else None,
+        poses[1].error if len(poses) > 1 else -1,
         Rotation2d(t_x),
         Rotation2d(t_y),
-        detection.tag_id,
     )
 
 

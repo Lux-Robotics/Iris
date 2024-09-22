@@ -1,4 +1,5 @@
 import dataclasses
+import enum
 import math
 from dataclasses import dataclass
 from typing import Any
@@ -9,22 +10,25 @@ from numpy import ndarray, dtype
 from wpimath.geometry import *
 
 
-@wpiutil.wpistruct.make_wpistruct(name="IrisPose")
-@dataclasses.dataclass
-class IrisPose:
-    pose: Pose3d
-    reprojection_error: wpiutil.wpistruct.double
-
-
 @wpiutil.wpistruct.make_wpistruct(name="IrisTarget")
 @dataclasses.dataclass
 class IrisTarget:
-    ambiguous_pose: bool
-    pose0: IrisPose
-    pose1: IrisPose
-    angle_offset_x: Rotation2d
-    angle_offset_y: Rotation2d
     id: wpiutil.wpistruct.int32
+    primaryTransform: Transform3d
+    primaryReprojError: wpiutil.wpistruct.double
+    secondaryTransform: Transform3d
+    secondaryReprojError: wpiutil.wpistruct.double
+    angleOffsetX: Rotation2d
+    angleOffsetY: Rotation2d
+
+
+@wpiutil.wpistruct.make_wpistruct(name="IrisResult")
+@dataclasses.dataclass
+class IrisResult:
+    primaryPose: Pose3d
+    primaryReprojError: wpiutil.wpistruct.double
+    secondaryPose: Pose3d
+    secondaryReprojError: wpiutil.wpistruct.double
 
 
 @dataclass(frozen=True)
@@ -67,8 +71,9 @@ class Pose:
         world_pose = target_pose.inverse()
         return Pose3d(world_pose.translation(), world_pose.rotation())
 
-    def getIrisPose(self) -> IrisPose:
-        return IrisPose(self.get_wpilib(), self.error)
+    def get_transform(self) -> Transform3d:
+        target_pose = self.get_object_pose()
+        return Transform3d(target_pose.translation(), target_pose.rotation())
 
 
 class TagCoordinates:
