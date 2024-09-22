@@ -60,7 +60,7 @@ def run_cancellable(coro: Coroutine[None, None, Any]):
     except NotImplementedError:
         # signal handlers are not available on Windows, KeyboardInterrupt will be raised instead
         pass
-    except:
+    except Exception:
         pass
 
     try:

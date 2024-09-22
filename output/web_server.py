@@ -1,3 +1,4 @@
+import os
 import shutil
 import subprocess
 import uuid
@@ -5,13 +6,12 @@ import uuid
 import cv2
 import uvicorn
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from util import state
-from util.calibration_util import get_snapshots, calibrate_cameras
-from util.state import exec_dir, settings, platform, Platform, device_id
-from fastapi.staticfiles import StaticFiles
-import os
+from util.calibration_util import calibrate_cameras, get_snapshots
+from util.state import Platform, device_id, exec_dir, platform, settings
 
 
 class HostnameConfig(BaseModel):

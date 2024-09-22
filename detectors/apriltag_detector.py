@@ -1,5 +1,4 @@
 import numpy as np
-import pyapriltags
 
 import util.state as state
 from util.vision_types import TagObservation

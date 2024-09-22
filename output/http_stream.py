@@ -1,7 +1,8 @@
 import cscore
+
+import util.state as state
 from output.pipeline import process_image
 from util.state import settings
-import util.state as state
 
 camera = cscore.CvSource(
     "cvsource",

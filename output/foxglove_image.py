@@ -1,11 +1,10 @@
-from foxglove_schemas_protobuf.CameraCalibration_pb2 import CameraCalibration
 from foxglove_schemas_protobuf.CompressedImage_pb2 import CompressedImage
 from foxglove_schemas_protobuf.ImageAnnotations_pb2 import ImageAnnotations
 from mcap_protobuf.writer import Writer
 
 import util.state as state
 from output.float_message_pb2 import FloatMessage
-from output.foxglove_utils import timestamp, points
+from output.foxglove_utils import points, timestamp
 
 
 def get_image(now: int, buffer: bytes) -> CompressedImage:

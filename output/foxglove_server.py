@@ -7,7 +7,6 @@ from typing import Set, Type
 
 import cv2
 import google.protobuf.message
-from foxglove_schemas_protobuf.CameraCalibration_pb2 import CameraCalibration
 from foxglove_schemas_protobuf.CompressedImage_pb2 import CompressedImage
 from foxglove_schemas_protobuf.FrameTransform_pb2 import FrameTransform
 from foxglove_schemas_protobuf.ImageAnnotations_pb2 import ImageAnnotations
@@ -22,10 +21,9 @@ import output.pipeline
 import util.state as state
 from output.float_message_pb2 import FloatMessage
 from output.foxglove_image import get_frame, get_image
-from output.foxglove_pose import get_pose, get_field
-from output.foxglove_utils import run_cancellable
-from output.foxglove_utils import timestamp
-from util.state import settings, logger
+from output.foxglove_pose import get_field, get_pose
+from output.foxglove_utils import run_cancellable, timestamp
+from util.state import logger, settings
 
 
 def build_file_descriptor_set(
@@ -67,12 +65,10 @@ class FoxgloveWSHandler(logging.Handler):
     def emit(self, record):
         global log
         try:
-            now = time.time_ns()
             log_entry = self.record_to_log(record)
-
             log = log_entry
 
-        except Exception as e:
+        except Exception:
             # Handle any errors that occur during logging
             self.handleError(record)
 

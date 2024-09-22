@@ -1,10 +1,10 @@
+import glob
 import os
 import shutil
 import subprocess
-import glob
 
-from util.state import logger, exec_dir
 import util.state as state
+from util.state import exec_dir, logger
 
 
 def get_snapshots(directory: str = "/tmp/snapshots"):

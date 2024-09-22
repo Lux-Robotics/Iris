@@ -10,9 +10,9 @@ from mcap_protobuf.writer import Writer
 import output.pipeline
 import util.state as state
 from output.foxglove_image import write_frame
-from output.foxglove_pose import write_pose, setup_field
+from output.foxglove_pose import setup_field, write_pose
 from output.foxglove_utils import timestamp
-from util.state import settings, logger
+from util.state import logger, settings
 
 
 class FoxgloveLoggingHandler(logging.Handler):
@@ -37,7 +37,7 @@ class FoxgloveLoggingHandler(logging.Handler):
             self.writer.write_message(
                 topic="/log", log_time=now, message=log_entry, publish_time=now
             )
-        except Exception as e:
+        except Exception:
             # Handle any errors that occur during logging
             self.handleError(record)
 

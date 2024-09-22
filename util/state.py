@@ -8,7 +8,7 @@ import cv2
 import pyapriltags
 from dynaconf import Dynaconf, loaders
 from dynaconf.utils.boxing import DynaBox
-from wpimath.geometry import *
+from wpimath.geometry import Pose3d, Quaternion, Rotation3d, Translation3d
 
 from util.vision_types import TagCoordinates
 

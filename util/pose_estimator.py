@@ -3,39 +3,7 @@ import numpy as np
 from wpimath.geometry import Rotation2d
 
 import util.state as state
-from util.vision_types import Pose, TagObservation, IrisTarget
-
-
-def get_distances(detections):
-    distances = []
-    centerX = 0
-    centerY = 0
-    for detection in detections:
-        corners = detection.corners.reshape((4, 2))
-        world_coords = np.array(
-            [
-                [-state.apriltag_size / 2, state.apriltag_size / 2, 0],
-                [state.apriltag_size / 2, state.apriltag_size / 2, 0],
-                [state.apriltag_size / 2, -state.apriltag_size / 2, 0],
-                [-state.apriltag_size / 2, -state.apriltag_size / 2, 0],
-            ]
-        )
-
-        _, rvecs, tvecs, errors = cv2.solvePnPGeneric(
-            world_coords,
-            corners,
-            np.array(state.settings.calibration.cameraMatrix),
-            distCoeffs=np.array(state.settings.calibration.distCoeffs),
-            flags=cv2.SOLVEPNP_AP3P,
-        )
-
-        distance = (
-            Pose(rvecs[0], tvecs[0], errors[0]).get_object_pose().translation().norm()
-        )
-
-        distances.append(Target2D(distance, theta_x, theta_y))
-
-    return distances, centerX, centerY
+from util.vision_types import IrisTarget, Pose, TagObservation
 
 
 def get_angle_offset(x: float, y: float):

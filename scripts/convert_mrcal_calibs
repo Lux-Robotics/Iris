@@ -2,9 +2,9 @@
 
 import argparse
 import sys
-import toml
 
 import mrcal
+import toml
 
 parser = argparse.ArgumentParser("mrcal_converter")
 

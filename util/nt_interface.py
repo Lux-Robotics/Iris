@@ -2,15 +2,14 @@ import math
 import time
 from typing import List
 
+import ntcore
+from ntcore import NetworkTableInstance, Publisher, Subscriber, Topic
 from wpimath.geometry import Pose3d
 
-from util.state import save_settings
-from util.vision_types import Pose, TagObservation, IrisTarget, IrisResult
-import ntcore
-from ntcore import Topic, Publisher, Subscriber, NetworkTableInstance
-
-import util.v4l2_ctrls
 import util.state as state
+import util.v4l2_ctrls
+from util.state import save_settings
+from util.vision_types import IrisResult, IrisTarget, Pose, TagObservation
 
 
 def _add_attribute(topic: Topic, default_value: any) -> tuple[Subscriber, Publisher]:

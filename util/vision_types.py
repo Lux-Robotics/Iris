@@ -1,13 +1,19 @@
 import dataclasses
-import enum
 import math
 from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
 import wpiutil.wpistruct
-from numpy import ndarray, dtype
-from wpimath.geometry import *
+from numpy import dtype, ndarray
+from wpimath.geometry import (
+    Pose3d,
+    Quaternion,
+    Rotation2d,
+    Rotation3d,
+    Transform3d,
+    Translation3d,
+)
 
 
 @wpiutil.wpistruct.make_wpistruct(name="IrisTarget")

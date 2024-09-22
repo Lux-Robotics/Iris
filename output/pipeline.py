@@ -8,7 +8,6 @@ import util.state as state
 
 
 def process_image(max_resolution):
-    current_time = time.time()
     if state.filtered_detections is None or state.last_frame is None:
         # Timeout so thread doesn't hog CPU
         time.sleep(0.005)
@@ -32,7 +31,6 @@ def process_image(max_resolution):
 
 
 def process_detections(scale):
-    current_time = time.time()
     if state.filtered_detections is None or state.last_frame is None:
         # Timeout so thread doesn't hog CPU
         time.sleep(0.005)
