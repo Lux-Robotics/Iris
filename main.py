@@ -8,7 +8,6 @@ import time
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 import cv2
-import pyapriltags
 
 import detectors.apriltag_detector
 import detectors.aruco_detector
@@ -206,19 +205,12 @@ while True:
 
     if state.detector_update_needed:
         if settings.detector == "apriltag":
-            state.apriltag3_detector = pyapriltags.Detector(
-                families=settings.apriltag3.families,
-                nthreads=settings.apriltag3.threads,
-                quad_decimate=settings.apriltag3.quad_decimate,
-                quad_sigma=settings.apriltag3.quad_sigma,
-                refine_edges=settings.apriltag3.refine_edges,
-            )
+            state.apriltag3_detector = state.get_apriltag3_detector()
             logger.info("Detector updated: " + str(state.apriltag3_detector.params))
 
         elif settings.detector == "aruco":  # Aruco
-            state.aruco_detection_params.aprilTagQuadDecimate = (
-                settings.apriltag3.quad_decimate
-            )
+            state.aruco_detection_params = state.get_aruco_detection_params()
+            state.aruco_dict = state.get_aruco_dict_from_string()
             logger.info("Detector updated: " + str(state.aruco_detection_params))
 
         state.detector_update_needed = False

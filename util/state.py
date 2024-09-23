@@ -100,28 +100,55 @@ if "pipeline" in settings.calibration:
 else:
     gstreamer_pipeline = settings["camera"]["pipeline"]
 
+
 # not constants
-apriltag3_detector = pyapriltags.Detector(
-    families=settings.apriltag3.families,
-    nthreads=settings.apriltag3.threads,
-    quad_decimate=settings.apriltag3.quad_decimate,
-    refine_edges=settings.apriltag3.refine_edges,
-)
+def get_apriltag3_detector() -> pyapriltags.Detector:
+    return pyapriltags.Detector(
+        families=settings.apriltag3.families,
+        nthreads=settings.apriltag3.threads,
+        quad_decimate=settings.apriltag3.quad_decimate,
+        quad_sigma=settings.apriltag3.quad_sigma,
+        refine_edges=settings.apriltag3.refine_edges,
+        decode_sharpening=settings.apriltag3.decode_sharpening,
+    )
 
-aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_APRILTAG_36h11)
 
-aruco_detection_params = cv2.aruco.DetectorParameters()
-aruco_detection_params.useAruco3Detection = settings.aruco.aruco3
-aruco_detection_params.aprilTagQuadDecimate = settings.apriltag3.quad_decimate
-aruco_detection_params.cornerRefinementMethod = (
-    cv2.aruco.CORNER_REFINE_SUBPIX
-    if settings.aruco.corner_refinement
-    else cv2.aruco.CORNER_REFINE_NONE
-)
-aruco_detection_params.relativeCornerRefinmentWinSize = (
-    settings.aruco.relative_refinement_window
-)
-aruco_detection_params.cornerRefinementWinSize = settings.aruco.max_refinement_window
+def get_aruco_dict_from_string(
+    family: str = settings.apriltag3.families,
+) -> cv2.aruco.Dictionary:
+    match family:
+        case "tag36h11":
+            return cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_APRILTAG_36h11)
+        case "tag25h9":
+            return cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_APRILTAG_25h9)
+        case "tag16h5":
+            return cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_APRILTAG_16h5)
+        case _:
+            return cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_APRILTAG_36h11)
+
+
+def get_aruco_detection_params() -> cv2.aruco.DetectorParameters:
+    aruco_detection_params = cv2.aruco.DetectorParameters()
+    aruco_detection_params.useAruco3Detection = settings.aruco.aruco3
+    aruco_detection_params.aprilTagQuadDecimate = settings.apriltag3.quad_decimate
+    aruco_detection_params.cornerRefinementMethod = (
+        cv2.aruco.CORNER_REFINE_SUBPIX
+        if settings.aruco.corner_refinement
+        else cv2.aruco.CORNER_REFINE_NONE
+    )
+    aruco_detection_params.relativeCornerRefinmentWinSize = (
+        settings.aruco.relative_refinement_window
+    )
+    aruco_detection_params.cornerRefinementWinSize = (
+        settings.aruco.max_refinement_window
+    )
+    return aruco_detection_params
+
+
+apriltag3_detector = get_apriltag3_detector()
+
+aruco_dict = get_aruco_dict_from_string()
+aruco_detection_params = get_aruco_detection_params()
 
 detector_update_needed = False
 
