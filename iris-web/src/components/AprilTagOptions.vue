@@ -69,6 +69,52 @@
         </template>
       </v-slider>
       <v-slider
+        v-model="sharpening"
+        class="my-4"
+        color="secondary"
+        hide-details
+        :max="4"
+        :step="0.1"
+      >
+        <template #label>
+          <span class="options-label">Decode Sharpening</span>
+        </template>
+        <template #append>
+          <v-text-field
+            v-model="sharpening"
+            color="secondary"
+            density="compact"
+            hide-details
+            style="width: 80px"
+            type="number"
+            variant="outlined"
+          />
+        </template>
+      </v-slider>
+      <v-slider
+        v-model="decisionMargin"
+        class="my-4"
+        color="secondary"
+        hide-details
+        :max="50"
+        :step="1"
+      >
+        <template #label>
+          <span class="options-label">Decision Margin</span>
+        </template>
+        <template #append>
+          <v-text-field
+            v-model="decisionMargin"
+            color="secondary"
+            density="compact"
+            hide-details
+            style="width: 80px"
+            type="number"
+            variant="outlined"
+          />
+        </template>
+      </v-slider>
+      <v-slider
         v-model="nThreads"
         class="my-4"
         color="secondary"
@@ -140,6 +186,8 @@
   const nThreads = ref(1)
   const tagFamily = ref()
   const detector = ref()
+  const sharpening = ref(0)
+  const decisionMargin = ref(0)
 
   const decimateRef = ref(1.0)
   const blurRef = ref(0.0)
