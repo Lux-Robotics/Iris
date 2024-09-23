@@ -172,7 +172,7 @@ while True:
         elif settings.solvepnp_method == "multitag":
             poses = util.pose_estimator.solvepnp_multitag(filtered_detections)
         elif settings.solvepnp_method == "ransac":
-            poses = util.pose_estimatorsolvepnp_ransac(filtered_detections)
+            poses = util.pose_estimator.solvepnp_ransac(filtered_detections)
         elif settings.solvepnp_method == "ransac_fallback":
             poses = util.pose_estimator.solvepnp_ransac(filtered_detections)
             if poses == ():

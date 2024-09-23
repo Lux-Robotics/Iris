@@ -69,7 +69,7 @@
         </template>
       </v-slider>
       <v-slider
-        v-model="sharpening"
+        v-model="sharpen"
         class="my-4"
         color="secondary"
         hide-details
@@ -81,7 +81,7 @@
         </template>
         <template #append>
           <v-text-field
-            v-model="sharpening"
+            v-model="sharpen"
             color="secondary"
             density="compact"
             hide-details
@@ -186,7 +186,7 @@
   const nThreads = ref(1)
   const tagFamily = ref()
   const detector = ref()
-  const sharpening = ref(0)
+  const sharpen = ref(0)
   const decisionMargin = ref(0)
 
   const decimateRef = ref(1.0)
@@ -194,14 +194,18 @@
   const nThreadsRef = ref(1)
   const tagFamilyRef = ref()
   const detectorRef = ref()
+  const sharpenRef = ref(0)
+  const decisionMarginRef = ref(0)
+
+  const threadsTopic: NetworkTablesTopic<number> = ntcore.createTopic('threads', NetworkTablesTypeInfos.kInteger)
+  const blurTopic: NetworkTablesTopic<number> = ntcore.createTopic('blur', NetworkTablesTypeInfos.kDouble)
+  const decimateTopic: NetworkTablesTopic<number> = ntcore.createTopic('decimate', NetworkTablesTypeInfos.kDouble)
+  const sharpenTopic: NetworkTablesTopic<number> = ntcore.createTopic('decode_sharpen', NetworkTablesTypeInfos.kDouble)
+  const decisionMarginTopic: NetworkTablesTopic<number> = ntcore.createTopic('decision_margin', NetworkTablesTypeInfos.kInteger)
+  const apriltagFamilyTopic: NetworkTablesTopic<string> = ntcore.createTopic('tagFamily', NetworkTablesTypeInfos.kString)
+  const detectorTopic: NetworkTablesTopic<string> = ntcore.createTopic('detector', NetworkTablesTypeInfos.kString)
 
   onMounted(() => {
-    const threadsTopic: NetworkTablesTopic<number> = ntcore.createTopic('threads', NetworkTablesTypeInfos.kInteger)
-    const blurTopic: NetworkTablesTopic<number> = ntcore.createTopic('blur', NetworkTablesTypeInfos.kDouble)
-    const decimateTopic: NetworkTablesTopic<number> = ntcore.createTopic('decimate', NetworkTablesTypeInfos.kDouble)
-    const apriltagFamilyTopic: NetworkTablesTopic<string> = ntcore.createTopic('tagFamily', NetworkTablesTypeInfos.kString)
-    const detectorTopic: NetworkTablesTopic<string> = ntcore.createTopic('detector', NetworkTablesTypeInfos.kString)
-
     watch(detector, async newDetector => {
       detectorRef.value = newDetector
       detectorTopic.publish()
@@ -224,6 +228,18 @@
       decimateRef.value = newDecimate
       decimateTopic.publish()
       decimateTopic.setValue(newDecimate)
+    })
+
+    watch(sharpen, async newSharpen => {
+      sharpenRef.value = newSharpen
+      sharpenTopic.publish()
+      sharpenTopic.setValue(newSharpen)
+    })
+
+    watch(decisionMargin, async newDecisionMargin => {
+      decisionMarginRef.value = newDecisionMargin
+      decisionMarginTopic.publish()
+      decisionMarginTopic.setValue(newDecisionMargin)
     })
 
     watch(tagFamily, async newTagFamily => {
@@ -259,6 +275,20 @@
         decimateRef.value = v
       }
     }, true)
+
+    sharpenTopic.subscribe(v => {
+      if (v !== null && sharpenRef.value !== v) {
+        sharpen.value = v
+        sharpenRef.value = v
+      }
+    })
+
+    decisionMarginTopic.subscribe(v => {
+      if (v !== null && decisionMarginRef.value !== v) {
+        decisionMargin.value = v
+        decisionMarginRef.value = v
+      }
+    })
 
     apriltagFamilyTopic.subscribe(v => {
       if (v !== null && tagFamilyRef.value !== v) {

@@ -148,6 +148,16 @@ class NTListener:
         self.blur_sub, self.blur_pub = _add_attribute(
             inst.getDoubleTopic("blur"), state.settings.apriltag3.quad_sigma
         )
+        self.sharpen_sub, self.sharpen_pub = _add_attribute(
+            inst.getDoubleTopic("decode_sharpen"),
+            state.settings.apriltag3.decode_sharpening,
+        )
+
+        self.decision_margin_sub, self.decision_margin_pub = _add_attribute(
+            inst.getIntegerTopic("decision_margin"),
+            state.settings.apriltag3.decision_margin,
+        )
+
         self.n_threads_sub, self.n_threads_pub = _add_attribute(
             inst.getIntegerTopic("threads"), state.settings.apriltag3.threads
         )
@@ -205,6 +215,32 @@ class NTListener:
                     state.settings.apriltag3,
                     "quad_sigma",
                     event.data.value.getDouble(),
+                ),
+                setattr(state, "detector_update_needed", True),
+                save_settings(),
+            ),
+        )
+        inst.addListener(
+            self.sharpen_sub,
+            ntcore.EventFlags.kValueAll,
+            lambda event: (
+                setattr(
+                    state.settings.apriltag3,
+                    "decode_sharpening",
+                    event.data.value.getDouble(),
+                ),
+                setattr(state, "detector_update_needed", True),
+                save_settings(),
+            ),
+        )
+        inst.addListener(
+            self.decision_margin_sub,
+            ntcore.EventFlags.kValueAll,
+            lambda event: (
+                setattr(
+                    state.settings.apriltag3,
+                    "decision_margin",
+                    event.data.value.getInteger(),
                 ),
                 setattr(state, "detector_update_needed", True),
                 save_settings(),
