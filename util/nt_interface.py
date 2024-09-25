@@ -242,7 +242,6 @@ class NTListener:
                     "decision_margin",
                     event.data.value.getInteger(),
                 ),
-                setattr(state, "detector_update_needed", True),
                 save_settings(),
             ),
         )
