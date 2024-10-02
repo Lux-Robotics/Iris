@@ -95,7 +95,7 @@
     class="mb-4"
     color="secondary"
     hide-details
-    :max="910"
+    :max="909"
     :min="4"
     :step="1"
   >

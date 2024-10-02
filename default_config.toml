@@ -13,7 +13,6 @@ detector = "apriltag"
 #solvepnp_method = "multitag_ap3p"
 solvepnp_method = "ransac"
 ignored_tags = []
-capture = "opencv"
 
 [camera]
 calibration_file = "calibration/002-7_1600x1200.json"
