@@ -1,5 +1,5 @@
 # Map of apriltag location, copied from wpilib
-map = "maps/2024-crescendo.json"
+map = "assets/maps/2024-crescendo.json"
 # Robot IP Address
 team_number = 6036
 

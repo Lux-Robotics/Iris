@@ -1,3 +1,5 @@
+import os.path
+
 from foxglove_schemas_protobuf.Color_pb2 import Color
 from foxglove_schemas_protobuf.FrameTransform_pb2 import FrameTransform
 from foxglove_schemas_protobuf.ModelPrimitive_pb2 import ModelPrimitive
@@ -10,6 +12,7 @@ from google.protobuf.duration_pb2 import Duration
 from mcap_protobuf.writer import Writer
 
 from output.foxglove_utils import timestamp
+from util.state import exec_dir
 from util.vision_types import Pose as IrisPose
 
 
@@ -45,7 +48,7 @@ def write_pose(now: int, pose: IrisPose, frame_id: str, writer: Writer) -> None:
 
 
 def get_field(now: int) -> SceneUpdate:
-    with open("assets/2024_crescendo.glb", mode="rb") as f:  # b is important -> binary
+    with open(os.path.join(exec_dir, "assets/models/2024_crescendo.glb"), mode="rb") as f:  # b is important -> binary
         field_model = f.read()
 
     field = ModelPrimitive(
