@@ -3,6 +3,7 @@ opencv-contrib-python-headless
 pyntcore
 robotpy-cscore
 robotpy-wpimath
+pyapriltags
 fastapi~=0.114.0
 uvicorn~=0.30.6
 dynaconf~=3.2.6
