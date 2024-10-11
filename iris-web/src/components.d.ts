@@ -13,6 +13,7 @@ declare module 'vue' {
     CameraOptions: typeof import('./components/CameraOptions.vue')['default']
     CameraOptionsCard: typeof import('./components/dashboard/CameraOptionsCard.vue')['default']
     CameraStream: typeof import('./components/CameraStream.vue')['default']
+    FieldLayout: typeof import('./components/settings/FieldLayout.vue')['default']
     Graph: typeof import('./components/Graph.vue')['default']
     NetworkSettings: typeof import('./components/settings/NetworkSettings.vue')['default']
     RealTimeGraph: typeof import('./components/dashboard/RealTimeGraph.vue')['default']

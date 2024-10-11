@@ -23,7 +23,4 @@
 </template>
 
 <style scoped>
-.v-img__img {
-  display: block !important;
-}
 </style>
