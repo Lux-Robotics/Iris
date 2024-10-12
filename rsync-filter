@@ -1,0 +1,7 @@
++ /iris-web/
++ /iris-web/dist/
++ /iris-web/dist/**
+- /iris-web/**
+- /.git/
+- /.github/
+- /tools/
