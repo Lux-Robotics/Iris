@@ -48,7 +48,9 @@ def write_pose(now: int, pose: IrisPose, frame_id: str, writer: Writer) -> None:
 
 
 def get_field(now: int) -> SceneUpdate:
-    with open(os.path.join(exec_dir, "assets/models/2024_crescendo.glb"), mode="rb") as f:  # b is important -> binary
+    with open(
+        os.path.join(exec_dir, "assets/models/2024_crescendo.glb"), mode="rb"
+    ) as f:  # b is important -> binary
         field_model = f.read()
 
     field = ModelPrimitive(

@@ -21,14 +21,14 @@
 </template>
 
 <script lang="ts" setup>
-  import { onMounted, ref } from 'vue'
-  import { useDisplay } from 'vuetify'
+import { onMounted, ref } from "vue";
+import { useDisplay } from "vuetify";
 
-  const drawer = ref(false)
+const drawer = ref(false);
 
-  onMounted(() => {
-    drawer.value = useDisplay().mdAndUp.value
-  })
+onMounted(() => {
+	drawer.value = useDisplay().mdAndUp.value;
+});
 </script>
 
 <style scoped>

@@ -169,90 +169,92 @@
 </template>
 
 <script lang="ts" setup>
-  import axios from 'axios'
-  import { computed, onMounted, ref } from 'vue'
-  import { NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
-  import { apiURI, backendConnected, ntcore } from '@/nt-listener'
+import axios from "axios";
+import { computed, onMounted, ref } from "vue";
+import { NetworkTablesTopic, NetworkTablesTypeInfos } from "ntcore-ts-client";
+import { apiURI, backendConnected, ntcore } from "@/nt-listener";
 
-  const robotServerIP = ref('')
-  const robotServerIPRef = ref('')
-  const ipValid = ref(false)
+const robotServerIP = ref("");
+const robotServerIPRef = ref("");
+const ipValid = ref(false);
 
-  const robotServerIPTopic: NetworkTablesTopic<number> = ntcore.createTopic('teamNumber', NetworkTablesTypeInfos.kInteger)
+const robotServerIPTopic: NetworkTablesTopic<number> = ntcore.createTopic(
+	"teamNumber",
+	NetworkTablesTypeInfos.kInteger,
+);
 
-  const hostnameDialog = ref(false)
-  const IPDialog = ref(false)
+const hostnameDialog = ref(false);
+const IPDialog = ref(false);
 
-  const hostname = ref('')
-  // const hostnameRef = ref('')
+const hostname = ref("");
+// const hostnameRef = ref('')
 
-  const ipAssignmentMethod = ref('dhcp')
+const ipAssignmentMethod = ref("dhcp");
 
-  const ipPrefix = computed<string>(() => {
-    const teamNum = parseInt(robotServerIPRef.value, 10)
-    if (isNaN(teamNum)) {
-      return ''
-    }
-    const p1 = Math.floor(teamNum / 100)
-    const p2 = teamNum % 100
-    return `10.${p1}.${p2}.`
-  })
+const ipPrefix = computed<string>(() => {
+	const teamNum = parseInt(robotServerIPRef.value, 10);
+	if (isNaN(teamNum)) {
+		return "";
+	}
+	const p1 = Math.floor(teamNum / 100);
+	const p2 = teamNum % 100;
+	return `10.${p1}.${p2}.`;
+});
 
-  const updateServerIP = () => {
-    if (backendConnected.value) {
-      robotServerIPTopic.publish()
-      robotServerIPTopic.setValue(parseInt(robotServerIP.value))
-    }
-  }
+const updateServerIP = () => {
+	if (backendConnected.value) {
+		robotServerIPTopic.publish();
+		robotServerIPTopic.setValue(parseInt(robotServerIP.value));
+	}
+};
 
-  const rules = [
-    (v: any) => !!v || 'Number is required',
-    (v: any) => (v && !isNaN(v)) || 'Must be a number',
-    (v: any) => (v && v >= 1 && v <= 25599) || 'Team must be between 1 and 25599',
-  ]
+const rules = [
+	(v: any) => !!v || "Number is required",
+	(v: any) => (v && !isNaN(v)) || "Must be a number",
+	(v: any) => (v && v >= 1 && v <= 25599) || "Team must be between 1 and 25599",
+];
 
-  const validate = () => {
-    for (const rule of rules) {
-      const result = rule(robotServerIP.value)
-      if (result !== true) {
-        ipValid.value = false
-        return
-      }
-    }
-    ipValid.value = true
-  }
+const validate = () => {
+	for (const rule of rules) {
+		const result = rule(robotServerIP.value);
+		if (result !== true) {
+			ipValid.value = false;
+			return;
+		}
+	}
+	ipValid.value = true;
+};
 
-  interface HostnameConfig {
-    hostname: string;
-  }
+interface HostnameConfig {
+	hostname: string;
+}
 
-  async function requestHostnameUpdate () {
-    const message: HostnameConfig = { hostname: hostname.value }
-    try {
-      const response = await axios.post(apiURI + '/api/hostname', message)
-      console.log('Success:', response.data)
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          console.error('Error:', error.response.data)
-        } else {
-          console.error('Error:', error.message)
-        }
-      } else {
-        console.error('Unexpected error:', error)
-      }
-    }
-  }
+async function requestHostnameUpdate() {
+	const message: HostnameConfig = { hostname: hostname.value };
+	try {
+		const response = await axios.post(apiURI + "/api/hostname", message);
+		console.log("Success:", response.data);
+	} catch (error) {
+		if (axios.isAxiosError(error)) {
+			if (error.response) {
+				console.error("Error:", error.response.data);
+			} else {
+				console.error("Error:", error.message);
+			}
+		} else {
+			console.error("Unexpected error:", error);
+		}
+	}
+}
 
-  onMounted(() => {
-    robotServerIPTopic.subscribe(v => {
-      if (v !== null && robotServerIPRef.value !== v.toString()) {
-        robotServerIP.value = v.toString()
-        robotServerIPRef.value = v.toString()
-      }
-    }, true)
-  })
-
+onMounted(() => {
+	robotServerIPTopic.subscribe((v) => {
+		if (v !== null && robotServerIPRef.value !== v.toString()) {
+			robotServerIP.value = v.toString();
+			robotServerIPRef.value = v.toString();
+		}
+	}, true);
+});
 </script>
 
 <style scoped>

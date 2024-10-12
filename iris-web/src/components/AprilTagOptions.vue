@@ -148,155 +148,176 @@
 </template>
 
 <script lang="ts" setup>
-  import { ntcore } from '@/nt-listener'
-  import { NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
-  import { onMounted, ref, watch } from 'vue'
+import { ntcore } from "@/nt-listener";
+import { NetworkTablesTopic, NetworkTablesTypeInfos } from "ntcore-ts-client";
+import { onMounted, ref, watch } from "vue";
 
-  const detectors = [
-    {
-      title: 'AprilTag 3',
-      value: 'apriltag',
-      subtitle: 'More accurate corners, lower framerate',
-    },
-    {
-      title: 'Aruco',
-      value: 'aruco',
-      subtitle: 'Less accurate corners, higher framerate',
-    },
-    {
-      title: 'Disabled',
-      value: 'disabled',
-      subtitle: 'Disable AprilTag detection',
-    },
-  ]
-  const tagFamilies = [
-    {
-      title: 'tag36h11',
-      subtitle: 'Used in FRC 2024 and later',
-    },
-    'tag25h9',
-    {
-      title: 'tag16h5',
-      subtitle: 'Used in FRC 2023',
-    },
-  ]
+const detectors = [
+	{
+		title: "AprilTag 3",
+		value: "apriltag",
+		subtitle: "More accurate corners, lower framerate",
+	},
+	{
+		title: "Aruco",
+		value: "aruco",
+		subtitle: "Less accurate corners, higher framerate",
+	},
+	{
+		title: "Disabled",
+		value: "disabled",
+		subtitle: "Disable AprilTag detection",
+	},
+];
+const tagFamilies = [
+	{
+		title: "tag36h11",
+		subtitle: "Used in FRC 2024 and later",
+	},
+	"tag25h9",
+	{
+		title: "tag16h5",
+		subtitle: "Used in FRC 2023",
+	},
+];
 
-  const decimate = ref(1.0)
-  const blur = ref(0.0)
-  const nThreads = ref(1)
-  const tagFamily = ref()
-  const detector = ref()
-  const sharpen = ref(0)
-  const decisionMargin = ref(0)
+const decimate = ref(1.0);
+const blur = ref(0.0);
+const nThreads = ref(1);
+const tagFamily = ref();
+const detector = ref();
+const sharpen = ref(0);
+const decisionMargin = ref(0);
 
-  const decimateRef = ref(1.0)
-  const blurRef = ref(0.0)
-  const nThreadsRef = ref(1)
-  const tagFamilyRef = ref()
-  const detectorRef = ref()
-  const sharpenRef = ref(0)
-  const decisionMarginRef = ref(0)
+const decimateRef = ref(1.0);
+const blurRef = ref(0.0);
+const nThreadsRef = ref(1);
+const tagFamilyRef = ref();
+const detectorRef = ref();
+const sharpenRef = ref(0);
+const decisionMarginRef = ref(0);
 
-  const threadsTopic: NetworkTablesTopic<number> = ntcore.createTopic('threads', NetworkTablesTypeInfos.kInteger)
-  const blurTopic: NetworkTablesTopic<number> = ntcore.createTopic('blur', NetworkTablesTypeInfos.kDouble)
-  const decimateTopic: NetworkTablesTopic<number> = ntcore.createTopic('decimate', NetworkTablesTypeInfos.kDouble)
-  const sharpenTopic: NetworkTablesTopic<number> = ntcore.createTopic('decode_sharpen', NetworkTablesTypeInfos.kDouble)
-  const decisionMarginTopic: NetworkTablesTopic<number> = ntcore.createTopic('decision_margin', NetworkTablesTypeInfos.kInteger)
-  const apriltagFamilyTopic: NetworkTablesTopic<string> = ntcore.createTopic('tagFamily', NetworkTablesTypeInfos.kString)
-  const detectorTopic: NetworkTablesTopic<string> = ntcore.createTopic('detector', NetworkTablesTypeInfos.kString)
+const threadsTopic: NetworkTablesTopic<number> = ntcore.createTopic(
+	"threads",
+	NetworkTablesTypeInfos.kInteger,
+);
+const blurTopic: NetworkTablesTopic<number> = ntcore.createTopic(
+	"blur",
+	NetworkTablesTypeInfos.kDouble,
+);
+const decimateTopic: NetworkTablesTopic<number> = ntcore.createTopic(
+	"decimate",
+	NetworkTablesTypeInfos.kDouble,
+);
+const sharpenTopic: NetworkTablesTopic<number> = ntcore.createTopic(
+	"decode_sharpen",
+	NetworkTablesTypeInfos.kDouble,
+);
+const decisionMarginTopic: NetworkTablesTopic<number> = ntcore.createTopic(
+	"decision_margin",
+	NetworkTablesTypeInfos.kInteger,
+);
+const apriltagFamilyTopic: NetworkTablesTopic<string> = ntcore.createTopic(
+	"tagFamily",
+	NetworkTablesTypeInfos.kString,
+);
+const detectorTopic: NetworkTablesTopic<string> = ntcore.createTopic(
+	"detector",
+	NetworkTablesTypeInfos.kString,
+);
 
-  onMounted(() => {
-    watch(detector, async newDetector => {
-      detectorRef.value = newDetector
-      detectorTopic.publish()
-      detectorTopic.setValue(newDetector)
-    })
+onMounted(() => {
+	watch(detector, async (newDetector) => {
+		detectorRef.value = newDetector;
+		detectorTopic.publish();
+		detectorTopic.setValue(newDetector);
+	});
 
-    watch(nThreads, async newNThreads => {
-      nThreadsRef.value = newNThreads
-      threadsTopic.publish()
-      threadsTopic.setValue(newNThreads)
-    })
+	watch(nThreads, async (newNThreads) => {
+		nThreadsRef.value = newNThreads;
+		threadsTopic.publish();
+		threadsTopic.setValue(newNThreads);
+	});
 
-    watch(blur, async newBlur => {
-      blurRef.value = newBlur
-      blurTopic.publish()
-      blurTopic.setValue(newBlur)
-    })
+	watch(blur, async (newBlur) => {
+		blurRef.value = newBlur;
+		blurTopic.publish();
+		blurTopic.setValue(newBlur);
+	});
 
-    watch(decimate, async newDecimate => {
-      decimateRef.value = newDecimate
-      decimateTopic.publish()
-      decimateTopic.setValue(newDecimate)
-    })
+	watch(decimate, async (newDecimate) => {
+		decimateRef.value = newDecimate;
+		decimateTopic.publish();
+		decimateTopic.setValue(newDecimate);
+	});
 
-    watch(sharpen, async newSharpen => {
-      sharpenRef.value = newSharpen
-      sharpenTopic.publish()
-      sharpenTopic.setValue(newSharpen)
-    })
+	watch(sharpen, async (newSharpen) => {
+		sharpenRef.value = newSharpen;
+		sharpenTopic.publish();
+		sharpenTopic.setValue(newSharpen);
+	});
 
-    watch(decisionMargin, async newDecisionMargin => {
-      decisionMarginRef.value = newDecisionMargin
-      decisionMarginTopic.publish()
-      decisionMarginTopic.setValue(newDecisionMargin)
-    })
+	watch(decisionMargin, async (newDecisionMargin) => {
+		decisionMarginRef.value = newDecisionMargin;
+		decisionMarginTopic.publish();
+		decisionMarginTopic.setValue(newDecisionMargin);
+	});
 
-    watch(tagFamily, async newTagFamily => {
-      tagFamilyRef.value = newTagFamily
-      apriltagFamilyTopic.publish()
-      apriltagFamilyTopic.setValue(newTagFamily)
-    })
+	watch(tagFamily, async (newTagFamily) => {
+		tagFamilyRef.value = newTagFamily;
+		apriltagFamilyTopic.publish();
+		apriltagFamilyTopic.setValue(newTagFamily);
+	});
 
-    detectorTopic.subscribe(v => {
-      if (v !== null && detectorRef.value !== v) {
-        detector.value = v
-        detectorRef.value = v
-      }
-    }, true)
+	detectorTopic.subscribe((v) => {
+		if (v !== null && detectorRef.value !== v) {
+			detector.value = v;
+			detectorRef.value = v;
+		}
+	}, true);
 
-    threadsTopic.subscribe(v => {
-      if (v !== null && nThreadsRef.value !== v) {
-        nThreads.value = v
-        nThreadsRef.value = v
-      }
-    }, true)
+	threadsTopic.subscribe((v) => {
+		if (v !== null && nThreadsRef.value !== v) {
+			nThreads.value = v;
+			nThreadsRef.value = v;
+		}
+	}, true);
 
-    blurTopic.subscribe(v => {
-      if (v !== null && blurRef.value !== v) {
-        blur.value = v
-        blurRef.value = v
-      }
-    }, true)
+	blurTopic.subscribe((v) => {
+		if (v !== null && blurRef.value !== v) {
+			blur.value = v;
+			blurRef.value = v;
+		}
+	}, true);
 
-    decimateTopic.subscribe(v => {
-      if (v !== null && decimateRef.value !== v) {
-        decimate.value = v
-        decimateRef.value = v
-      }
-    }, true)
+	decimateTopic.subscribe((v) => {
+		if (v !== null && decimateRef.value !== v) {
+			decimate.value = v;
+			decimateRef.value = v;
+		}
+	}, true);
 
-    sharpenTopic.subscribe(v => {
-      if (v !== null && sharpenRef.value !== v) {
-        sharpen.value = v
-        sharpenRef.value = v
-      }
-    })
+	sharpenTopic.subscribe((v) => {
+		if (v !== null && sharpenRef.value !== v) {
+			sharpen.value = v;
+			sharpenRef.value = v;
+		}
+	});
 
-    decisionMarginTopic.subscribe(v => {
-      if (v !== null && decisionMarginRef.value !== v) {
-        decisionMargin.value = v
-        decisionMarginRef.value = v
-      }
-    })
+	decisionMarginTopic.subscribe((v) => {
+		if (v !== null && decisionMarginRef.value !== v) {
+			decisionMargin.value = v;
+			decisionMarginRef.value = v;
+		}
+	});
 
-    apriltagFamilyTopic.subscribe(v => {
-      if (v !== null && tagFamilyRef.value !== v) {
-        tagFamily.value = v
-        tagFamilyRef.value = v
-      }
-    }, true)
-  })
+	apriltagFamilyTopic.subscribe((v) => {
+		if (v !== null && tagFamilyRef.value !== v) {
+			tagFamily.value = v;
+			tagFamilyRef.value = v;
+		}
+	}, true);
+});
 </script>
 
 <style>

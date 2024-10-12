@@ -1,21 +1,20 @@
 <script lang="ts" setup>
-  import { backendConnected, backendURI } from '@/nt-listener'
-  import { onMounted, onUnmounted } from 'vue'
+import { backendConnected, backendURI } from "@/nt-listener";
+import { onMounted, onUnmounted } from "vue";
 
-  const logoSrc = new URL('@/assets/loading.jpeg', import.meta.url).href
-  const streamSrcURL = 'http://' + backendURI + ':1180/stream.mjpg'
+const logoSrc = new URL("@/assets/loading.jpeg", import.meta.url).href;
+const streamSrcURL = "http://" + backendURI + ":1180/stream.mjpg";
 
-  const streamSrc = computed<string>(() => {
-    return backendConnected.value ? streamSrcURL : logoSrc
-  })
+const streamSrc = computed<string>(() => {
+	return backendConnected.value ? streamSrcURL : logoSrc;
+});
 
-  onMounted(() => {
-    console.log('mounted')
-  })
-  onUnmounted(() => {
-    console.log('unmounted')
-  })
-
+onMounted(() => {
+	console.log("mounted");
+});
+onUnmounted(() => {
+	console.log("unmounted");
+});
 </script>
 
 <template>

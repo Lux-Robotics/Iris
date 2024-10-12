@@ -21,7 +21,7 @@ install-libraries:
     pip install -r requirements.txt --extra-index-url=https://iris-vision.github.io/pyapriltags/simple/
 
 lint:
-    cd iris-web && npx eslint src/ --fix
+    cd iris-web && npx @biomejs/biome format --write ./src
     isort .
     black .
     flake8

@@ -1,76 +1,88 @@
 <script setup lang="ts">
-  import { apiURI, ntcore } from '@/nt-listener'
-  import axios from 'axios'
-  import { NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
-  import { onMounted } from 'vue'
+import { apiURI, ntcore } from "@/nt-listener";
+import axios from "axios";
+import { NetworkTablesTopic, NetworkTablesTypeInfos } from "ntcore-ts-client";
+import { onMounted } from "vue";
 
-  const calibrationDialog = ref(false)
-  const page = ref(1)
-  const progress = ref(0)
-  const failProgress = ref(0)
-  const numSnapshots = ref(0)
+const calibrationDialog = ref(false);
+const page = ref(1);
+const progress = ref(0);
+const failProgress = ref(0);
+const numSnapshots = ref(0);
 
-  function takeSnapshot () {
-    axios.post(apiURI + '/api/take-snapshot', {})
-      .then(response => {
-        console.log(response.data)
-      })
-      .catch(error => {
-        console.error('Error occurred:', error)
-      })
-  }
+function takeSnapshot() {
+	axios
+		.post(apiURI + "/api/take-snapshot", {})
+		.then((response) => {
+			console.log(response.data);
+		})
+		.catch((error) => {
+			console.error("Error occurred:", error);
+		});
+}
 
-  function clearSnapshots () {
-    axios.post(apiURI + '/api/clear-snapshots', {})
-      .then(response => {
-        console.log(response.data)
-      })
-      .catch(error => {
-        console.error('Error occurred:', error)
-      })
-  }
+function clearSnapshots() {
+	axios
+		.post(apiURI + "/api/clear-snapshots", {})
+		.then((response) => {
+			console.log(response.data);
+		})
+		.catch((error) => {
+			console.error("Error occurred:", error);
+		});
+}
 
-  function calibrate () {
-    axios.post(apiURI + '/api/calibrate', {})
-      .then(response => {
-        console.log(response.data)
-      })
-      .catch(error => {
-        console.error('Error occurred:', error)
-      })
-    page.value += 1
-  }
+function calibrate() {
+	axios
+		.post(apiURI + "/api/calibrate", {})
+		.then((response) => {
+			console.log(response.data);
+		})
+		.catch((error) => {
+			console.error("Error occurred:", error);
+		});
+	page.value += 1;
+}
 
-  function cancelCalibration () {
-    clearSnapshots()
-  }
+function cancelCalibration() {
+	clearSnapshots();
+}
 
-  function saveCalibration (name: string) {
-    clearSnapshots()
-    axios.post(apiURI + '/api/save-calibration', { filename: name })
-  }
+function saveCalibration(name: string) {
+	clearSnapshots();
+	axios.post(apiURI + "/api/save-calibration", { filename: name });
+}
 
-  onMounted(() => {
-    const progressTopic: NetworkTablesTopic<number> = ntcore.createTopic('calibrationProgress', NetworkTablesTypeInfos.kInteger)
-    const failProgressTopic: NetworkTablesTopic<number> = ntcore.createTopic('calibrationProgress', NetworkTablesTypeInfos.kInteger)
-    const snapshotsTopic: NetworkTablesTopic<string[]> = ntcore.createTopic('snapshots', NetworkTablesTypeInfos.kStringArray)
+onMounted(() => {
+	const progressTopic: NetworkTablesTopic<number> = ntcore.createTopic(
+		"calibrationProgress",
+		NetworkTablesTypeInfos.kInteger,
+	);
+	const failProgressTopic: NetworkTablesTopic<number> = ntcore.createTopic(
+		"calibrationProgress",
+		NetworkTablesTypeInfos.kInteger,
+	);
+	const snapshotsTopic: NetworkTablesTopic<string[]> = ntcore.createTopic(
+		"snapshots",
+		NetworkTablesTypeInfos.kStringArray,
+	);
 
-    progressTopic.subscribe(v => {
-      if (v !== null) {
-        progress.value = v
-      }
-    })
-    failProgressTopic.subscribe(v => {
-      if (v !== null) {
-        failProgress.value = v
-      }
-    })
-    snapshotsTopic.subscribe(v => {
-      if (v !== null) {
-        numSnapshots.value = v.length
-      }
-    })
-  })
+	progressTopic.subscribe((v) => {
+		if (v !== null) {
+			progress.value = v;
+		}
+	});
+	failProgressTopic.subscribe((v) => {
+		if (v !== null) {
+			failProgress.value = v;
+		}
+	});
+	snapshotsTopic.subscribe((v) => {
+		if (v !== null) {
+			numSnapshots.value = v.length;
+		}
+	});
+});
 </script>
 
 <template>
