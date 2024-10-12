@@ -2,12 +2,12 @@
   <div class="scrollable-area pa-2">
     <v-row dense>
       <v-col lg="8" md="12" sm="12">
-        <CameraCard />
+        <camera-card />
       </v-col>
       <v-col lg="4" md="12" sm="12">
-        <CameraOptionsCard />
+        <camera-options-card />
         <v-spacer class="py-1" />
-        <AprilTagOptions />
+        <april-tag-options />
       </v-col>
     </v-row>
   </div>

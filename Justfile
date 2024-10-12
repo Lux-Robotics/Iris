@@ -24,4 +24,7 @@ lint:
     cd iris-web && npx @biomejs/biome format --write ./src
     isort .
     black .
-    flake8
+    flake8 .
+
+test:
+    python3 main.py --video assets/2024speaker.webm

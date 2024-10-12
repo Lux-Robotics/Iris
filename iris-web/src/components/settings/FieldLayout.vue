@@ -3,20 +3,20 @@
 </script>
 
 <template>
-  <h2 class="my-3">Field Layout</h2>
+  <v-spacer class="my-3" />
   <v-card border variant="elevated">
     <template #text>
       <div class="edit-settings">
         <div>
-          <h3>Offline Software Update</h3>
-          <span>Updates can be found at </span>
-          <a href="https://github.com/" target="_blank">https://example.com/updates</a>
+          <h3>AprilTag Layout</h3>
+          <span>Compatible with </span>
+          <a href="https://github.com/wpilibsuite/allwpilib/tree/main/apriltag/src/main/native/resources/edu/wpi/first/apriltag" target="_blank">WPILib .json field maps</a>
         </div>
         <v-spacer />
         <v-btn
           class="text-none"
           color="primary"
-          text="Select Update .zip"
+          text="Manage Layouts"
           variant="flat"
         />
       </div>
@@ -25,5 +25,4 @@
 </template>
 
 <style scoped>
-
 </style>
