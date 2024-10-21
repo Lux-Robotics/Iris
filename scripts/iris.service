@@ -1,0 +1,13 @@
+[Unit]
+Description=Iris
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/root/Iris
+ExecStart=/usr/bin/bash /root/Iris/main.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
