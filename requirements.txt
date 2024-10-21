@@ -16,7 +16,7 @@ mcap
 mcap-protobuf-support~=0.5.1
 foxglove-schemas-protobuf
 foxglove-websocket
-typing
+typing===3.7.4.1
 asyncio~=3.4.3
 
 argparse~=1.4.0
