@@ -1,7 +1,8 @@
 package: build-web copy-files download-deploy-deps
 
 copy-files:
-    rsync -arvh --exclude-from="./.gitignore" --filter="merge rsync-filter" ./ dist/ --delete --delete-excluded
+    mkdir -p ./dist/Iris
+    rsync -arvh --exclude-from="./.gitignore" --filter="merge rsync-filter" ./ dist/Iris/ --delete --delete-excluded
 
 build-web:
     cd iris-web && npm install && npm run build
@@ -42,7 +43,7 @@ test: build-web
     python3 main.py --video assets/2024speaker.webm
 
 deploy remote: package
-    ssh radxa@{{remote}} "sudo systemctl stop Iris"
-    rsync -arvh dist/ {{remote}}:/root/Iris
-    ssh radxa@{{remote}} "source /root/Iris/venv/bin/activate && pip install --upgrade /root/Iris/wheels/*"
-    ssh radxa@{{remote}} "sudo systemctl start Iris"
+    ssh root@{{remote}} "systemctl stop Iris"
+    rsync -arvh dist/* {{remote}}:/app/
+    ssh root@{{remote}} "cd /app/ && just install"
+    ssh root@{{remote}} "systemctl start Iris"

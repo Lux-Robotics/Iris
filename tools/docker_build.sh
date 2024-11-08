@@ -9,12 +9,12 @@ BUILD_DIR="./build"
 read -p "Enter the version string (e.g., 0.1.1): " VERSION
 
 # Update the version in package.json using jq
-if jq --arg v "v$VERSION" '.version = $v' "$PACKAGE_JSON_PATH" > tmp.$$.json && mv tmp.$$.json "$PACKAGE_JSON_PATH"; then
-  echo "Updated package.json with version v$VERSION"
-else
-  echo "Failed to update package.json"
-  exit 1
-fi
+#if jq --arg v "v$VERSION" '.version = $v' "$PACKAGE_JSON_PATH" > tmp.$$.json && mv tmp.$$.json "$PACKAGE_JSON_PATH"; then
+#  echo "Updated package.json with version v$VERSION"
+#else
+#  echo "Failed to update package.json"
+#  exit 1
+#fi
 
 mkdir -p "$BUILD_DIR"
 
