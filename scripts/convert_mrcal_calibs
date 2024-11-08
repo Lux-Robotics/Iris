@@ -31,6 +31,7 @@ intrinsic_matrix_opencv = [
 distortions_opencv = intrinsics_mrcal[4:].tolist()
 
 calibration_out = {
+    "lensmodel": "LENSMODEL_OPENCV8",
     "resolution": [x_res, y_res],
     "cameraMatrix": intrinsic_matrix_opencv,
     "distCoeffs": distortions_opencv,

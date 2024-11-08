@@ -1,9 +1,9 @@
 import enum
 import json
-import tomllib
 import logging
 import os
 import subprocess
+import tomllib
 
 import cv2
 import pyapriltags
@@ -37,6 +37,7 @@ def load_calibration(settings):
         calibration = tomllib.load(c)
     print(calibration)
     return {"calibration": calibration}
+
 
 def get_git_info():
     try:
