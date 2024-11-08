@@ -172,6 +172,10 @@ class NTListener:
         _, self.snapshots_pub = _add_attribute(
             inst.getStringArrayTopic("snapshots"), state.snapshots
         )
+        _, self.current_calibration_pub = _add_attribute(
+            inst.getStringTopic("current_calibration"),
+            state.settings.camera.calibration_file,
+        )
 
         # TODO: switch to MultiSubscriber?
         inst.addListener(
