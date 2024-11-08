@@ -33,7 +33,7 @@ logger.info("Logger initialized")
 
 def load_calibration(settings):
     """Hook to load calibration data into settings."""
-    with open(os.path.join(exec_dir, settings.camera.calibration_file), "rb") as c:
+    with open(os.path.join(exec_dir, "calibration", settings.camera.calibration_file, "calibration.toml"), "rb") as c:
         calibration = tomllib.load(c)
     print(calibration)
     return {"calibration": calibration}

@@ -219,6 +219,11 @@ app.mount(
 
 app.mount("/snapshots", StaticFiles(directory="/tmp/snapshots"), name="snapshots")
 
+app.mount(
+    "/calibrations",
+    StaticFiles(directory=os.path.join(exec_dir, "calibration")),
+    name="calibrations",
+)
 
 app.mount(
     "/",
