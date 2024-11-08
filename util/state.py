@@ -1,5 +1,6 @@
 import enum
 import json
+import tomllib
 import logging
 import os
 import subprocess
@@ -32,10 +33,10 @@ logger.info("Logger initialized")
 
 def load_calibration(settings):
     """Hook to load calibration data into settings."""
-    with open(os.path.join(exec_dir, settings.camera.calibration_file), "r") as c:
-        calibration = json.load(c)
+    with open(os.path.join(exec_dir, settings.camera.calibration_file), "rb") as c:
+        calibration = tomllib.load(c)
+    print(calibration)
     return {"calibration": calibration}
-
 
 def get_git_info():
     try:
