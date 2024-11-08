@@ -1,4 +1,4 @@
-name: Build iris-web
+name: Build project
 
 on:
   push:
@@ -16,18 +16,12 @@ jobs:
         with:
           node-version: '16'
 
-      - name: Install Dependencies
-        run: |
-          cd iris-web
-          npm install
-
       - name: Build Project
-        run: |
-          cd iris-web
-          npm run build
+        uses: taiki-e/install-action@just
+        run: just package
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build
-          path: iris-web/dist
+          path: dist/
