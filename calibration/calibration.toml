@@ -1,0 +1,9 @@
+# generated on 2024-09-15 05:29:14 with   /usr/bin/mrcal-calibrate-cameras --corners-cache=corners.vnl --lensmodel=LENSMODEL_OPENCV8 --focal=900 --object-spacing=0.012 --object-width-n=14 '/tmp/snapshots/*.png'
+# RMS reprojection error: 0.2 pixels
+# Worst residual (by measurement): 0.9 pixels
+# Noutliers: 4 out of 1568 total points: 0.3% of the data
+# calobject_warp = [8.80739636e-05 2.40585152e-04]
+
+resolution = [ 640, 480,]
+cameraMatrix = [ [ "369.9894827", 0, "340.9537583",], [ 0, "444.684046", "232.2065861",], [ 0, 0, 1,],]
+distCoeffs = [ -0.1851498102, 0.04186957023, 0.0008163433465, 0.001160433211, 0.3773219996, -0.2963804692, 0.2419370985, 0.3086207349,]
