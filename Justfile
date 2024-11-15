@@ -4,6 +4,9 @@ copy-files:
     mkdir -p ./dist/Iris
     rsync -arvh --exclude-from="./.gitignore" --filter="merge rsync-filter" ./ dist/Iris/ --delete --delete-excluded
 
+compress:
+    tar -cf - ./dist | xz -z -T0 > archive.tar.xz
+
 build-web:
     cd iris-web && npm install && npm run build
 
@@ -42,8 +45,11 @@ lint:
 test: build-web
     python3 main.py --video assets/2024speaker.webm
 
-deploy remote: package
-    ssh root@{{remote}} "systemctl stop Iris"
-    rsync -arvh dist/* {{remote}}:/app/
-    ssh root@{{remote}} "cd /app/ && just install"
-    ssh root@{{remote}} "systemctl start Iris"
+lock-reqs:
+    pip-compile requirements.txt --output-file requirements_lock.txt
+
+deploy remote:
+    ssh root@{{remote}} "systemctl stop iris"
+    rsync -arvh --delete --exclude='venv/' dist/* root@{{remote}}:/app/
+    ssh root@{{remote}} "cd /app/ && source venv/bin/activate && pip install pip-tools --no-index --find-links=./wheels/ && pip-sync --no-index --find-links=./wheels iris/requirements_lock.txt"
+    ssh root@{{remote}} "systemctl start iris"

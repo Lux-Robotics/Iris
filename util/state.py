@@ -2,6 +2,7 @@ import enum
 import json
 import logging
 import os
+import shutil
 import subprocess
 import tomllib
 
@@ -9,6 +10,7 @@ import cv2
 import pyapriltags
 from dynaconf import Dynaconf, loaders
 from dynaconf.utils.boxing import DynaBox
+from platformdirs import site_config_dir
 from wpimath.geometry import Pose3d, Quaternion, Rotation3d, Translation3d
 
 from util.vision_types import TagCoordinates
@@ -20,6 +22,7 @@ class Platform(enum.Enum):
 
 
 exec_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+config_dir = site_config_dir(appname="iris", appauthor="irisvision")
 
 logging.basicConfig(
     level="INFO",
@@ -33,9 +36,15 @@ logger.info("Logger initialized")
 
 def load_calibration(settings):
     """Hook to load calibration data into settings."""
+    if not os.path.exists(os.path.join(config_dir, "calibration", "test")):
+        shutil.copytree(
+            os.path.join(exec_dir, "calibration"),
+            os.path.join(config_dir, "calibration"),
+            dirs_exist_ok=True,
+        )
     with open(
         os.path.join(
-            exec_dir,
+            config_dir,
             "calibration",
             settings.camera.calibration_file,
             "calibration.toml",
@@ -47,6 +56,7 @@ def load_calibration(settings):
     return {"calibration": calibration}
 
 
+# TODO: fix
 def get_git_info():
     try:
         # Run the git command to get the latest tag description

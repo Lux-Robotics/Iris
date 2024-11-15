@@ -65,7 +65,9 @@ pathspec==0.12.1
 pip-tools==7.4.1
     # via -r requirements.txt
 platformdirs==4.3.6
-    # via black
+    # via
+    #   -r requirements.txt
+    #   black
 protobuf==5.28.2
     # via
     #   foxglove-schemas-protobuf
