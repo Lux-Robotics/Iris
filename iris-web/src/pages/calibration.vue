@@ -53,13 +53,13 @@
     <v-divider />
     <v-card-text>
       <v-row dense>
-        <v-col cols="12" md="8" sm="12">
+        <v-col cols="12" md="6" sm="12">
+          <h2>Current Calibration (Applied)</h2>
+          <pre class="scrollable-text my-2">{{ text }}</pre>
+          <v-select v-model="imageSelection" :items="images" variant="outlined" />
           <v-img class="svg-background" :src="imgSrc" />
         </v-col>
-        <v-col cols="12" md="4" sm="12">
-          <v-select v-model="imageSelection" :items="images" variant="outlined" />
-          <pre class="scrollable-text">{{ text }}</pre>
-        </v-col>
+        <!--        <v-col cols="12" md="8" sm="12" />-->
       </v-row>
     </v-card-text>
   </v-card>

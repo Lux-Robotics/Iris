@@ -53,7 +53,10 @@ time.sleep(0.2)
 def init_camera():
     if args.mode == 0:
         if state.platform == Platform.IRIS:
-            return cv2.VideoCapture(11)
+            cap = cv2.VideoCapture(11)
+            cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 800)
+            return cap
         elif state.platform == Platform.DEV:
             return cv2.VideoCapture(0)
         else:
