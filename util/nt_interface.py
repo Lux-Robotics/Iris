@@ -8,6 +8,7 @@ from wpimath.geometry import Pose3d
 
 import util.state as state
 import util.v4l2_ctrls
+from util.calibration_util import get_snapshots
 from util.state import save_settings
 from util.vision_types import IrisResult, IrisTarget, Pose, TagObservation
 
@@ -167,14 +168,10 @@ class NTListener:
             inst.getIntegerTopic("calibrationProgress"), 0
         )
         _, self.calibration_failed_pub = _add_attribute(
-            inst.getIntegerTopic("calibrationFailed"), -1
+            inst.getBooleanTopic("calibrationFailed"), False
         )
         _, self.snapshots_pub = _add_attribute(
-            inst.getStringArrayTopic("snapshots"), state.snapshots
-        )
-        _, self.current_calibration_pub = _add_attribute(
-            inst.getStringTopic("current_calibration"),
-            state.settings.camera.calibration_file,
+            inst.getStringArrayTopic("snapshots"), get_snapshots()
         )
 
         # TODO: switch to MultiSubscriber?
@@ -286,9 +283,6 @@ class NTListener:
         # Update fps
         self.fps_pub.set(state.fps)
         self.uptime_pub.set(int(state.frame_times[-1] - state.frame_times[0]))
-        self.calibration_progress_pub.set(state.calibration_progress)
-        self.calibration_failed_pub.set(state.calibration_progress)
-        self.snapshots_pub.set(state.snapshots)
 
     def periodic(self, timestamp: float):
         self.update_data(timestamp)

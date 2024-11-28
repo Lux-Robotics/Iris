@@ -34,19 +34,20 @@ logger = logging.getLogger("Iris")
 logger.info("Logger initialized")
 
 
-def load_calibration(settings):
+def load_calibration(settings, name="current"):
     """Hook to load calibration data into settings."""
-    if not os.path.exists(os.path.join(config_dir, "calibration", "test")):
+    if not os.path.exists(os.path.join(config_dir, "calibration", "current")):
         shutil.copytree(
-            os.path.join(exec_dir, "calibration"),
-            os.path.join(config_dir, "calibration"),
+            os.path.join(exec_dir, "calibration", "default"),
+            os.path.join(config_dir, "calibration", "current"),
             dirs_exist_ok=True,
         )
+
     with open(
         os.path.join(
             config_dir,
             "calibration",
-            settings.camera.calibration_file,
+            name,
             "calibration.toml",
         ),
         "rb",
@@ -54,6 +55,10 @@ def load_calibration(settings):
         calibration = tomllib.load(c)
     print(calibration)
     return {"calibration": calibration}
+
+
+def reload_calibration():
+    settings["calibration"] = load_calibration(settings)["calibration"]
 
 
 # TODO: fix
@@ -114,11 +119,9 @@ device_id: str = get_device_id()
 
 logger.info("Load Configuration Successful")
 
-# Load gstreamer pipeline
-if "pipeline" in settings.calibration:
-    gstreamer_pipeline = settings.calibration.pipeline
-else:
-    gstreamer_pipeline = settings["camera"]["pipeline"]
+nt_listener = None
+
+logger.info("NT server started")
 
 
 # not constants
@@ -187,10 +190,6 @@ new_data = False
 bad_frames = 0
 
 robot_last_enabled = False
-
-snapshots = []
-calibration_progress = 0
-calibration_failed = -1
 
 # Define apriltag locations
 apriltag_size = 0.1651  # 36h11

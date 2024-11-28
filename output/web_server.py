@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+import tempfile
 import uuid
 
 import cv2
@@ -11,11 +12,7 @@ from pydantic import BaseModel
 
 from util import state
 from util.calibration_util import calibrate_cameras, get_snapshots
-from util.state import Platform, device_id, exec_dir, platform, settings
-
-
-class HostnameConfig(BaseModel):
-    hostname: str
+from util.state import Platform, device_id, exec_dir, nt_listener, platform, settings
 
 
 class IPConfig(BaseModel):
@@ -24,21 +21,14 @@ class IPConfig(BaseModel):
     gateway: str
 
 
-class CalibrationConfig(BaseModel):
-    filename: str
-
-
 app = FastAPI()
-# api_router = APIRouter()
 
 os.makedirs("/tmp/calibration", exist_ok=True)
 os.makedirs("/tmp/snapshots", exist_ok=True)
 
-state.snapshots = get_snapshots()
-
 
 @app.post("/api/hostname")
-def update_hostname(new_hostname: HostnameConfig):
+def update_hostname(new_hostname: str):
     if platform == Platform.IRIS:
         try:
             subprocess.run(
@@ -53,7 +43,7 @@ def update_hostname(new_hostname: HostnameConfig):
     return {"status": "ok"}
 
 
-@app.get("/api/hostname", response_model=HostnameConfig)
+@app.get("/api/hostname", response_model=str)
 def get_hostname():
     return {"hostname": device_id}
 
@@ -146,7 +136,7 @@ def get_ip_config():
 
 @app.post("/api/take-snapshot")
 def take_snapshot():
-    state.calibration_progress = 0
+    nt_listener.calibration_progress_pub.set(0)
     try:
         if not os.path.exists("/tmp/snapshots"):
             os.makedirs("/tmp/snapshots", exist_ok=True)
@@ -154,7 +144,7 @@ def take_snapshot():
         name = uuid.uuid4()
         if frame is not None:
             cv2.imwrite(os.path.join("/tmp/snapshots", str(name) + ".png"), frame)
-        state.snapshots = get_snapshots()
+        nt_listener.snapshots_pub.set(get_snapshots())
     except Exception:
         return HTTPException(status_code=500, detail="Failed to take snapshot")
     return {"status": "ok"}
@@ -162,12 +152,12 @@ def take_snapshot():
 
 @app.post("/api/clear-snapshots")
 def clear_snapshots():
-    state.calibration_progress = 0
+    nt_listener.calibration_progress_pub.set(0)
     try:
         if os.path.exists("/tmp/snapshots"):
             shutil.rmtree("/tmp/snapshots")
         os.makedirs("/tmp/snapshots", exist_ok=True)
-        state.snapshots = get_snapshots()
+        nt_listener.snapshots_pub.set(get_snapshots())
     except Exception:
         return HTTPException(status_code=500, detail="Failed to clear snapshot")
     return {"status": "ok"}
@@ -175,27 +165,26 @@ def clear_snapshots():
 
 @app.post("/api/calibrate")
 def calibrate():
-    state.calibration_failed = False
-    state.calibration_progress = 0
-    if len(state.snapshots) < 1:
-        state.calibration_failed = state.calibration_progress
+    nt_listener.calibration_failed_pub.set(False)
+    nt_listener.calibration_progress_pub.set(0)
+    if len(get_snapshots()) < 1:
+        nt_listener.calibration_failed_pub.set(True)
         return HTTPException(status_code=500, detail="Calibration failed")
     ret = calibrate_cameras("/tmp/snapshots")
     if not ret:
-        state.calibration_failed = state.calibration_progress
+        nt_listener.calibration_failed_pub.set(True)
         return HTTPException(status_code=500, detail="Calibration failed")
     return {"status": "ok"}
 
 
 @app.post("/api/save-calibration")
-def save_calibration(calib_config: CalibrationConfig):
-    state.calibration_progress = 0
+def save_calibration():
+    nt_listener.calibration_progress_pub.set(0)
     src_directory = "/tmp/calibration"
-    dest_directory = os.path.join(exec_dir, "calibration", calib_config.filename)
+    dest_directory = os.path.join(state.config_dir, "calibration", "staged")
     # Check if the source directory is empty
     if not os.listdir(src_directory):
-        print(f"The directory {src_directory} is empty.")
-        return
+        return HTTPException(status_code=500, detail="Calibration failed")
 
     # Make sure the destination directory exists
     if not os.path.exists(dest_directory):
@@ -211,6 +200,38 @@ def save_calibration(calib_config: CalibrationConfig):
     return {"status": "ok"}
 
 
+@app.post("/api/swap-calibration")
+def swap_calibration():
+    current = os.path.join(state.config_dir, "calibration", "current")
+    staged = os.path.join(state.config_dir, "calibration", "staged")
+    # Ensure both directories exist
+    if not os.path.isdir(current) or not os.path.isdir(staged):
+        return HTTPException(status_code=500, detail="Calibration failed")
+
+    # Create a temporary directory to hold one of the directories during the swap
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Move the first directory to the temporary directory
+        shutil.move(staged, temp_dir)
+
+        # Move the second directory to the first directory's location
+        shutil.move(current, staged)
+
+        # Move the directory from the temporary location to the second directory's location
+        shutil.move(os.path.join(temp_dir, os.path.basename(staged)), current)
+    state.reload_calibration()
+    return {"status": "ok"}
+
+
+@app.get("/api/get-calibrations")
+def get_calibrations():
+    try:
+        staged = state.load_calibration(state.settings, "staged")
+    except Exception:
+        staged = None
+
+    return {"current": settings.calibration, "staged": staged}
+
+
 app.mount(
     "/processed-calibration",
     StaticFiles(directory="/tmp/calibration"),
@@ -221,7 +242,7 @@ app.mount("/snapshots", StaticFiles(directory="/tmp/snapshots"), name="snapshots
 
 app.mount(
     "/calibrations",
-    StaticFiles(directory=os.path.join(exec_dir, "calibration")),
+    StaticFiles(directory=os.path.join(state.config_dir, "calibration")),
     name="calibrations",
 )
 

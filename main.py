@@ -30,6 +30,8 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
+state.nt_listener = NTListener()
+
 # Start logging thread
 
 if args.video is not None:
@@ -85,8 +87,6 @@ nt_instance = None
 if settings.use_networktables:
     nt_instance = NTInterface(state.get_server_ip())
 
-nt_listener = NTListener()
-
 prev_frame_time = 0
 
 foxglove_server_thread = threading.Thread(
@@ -101,6 +101,8 @@ if settings.http_stream.enabled:
     web_server_thread.start()
 
 while True:
+    # TODO: remove
+    time.sleep(0.03)
     # read data from networktables
     if settings.use_networktables:
         nt_instance.get_states()
@@ -118,9 +120,6 @@ while True:
         )
     else:
         state.fps = 0
-
-    # Latency compensation estimate
-    new_frame_time -= (1 / settings.camera.fps) / 2
 
     # Bad camera return value
     if not ret:
@@ -194,7 +193,8 @@ while True:
         except Exception as e:
             logger.warning("Failed to publish nt4 data" + str(e))
 
-    nt_listener.update_data(new_frame_time)
+    state.nt_listener.fps_pub.set(state.fps)
+    state.nt_listener.uptime_pub.set(int(state.frame_times[-1] - state.frame_times[0]))
 
     if state.detector_update_needed:
         if settings.detector == "apriltag":

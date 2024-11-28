@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import re
 import sys
 
 import mrcal
@@ -12,8 +13,28 @@ parser.add_argument("filepath", help="Path to your .cameramodel file", type=str)
 parser.add_argument("outputpath", help="Output filepath", type=str)
 args = parser.parse_args()
 
+def parse_calibration_output(file_path):
+    # Read the file content
+    with open(file_path, 'r') as file:
+        text = file.read()
+
+    # Regular expressions for parsing
+    rms_pattern = r"RMS reprojection error: ([\d.]+) pixels"
+    worst_residual_pattern = r"Worst residual \(by measurement\): ([\d.]+) pixels"
+
+    # Extract information
+    rms_error = re.search(rms_pattern, text)
+    worst_residual = re.search(worst_residual_pattern, text)
+
+    # Return results
+    return {
+        "rms_reprojection_error": float(rms_error.group(1)),
+        "worst_residual": float(worst_residual.group(1))
+    }
+
 try:
     model = mrcal.cameramodel(args.filepath)
+    stats = parse_calibration_output(args.filepath)
 except:
     print("Error loading calibration file:", args.filepath)
     sys.exit()
@@ -36,6 +57,8 @@ calibration_out = {
     "resolution": [x_res, y_res],
     "cameraMatrix": intrinsic_matrix_opencv,
     "distCoeffs": distortions_opencv,
+    "rms_reprojection_error": stats["rms_reprojection_error"],
+    "worst_residual": stats["worst_residual"]
 }
 
 # Read the first few lines of the input file

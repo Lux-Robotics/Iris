@@ -45,7 +45,7 @@ lint:
 test: build-web
     python3 main.py --video assets/2024speaker.webm
 
-lock-reqs:
+update-dependencies:
     pip-compile requirements.txt --output-file requirements_lock.txt
 
 deploy remote:

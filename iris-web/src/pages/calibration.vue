@@ -4,11 +4,11 @@
   import { NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
   import { onMounted, watch } from 'vue'
 
-  const currentCalibration = ref('')
+  const currentCalibration = ref(0)
   const text = ref('No calibrations loaded')
   const imageSelection = ref('projection_uncertainty.png')
   const imgSrc = computed<string>(() => {
-    return apiURI + '/calibrations/' + currentCalibration.value + '/' + imageSelection.value
+    return apiURI + '/calibrations/slot' + currentCalibration.value + '/' + imageSelection.value
   })
 
   const images = [
@@ -20,7 +20,7 @@
 
   async function updateText () {
     try {
-      const response = await axios.get(apiURI + '/calibrations/' + currentCalibration.value + '/calibration.toml', {
+      const response = await axios.get(apiURI + '/calibrations/slot' + currentCalibration.value + '/calibration.toml', {
         responseType: 'text', // Ensure the response is treated as text
       })
       text.value = response.data
@@ -30,7 +30,7 @@
   }
 
   onMounted(() => {
-    const currentCalibrationTopic: NetworkTablesTopic<string> = ntcore.createTopic('current_calibration', NetworkTablesTypeInfos.kString)
+    const currentCalibrationTopic: NetworkTablesTopic<number> = ntcore.createTopic('current_calibration', NetworkTablesTypeInfos.kInteger)
     currentCalibrationTopic.subscribe(v => {
       if (v !== null) {
         currentCalibration.value = v
@@ -43,26 +43,47 @@
 </script>
 
 <template>
-  <v-card border class="ma-2">
-    <template #title>
-      <span class="font-weight-black">Calibration</span>
-    </template>
-    <template #append>
-      <new-calibration />
-    </template>
-    <v-divider />
-    <v-card-text>
-      <v-row dense>
-        <v-col cols="12" md="6" sm="12">
-          <h2>Current Calibration (Applied)</h2>
-          <pre class="scrollable-text my-2">{{ text }}</pre>
-          <v-select v-model="imageSelection" :items="images" variant="outlined" />
-          <v-img class="svg-background" :src="imgSrc" />
-        </v-col>
-        <!--        <v-col cols="12" md="8" sm="12" />-->
-      </v-row>
-    </v-card-text>
-  </v-card>
+  <div class="pa-2 scrollable-area">
+    <v-row dense>
+      <v-col cols="12" md="6" sm="12">
+        <v-card border>
+          <template #title>
+            <span class="font-weight-black">Current Calibration (Applied)</span>
+          </template>
+          <template #append>
+            <v-btn
+              class="text-capitalize"
+              color="primary"
+              text="Swap with latest"
+              variant="flat"
+            />
+          </template>
+          <v-divider />
+          <v-card-text>
+            <pre class="scrollable-text my-2">{{ text }}</pre>
+            <v-select v-model="imageSelection" :items="images" variant="outlined" />
+            <v-img class="svg-background" :src="imgSrc" />
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col cols="12" md="6" sm="12">
+        <v-card border>
+          <template #title>
+            <span class="font-weight-black">Latest Calibration</span>
+          </template>
+          <template #append>
+            <new-calibration />
+          </template>
+          <v-divider />
+          <v-card-text>
+            <pre class="scrollable-text my-2">{{ text }}</pre>
+            <v-select v-model="imageSelection" :items="images" variant="outlined" />
+            <v-img class="svg-background" :src="imgSrc" />
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <style scoped>

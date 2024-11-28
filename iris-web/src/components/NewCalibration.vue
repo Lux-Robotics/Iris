@@ -49,9 +49,10 @@
     calibrationDialog.value = false
   }
 
-  function saveCalibration (name: string) {
+  function saveCalibration () {
     clearSnapshots()
-    axios.post(apiURI + '/api/save-calibration', { filename: name })
+    axios.post(apiURI + '/api/save-calibration')
+    calibrationDialog.value = false
   }
 
   onMounted(() => {

@@ -2,24 +2,16 @@
 map = "assets/maps/2024-crescendo.json"
 # Robot IP Address
 team_number = 6036
-
-test_video = "testdata/2024speaker.webm"
 use_networktables = true
 dev_server_port = 5800
 
-# apriltag, aruco, wpilib
+# apriltag, aruco
 detector = "apriltag"
 # singletag, multitag, ransac
-#solvepnp_method = "multitag_ap3p"
 solvepnp_method = "ransac"
 ignored_tags = []
 
 [camera]
-calibration_file = "test"
-# Default GStreamer pipeline
-pipeline = "v4l2src device=/dev/video0 extra_controls=\"c,exposure_dynamic_framerate=1\" ! image/jpeg,format=MJPG,width=1280,height=720 ! jpegdec ! appsink drop=1"
-# Camera fps, used to estimate latency
-fps = 50
 brightness = 200
 exposure = 800
 gain = 16
