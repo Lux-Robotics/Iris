@@ -12,7 +12,7 @@
 
   function takeSnapshot () {
     axios
-      .post(apiURI + '/api/take-snapshot', {})
+      .post('/api/take-snapshot', {})
       .then(response => {
         console.log(response.data)
       })
@@ -23,7 +23,7 @@
 
   function clearSnapshots () {
     axios
-      .post(apiURI + '/api/clear-snapshots', {})
+      .post('/api/clear-snapshots', {})
       .then(response => {
         console.log(response.data)
       })
@@ -34,7 +34,7 @@
 
   function calibrate () {
     axios
-      .post(apiURI + '/api/calibrate', {})
+      .post('/api/calibrate', {})
       .then(response => {
         console.log(response.data)
       })
@@ -51,7 +51,7 @@
 
   function saveCalibration () {
     clearSnapshots()
-    axios.post(apiURI + '/api/save-calibration')
+    axios.post('/api/save-calibration')
     calibrationDialog.value = false
   }
 

@@ -146,7 +146,7 @@ def take_snapshot():
             cv2.imwrite(os.path.join("/tmp/snapshots", str(name) + ".png"), frame)
         nt_listener.snapshots_pub.set(get_snapshots())
     except Exception:
-        return HTTPException(status_code=500, detail="Failed to take snapshot")
+        raise HTTPException(status_code=500, detail="Failed to take snapshot")
     return {"status": "ok"}
 
 
@@ -159,7 +159,7 @@ def clear_snapshots():
         os.makedirs("/tmp/snapshots", exist_ok=True)
         nt_listener.snapshots_pub.set(get_snapshots())
     except Exception:
-        return HTTPException(status_code=500, detail="Failed to clear snapshot")
+        raise HTTPException(status_code=500, detail="Failed to clear snapshot")
     return {"status": "ok"}
 
 
@@ -169,11 +169,11 @@ def calibrate():
     nt_listener.calibration_progress_pub.set(0)
     if len(get_snapshots()) < 1:
         nt_listener.calibration_failed_pub.set(True)
-        return HTTPException(status_code=500, detail="Calibration failed")
+        raise HTTPException(status_code=500, detail="Calibration failed")
     ret = calibrate_cameras("/tmp/snapshots")
     if not ret:
         nt_listener.calibration_failed_pub.set(True)
-        return HTTPException(status_code=500, detail="Calibration failed")
+        raise HTTPException(status_code=500, detail="Calibration failed")
     return {"status": "ok"}
 
 
@@ -184,7 +184,7 @@ def save_calibration():
     dest_directory = os.path.join(state.config_dir, "calibration", "staged")
     # Check if the source directory is empty
     if not os.listdir(src_directory):
-        return HTTPException(status_code=500, detail="Calibration failed")
+        raise HTTPException(status_code=500, detail="Calibration failed")
 
     # Make sure the destination directory exists
     if not os.path.exists(dest_directory):
@@ -200,13 +200,13 @@ def save_calibration():
     return {"status": "ok"}
 
 
-@app.post("/api/swap-calibration")
-def swap_calibration():
+@app.post("/api/swap-calibrations")
+def swap_calibrations():
     current = os.path.join(state.config_dir, "calibration", "current")
     staged = os.path.join(state.config_dir, "calibration", "staged")
     # Ensure both directories exist
     if not os.path.isdir(current) or not os.path.isdir(staged):
-        return HTTPException(status_code=500, detail="Calibration failed")
+        raise HTTPException(status_code=500, detail="Swap failed")
 
     # Create a temporary directory to hold one of the directories during the swap
     with tempfile.TemporaryDirectory() as temp_dir:

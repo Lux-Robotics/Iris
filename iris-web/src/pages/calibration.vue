@@ -1,44 +1,20 @@
 <script setup lang="ts">
-  import { apiURI, ntcore } from '@/nt-listener'
   import axios from 'axios'
-  import { NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
-  import { onMounted, watch } from 'vue'
+  import { onMounted } from 'vue'
 
-  const currentCalibration = ref(0)
-  const text = ref('No calibrations loaded')
-  const imageSelection = ref('projection_uncertainty.png')
-  const imgSrc = computed<string>(() => {
-    return apiURI + '/calibrations/slot' + currentCalibration.value + '/' + imageSelection.value
-  })
+  const data = ref({})
 
-  const images = [
-    { title: 'Projection Uncertainty', value: 'projection_uncertainty.png' },
-    { title: 'Distortion', value: 'distortion.png' },
-    { title: 'Residuals', value: 'residuals.png' },
-    { title: 'Valid Intrinsics Region', value: 'valid_intrinsics_region.png' },
-  ]
+  const reload = function () {
+    axios.get('/api/get-calibrations').then(response => { data.value = response.data }).catch(error => { console.log(error) })
+  }
 
-  async function updateText () {
-    try {
-      const response = await axios.get(apiURI + '/calibrations/slot' + currentCalibration.value + '/calibration.toml', {
-        responseType: 'text', // Ensure the response is treated as text
-      })
-      text.value = response.data
-    } catch (error) {
-      console.error('Error fetching data:', error)
-    }
+  const swapCalibration = async () => {
+    await axios.post('/api/swap-calibrations')
+    reload()
   }
 
   onMounted(() => {
-    const currentCalibrationTopic: NetworkTablesTopic<number> = ntcore.createTopic('current_calibration', NetworkTablesTypeInfos.kInteger)
-    currentCalibrationTopic.subscribe(v => {
-      if (v !== null) {
-        currentCalibration.value = v
-        console.log('new calib: ' + v)
-      }
-    }, true)
-    updateText()
-    watch(currentCalibration, updateText)
+    reload()
   })
 </script>
 
@@ -54,32 +30,25 @@
             <v-btn
               class="text-capitalize"
               color="primary"
-              text="Swap with latest"
+              text="Swap with staged"
               variant="flat"
+              @click="swapCalibration"
             />
           </template>
           <v-divider />
-          <v-card-text>
-            <pre class="scrollable-text my-2">{{ text }}</pre>
-            <v-select v-model="imageSelection" :items="images" variant="outlined" />
-            <v-img class="svg-background" :src="imgSrc" />
-          </v-card-text>
+          <calibration-info calibration-name="current" :json-data="data" />
         </v-card>
       </v-col>
       <v-col cols="12" md="6" sm="12">
         <v-card border>
           <template #title>
-            <span class="font-weight-black">Latest Calibration</span>
+            <span class="font-weight-black">Staged Calibration</span>
           </template>
           <template #append>
             <new-calibration />
           </template>
           <v-divider />
-          <v-card-text>
-            <pre class="scrollable-text my-2">{{ text }}</pre>
-            <v-select v-model="imageSelection" :items="images" variant="outlined" />
-            <v-img class="svg-background" :src="imgSrc" />
-          </v-card-text>
+          <calibration-info calibration-name="staged" :json-data="data" />
         </v-card>
       </v-col>
     </v-row>
@@ -87,10 +56,4 @@
 </template>
 
 <style scoped>
-.scrollable-text {
-  overflow-x: auto;
-}
-.svg-background {
-  background-color: white;
-}
 </style>
