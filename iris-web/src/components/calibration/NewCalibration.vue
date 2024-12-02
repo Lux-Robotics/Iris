@@ -7,7 +7,7 @@
   const calibrationDialog = ref(false)
   const page = ref(1)
   const progress = ref(0)
-  const failProgress = ref(0)
+  const failed = ref(false)
   const numSnapshots = ref(0)
 
   function takeSnapshot () {
@@ -60,8 +60,8 @@
       'calibrationProgress',
       NetworkTablesTypeInfos.kInteger,
     )
-    const failProgressTopic: NetworkTablesTopic<number> = ntcore.createTopic(
-      'calibrationProgress',
+    const failProgressTopic: NetworkTablesTopic<boolean> = ntcore.createTopic(
+      'calibrationFailed',
       NetworkTablesTypeInfos.kInteger,
     )
     const snapshotsTopic: NetworkTablesTopic<string[]> = ntcore.createTopic(
@@ -76,7 +76,7 @@
     })
     failProgressTopic.subscribe(v => {
       if (v !== null) {
-        failProgress.value = v
+        failed.value = v
       }
     })
     snapshotsTopic.subscribe(v => {
@@ -133,7 +133,7 @@
                 <v-stepper-item
                   color="primary"
                   :complete="progress>0"
-                  :error="failProgress === 0"
+                  :error="progress === 0 && failed"
                   title="Compute Corners"
                   value="1"
                 />
@@ -143,7 +143,7 @@
                 <v-stepper-item
                   color="primary"
                   :complete="progress>1"
-                  :error="failProgress === 1"
+                  :error="progress === 1 && failed"
                   title="Solve"
                   value="2"
                 />
@@ -153,7 +153,7 @@
                 <v-stepper-item
                   color="primary"
                   :complete="progress>2"
-                  :error="failProgress === 2"
+                  :error="progress === 2 && failed"
                   title="Convert Calibration"
                   value="3"
                 />
@@ -163,7 +163,7 @@
                 <v-stepper-item
                   color="primary"
                   :complete="progress>3"
-                  :error="failProgress === 3"
+                  :error="progress === 3 && failed"
                   title="Generate Graphs"
                   value="4"
                 />
@@ -172,7 +172,7 @@
                 <v-stepper-item
                   color="primary"
                   :complete="progress>0"
-                  :error="failProgress === 0"
+                  :error="progress === 0 && failed"
                   title="Compute Corners"
                   value="1"
                 />
@@ -182,7 +182,7 @@
                 <v-stepper-item
                   color="primary"
                   :complete="progress>1"
-                  :error="failProgress === 1"
+                  :error="progress === 1 && failed"
                   title="Solve"
                   value="2"
                 />
@@ -192,7 +192,7 @@
                 <v-stepper-item
                   color="primary"
                   :complete="progress>2"
-                  :error="failProgress === 2"
+                  :error="progress === 2 && failed"
                   title="Convert Calibration"
                   value="3"
                 />
@@ -202,7 +202,7 @@
                 <v-stepper-item
                   color="primary"
                   :complete="progress>3"
-                  :error="failProgress === 3"
+                  :error="progress === 3 && failed"
                   title="Generate Graphs"
                   value="4"
                 />

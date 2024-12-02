@@ -3,7 +3,8 @@ import os
 import shutil
 import subprocess
 
-from util.state import exec_dir, logger, nt_listener
+import util.state as state
+from util.state import exec_dir, logger
 
 
 def get_snapshots(directory: str = "/tmp/snapshots"):
@@ -76,7 +77,7 @@ def calibrate_cameras(image_dir: str, object_spacing: float = 0.012, gridn: int 
     except subprocess.CalledProcessError:
         logger.error("Failed to compute corners cache")
         return False
-    nt_listener.calibration_progress_pub.set(1)
+    state.nt_listener.calibration_progress_pub.set(1)
     try:
         subprocess.run(
             [
@@ -95,7 +96,7 @@ def calibrate_cameras(image_dir: str, object_spacing: float = 0.012, gridn: int 
     except subprocess.CalledProcessError:
         logger.error("Calibration failed")
         return False
-    nt_listener.calibration_progress_pub.set(2)
+    state.nt_listener.calibration_progress_pub.set(2)
     logger.info("Converting calibration")
     try:
         subprocess.run(
@@ -110,7 +111,7 @@ def calibrate_cameras(image_dir: str, object_spacing: float = 0.012, gridn: int 
     except subprocess.CalledProcessError:
         logger.error("Conversion failed")
         return False
-    nt_listener.calibration_progress_pub.set(3)
+    state.nt_listener.calibration_progress_pub.set(3)
     logger.info("Generating graphs")
     try:
         generate_calibration_images(dir_path)
@@ -118,5 +119,5 @@ def calibrate_cameras(image_dir: str, object_spacing: float = 0.012, gridn: int 
         logger.error("Failed to generate graphs")
         return False
     logger.info("Calibration complete")
-    nt_listener.calibration_progress_pub.set(4)
+    state.nt_listener.calibration_progress_pub.set(4)
     return True

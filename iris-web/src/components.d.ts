@@ -17,7 +17,6 @@ declare module 'vue' {
     CameraStream: typeof import('./components/CameraStream.vue')['default']
     FieldLayout: typeof import('./components/settings/FieldLayout.vue')['default']
     Graph: typeof import('./components/Graph.vue')['default']
-    JsonTest: typeof import('./components/calibration/JsonTest.vue')['default']
     NetworkSettings: typeof import('./components/settings/NetworkSettings.vue')['default']
     NewCalibration: typeof import('./components/calibration/NewCalibration.vue')['default']
     RealTimeGraph: typeof import('./components/dashboard/RealTimeGraph.vue')['default']

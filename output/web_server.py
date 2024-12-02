@@ -12,7 +12,7 @@ from pydantic import BaseModel
 
 from util import state
 from util.calibration_util import calibrate_cameras, get_snapshots
-from util.state import Platform, device_id, exec_dir, nt_listener, platform, settings
+from util.state import Platform, device_id, exec_dir, platform, settings
 
 
 class IPConfig(BaseModel):
@@ -136,7 +136,7 @@ def get_ip_config():
 
 @app.post("/api/take-snapshot")
 def take_snapshot():
-    nt_listener.calibration_progress_pub.set(0)
+    state.nt_listener.calibration_progress_pub.set(0)
     try:
         if not os.path.exists("/tmp/snapshots"):
             os.makedirs("/tmp/snapshots", exist_ok=True)
@@ -144,7 +144,7 @@ def take_snapshot():
         name = uuid.uuid4()
         if frame is not None:
             cv2.imwrite(os.path.join("/tmp/snapshots", str(name) + ".png"), frame)
-        nt_listener.snapshots_pub.set(get_snapshots())
+        state.nt_listener.snapshots_pub.set(get_snapshots())
     except Exception:
         raise HTTPException(status_code=500, detail="Failed to take snapshot")
     return {"status": "ok"}
@@ -152,12 +152,12 @@ def take_snapshot():
 
 @app.post("/api/clear-snapshots")
 def clear_snapshots():
-    nt_listener.calibration_progress_pub.set(0)
+    state.nt_listener.calibration_progress_pub.set(0)
     try:
         if os.path.exists("/tmp/snapshots"):
             shutil.rmtree("/tmp/snapshots")
         os.makedirs("/tmp/snapshots", exist_ok=True)
-        nt_listener.snapshots_pub.set(get_snapshots())
+        state.nt_listener.snapshots_pub.set(get_snapshots())
     except Exception:
         raise HTTPException(status_code=500, detail="Failed to clear snapshot")
     return {"status": "ok"}
@@ -165,21 +165,21 @@ def clear_snapshots():
 
 @app.post("/api/calibrate")
 def calibrate():
-    nt_listener.calibration_failed_pub.set(False)
-    nt_listener.calibration_progress_pub.set(0)
+    state.nt_listener.calibration_failed_pub.set(False)
+    state.nt_listener.calibration_progress_pub.set(0)
     if len(get_snapshots()) < 1:
-        nt_listener.calibration_failed_pub.set(True)
+        state.nt_listener.calibration_failed_pub.set(True)
         raise HTTPException(status_code=500, detail="Calibration failed")
     ret = calibrate_cameras("/tmp/snapshots")
     if not ret:
-        nt_listener.calibration_failed_pub.set(True)
+        state.nt_listener.calibration_failed_pub.set(True)
         raise HTTPException(status_code=500, detail="Calibration failed")
     return {"status": "ok"}
 
 
 @app.post("/api/save-calibration")
 def save_calibration():
-    nt_listener.calibration_progress_pub.set(0)
+    state.nt_listener.calibration_progress_pub.set(0)
     src_directory = "/tmp/calibration"
     dest_directory = os.path.join(state.config_dir, "calibration", "staged")
     # Check if the source directory is empty
