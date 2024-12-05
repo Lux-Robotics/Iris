@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { apiURI, ntcore } from '@/nt-listener'
+  import { ntcore } from '@/nt-listener'
   import axios from 'axios'
   import { NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
   import { onMounted } from 'vue'
@@ -103,6 +103,13 @@
       </template>
       <v-divider />
       <v-window v-model="page">
+        <v-progress-linear
+          v-if="page===2"
+          :bg-opacity="0"
+          color="primary"
+          height="6"
+          :indeterminate="progress !== 4 && !failed"
+        />
         <div class="ma-2">
           <v-window-item :value="1">
             <v-row dense>
@@ -208,12 +215,6 @@
                 />
               </div>
             </v-stepper>
-            <v-container v-if="progress === 4" max-width="800">
-              <v-img
-                class="svg-background"
-                :src="apiURI + '/processed-calibration/projection_uncertainty.svg'"
-              />
-            </v-container>
           </v-window-item>
         </div>
       </v-window>
@@ -257,7 +258,4 @@
 </template>
 
 <style scoped>
-.svg-background {
-  background-color: white;
-}
 </style>

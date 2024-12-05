@@ -187,7 +187,6 @@
   const IPDialog = ref(false)
 
   const hostname = ref('')
-  // const hostnameRef = ref('')
 
   const ipAssignmentMethod = ref('dhcp')
 
