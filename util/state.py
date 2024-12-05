@@ -2,6 +2,7 @@ import enum
 import json
 import logging
 import os
+import platform
 import shutil
 import subprocess
 import tomllib
@@ -92,10 +93,7 @@ def get_git_info():
 
 
 def get_platform():
-    kernel_release = subprocess.run(
-        ["uname", "-r"], capture_output=True, text=True
-    ).stdout.strip()
-    return Platform.IRIS if "rk2312" in kernel_release else Platform.DEV
+    return Platform.IRIS if "rk2312" in platform.release() else Platform.DEV
 
 
 def get_device_id():
@@ -114,7 +112,7 @@ settings = Dynaconf(
 )
 
 version, git_hash = get_git_info()
-platform: Platform = get_platform()
+current_platform: Platform = get_platform()
 device_id: str = get_device_id()
 
 logger.info("Load Configuration Successful")

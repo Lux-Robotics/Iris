@@ -12,7 +12,7 @@ from pydantic import BaseModel
 
 from util import state
 from util.calibration_util import calibrate_cameras, get_snapshots
-from util.state import Platform, device_id, exec_dir, platform, settings
+from util.state import Platform, current_platform, device_id, exec_dir, settings
 
 
 class IPConfig(BaseModel):
@@ -29,7 +29,7 @@ os.makedirs("/tmp/snapshots", exist_ok=True)
 
 @app.post("/api/hostname")
 def update_hostname(new_hostname: str):
-    if platform == Platform.IRIS:
+    if current_platform == Platform.IRIS:
         try:
             subprocess.run(
                 ["hostnamectl", "set-hostname", new_hostname.hostname], check=True
@@ -50,7 +50,7 @@ def get_hostname():
 
 @app.post("/api/ip-config")
 def update_ip_config(new_ip_config: IPConfig):
-    if platform == Platform.IRIS:
+    if current_platform == Platform.IRIS:
         try:
             connection_name = "eth0"
             subprocess.run(
@@ -255,6 +255,6 @@ app.mount(
 
 def start():
     port = 80
-    if platform != Platform.IRIS:
+    if current_platform != Platform.IRIS:
         port = settings.dev_server_port
     uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")

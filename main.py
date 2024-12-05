@@ -1,11 +1,17 @@
 import argparse
 import os
+import platform
 import sys
 import threading
 import time
 
 # Add parent directory to path for module imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# this is so scuffed
+# import mrcal from python3-mrcal debian package
+if "rk2312" in platform.release():
+    sys.path.append("/usr/lib/python3/dist-packages/")
 
 import cv2
 
@@ -54,12 +60,12 @@ time.sleep(0.2)
 # Initialize video capture
 def init_camera():
     if args.mode == 0:
-        if state.platform == Platform.IRIS:
+        if state.current_platform == Platform.IRIS:
             cap = cv2.VideoCapture(11)
             cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
             cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 800)
             return cap
-        elif state.platform == Platform.DEV:
+        elif state.current_platform == Platform.DEV:
             return cv2.VideoCapture(0)
         else:
             logger.error("Platform not recognized")
@@ -101,8 +107,6 @@ if settings.http_stream.enabled:
     web_server_thread.start()
 
 while True:
-    # TODO: remove
-    time.sleep(0.03)
     # read data from networktables
     if settings.use_networktables:
         nt_instance.get_states()
