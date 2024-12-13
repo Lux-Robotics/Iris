@@ -14,7 +14,7 @@ download-deploy-deps:
     rm -f dist/wheels/*
     pip download -r requirements_lock.txt \
         --extra-index-url=https://wpilib.jfrog.io/artifactory/api/pypi/wpilib-python-release-2024/simple/ \
-        --extra-index-url=https://iris-vision.github.io/pyapriltags/simple/ \
+        --extra-index-url=https://repo.irisvision.dev/simple/ \
         --platform=manylinux2014_aarch64 \
         --platform=linux_aarch64 \
         --only-binary=:all: \
@@ -30,7 +30,7 @@ install:
     if [ $? -ne 0 ]; then \
         echo "Some packages were missing; retrying with online repositories..."; \
         pip-sync requirements_lock.txt \
-            --extra-index-url=https://iris-vision.github.io/pyapriltags/simple/ \
+            --extra-index-url=https://repo.irisvision.dev/simple/ \
             --find-links=./wheels; \
     else \
         echo "All packages installed successfully from local wheels."; \
@@ -42,7 +42,7 @@ lint:
     # cd iris-web && npx @biomejs/biome format --ignore '**/*.d.ts' -write ./src
     flake8 .
 
-test: build-web
+test:
     python3 main.py --video assets/2024speaker.webm
 
 update-dependencies:
