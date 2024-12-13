@@ -6,14 +6,14 @@ from typing import Any
 import numpy as np
 import wpiutil.wpistruct
 from numpy import dtype, ndarray
-from wpimath.geometry import (
-    Pose3d,
-    Quaternion,
-    Rotation2d,
-    Rotation3d,
-    Transform3d,
-    Translation3d,
-)
+from wpimath.geometry import Pose3d, Quaternion, Rotation3d, Transform3d, Translation3d
+
+
+@wpiutil.wpistruct.make_wpistruct(name="TargetAngle")
+@dataclasses.dataclass
+class TargetAngle:
+    x: wpiutil.wpistruct.double
+    y: wpiutil.wpistruct.double
 
 
 @wpiutil.wpistruct.make_wpistruct(name="IrisTarget")
@@ -24,13 +24,16 @@ class IrisTarget:
     primaryReprojError: wpiutil.wpistruct.double
     secondaryTransform: Transform3d
     secondaryReprojError: wpiutil.wpistruct.double
-    angleOffsetX: Rotation2d
-    angleOffsetY: Rotation2d
+    center: TargetAngle
+    c0: TargetAngle
+    c1: TargetAngle
+    c2: TargetAngle
+    c3: TargetAngle
 
 
-@wpiutil.wpistruct.make_wpistruct(name="IrisResult")
+@wpiutil.wpistruct.make_wpistruct(name="IrisPoseEstimationResult")
 @dataclasses.dataclass
-class IrisResult:
+class IrisPoseEstimationResult:
     primaryPose: Pose3d
     primaryReprojError: wpiutil.wpistruct.double
     secondaryPose: Pose3d

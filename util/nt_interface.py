@@ -4,13 +4,13 @@ from typing import List
 
 import ntcore
 from ntcore import NetworkTableInstance, Publisher, Subscriber, Topic
-from wpimath.geometry import Pose3d
+from wpimath.geometry import Pose3d, Translation2d
 
 import util.state as state
 import util.v4l2_ctrls
 from util.calibration_util import get_snapshots
-from util.state import save_settings
-from util.vision_types import IrisResult, IrisTarget, Pose, TagObservation
+from util.state import Platform, save_settings
+from util.vision_types import IrisPoseEstimationResult, IrisTarget, Pose, TagObservation
 
 
 def _add_attribute(topic: Topic, default_value: any) -> tuple[Subscriber, Publisher]:
@@ -34,13 +34,15 @@ class NTInterface:
     # Initiate Connection
     def __init__(self, ip: str) -> None:
         inst = NetworkTableInstance.getDefault()
-        # inst = NTListener.inst
-        inst.setServer(ip)
-        inst.startClient4("Iris")
-        self.output_table = inst.getTable("/Iris/" + state.device_id)
+        if state.current_platform == Platform.IRIS:
+            inst.setServer(ip)
+            inst.startClient4("iris")
+        else:
+            inst = NTListener.inst
+        self.output_table = inst.getTable("/iris/" + state.device_id)
 
         self.pose_est_pub = self.output_table.getStructTopic(
-            "cameraPose", IrisResult
+            "cameraPose", IrisPoseEstimationResult
         ).publish(ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=False))
 
         self.targets_pub = self.output_table.getStructArrayTopic(
@@ -60,6 +62,9 @@ class NTInterface:
         self.control_data_sub = (
             inst.getTable("/FMSInfo").getIntegerTopic("FMSControlData").subscribe(0)
         )
+        self.corner_data_pub = self.output_table.getStructArrayTopic(
+            "corners", Translation2d
+        ).publish(ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=False))
 
     def publish_data(
         self,
@@ -71,7 +76,7 @@ class NTInterface:
     ) -> None:
         if pose0 is not None:
             self.pose_est_pub.set(
-                IrisResult(
+                IrisPoseEstimationResult(
                     pose0.get_wpilib(),
                     pose0.error,
                     pose1.get_wpilib() if pose1 is not None else Pose3d(),
@@ -81,6 +86,11 @@ class NTInterface:
             )
         self.fps_pub.set(state.fps, math.floor(timestamp * 1000000))
         self.targets_pub.set(targets, math.floor(timestamp * 1000000))
+        corners = []
+        for t in tags:
+            for c in t.corners[0]:
+                corners.append(Translation2d(c[0], c[1]))
+        self.corner_data_pub.set(corners, math.floor(timestamp * 1000000))
 
     def get_states(self):
         state.ignored_tags = self.tagignore_sub.get([])

@@ -1,9 +1,8 @@
 import cv2
 import numpy as np
-from wpimath.geometry import Rotation2d
 
 import util.state as state
-from util.vision_types import IrisTarget, Pose, TagObservation
+from util.vision_types import IrisTarget, Pose, TagObservation, TargetAngle
 
 
 def get_angle_offset(x: float, y: float):
@@ -58,14 +57,18 @@ def get_tag_angle_offset(detection: TagObservation) -> IrisTarget:
     poses = solvepnp_singletag([detection])
     center_point = np.mean(detection.corners.reshape((4, 2)), axis=0)
     t_x, t_y = get_angle_offset(center_point[0], center_point[1])
+    corners = [get_angle_offset(c[0], c[1]) for c in detection.corners[0]]
     return IrisTarget(
         detection.tag_id,
         poses[0].get_transform(),
         poses[0].error,
         poses[1].get_transform() if len(poses) > 1 else None,
         poses[1].error if len(poses) > 1 else -1,
-        Rotation2d(t_x),
-        Rotation2d(t_y),
+        TargetAngle(t_x, t_y),
+        TargetAngle(corners[0][0], corners[0][1]),
+        TargetAngle(corners[1][0], corners[1][1]),
+        TargetAngle(corners[2][0], corners[2][1]),
+        TargetAngle(corners[3][0], corners[3][1]),
     )
 
 
