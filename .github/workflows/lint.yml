@@ -33,4 +33,4 @@ jobs:
         run: flake8 .
 
       - name: Run Prettier
-        run: prettier --check --ignore-path=iris-web/.gitignore iris-web/
+        run: prettier --check --ignore-path=iris-web/.gitignore --ignore-path=iris-web/.prettierignore iris-web/
