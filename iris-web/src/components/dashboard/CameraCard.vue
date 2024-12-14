@@ -6,35 +6,35 @@ import { onMounted, ref } from "vue";
 const fps = ref(0);
 
 const fpsText = computed<string>(() => {
-	return backendConnected.value
-		? fps.value.toFixed(2) + " FPS"
-		: "Disconnected";
+  return backendConnected.value
+    ? fps.value.toFixed(2) + " FPS"
+    : "Disconnected";
 });
 
 const fpsColor = computed<string>(() => {
-	if (!backendConnected.value) {
-		return "red";
-	} else if (fps.value > 40) {
-		return "green";
-	} else if (fps.value > 20) {
-		return "yellow";
-	} else {
-		return "red";
-	}
+  if (!backendConnected.value) {
+    return "red";
+  } else if (fps.value > 40) {
+    return "green";
+  } else if (fps.value > 20) {
+    return "yellow";
+  } else {
+    return "red";
+  }
 });
 
 onMounted(() => {
-	const fpsTopic: NetworkTablesTopic<number> = ntcore.createTopic(
-		"fps",
-		NetworkTablesTypeInfos.kDouble,
-	);
+  const fpsTopic: NetworkTablesTopic<number> = ntcore.createTopic(
+    "fps",
+    NetworkTablesTypeInfos.kDouble,
+  );
 
-	fpsTopic.subscribe((v) => {
-		if (v === null) {
-			v = 0;
-		}
-		fps.value = v;
-	}, true);
+  fpsTopic.subscribe((v) => {
+    if (v === null) {
+      v = 0;
+    }
+    fps.value = v;
+  }, true);
 });
 </script>
 
@@ -60,6 +60,6 @@ onMounted(() => {
 
 <style scoped>
 .stream-container {
-position: relative;
+  position: relative;
 }
 </style>

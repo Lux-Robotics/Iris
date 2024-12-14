@@ -1,21 +1,28 @@
 <script setup lang="ts">
-  import axios from 'axios'
-  import { onMounted } from 'vue'
+import axios from "axios";
+import { onMounted } from "vue";
 
-  const data = ref({})
+const data = ref({});
 
-  const reload = function () {
-    axios.get('/api/get-calibrations').then(response => { data.value = response.data }).catch(error => { console.log(error) })
-  }
+const reload = function () {
+  axios
+    .get("/api/get-calibrations")
+    .then((response) => {
+      data.value = response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
 
-  const swapCalibration = async () => {
-    await axios.post('/api/swap-calibrations')
-    reload()
-  }
+const swapCalibration = async () => {
+  await axios.post("/api/swap-calibrations");
+  reload();
+};
 
-  onMounted(() => {
-    reload()
-  })
+onMounted(() => {
+  reload();
+});
 </script>
 
 <template>
@@ -55,5 +62,4 @@
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

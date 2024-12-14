@@ -3,8 +3,11 @@
   <v-card border variant="elevated">
     <template #text>
       <h3>Team Number</h3>
-      <span>This is used to determine the address of the NetworkTables instance to publish results to. Alternatively,
-        enter an IP address or hostname if you are not using Iris with a roboRio.</span>
+      <span
+        >This is used to determine the address of the NetworkTables instance to
+        publish results to. Alternatively, enter an IP address or hostname if
+        you are not using Iris with a roboRio.</span
+      >
       <v-spacer class="my-2" />
       <v-text-field
         v-model="robotServerIP"
@@ -16,7 +19,10 @@
       >
         <template #append-inner>
           <v-slide-y-transition>
-            <div v-if="robotServerIP !== robotServerIPRef" class="edit-settings">
+            <div
+              v-if="robotServerIP !== robotServerIPRef"
+              class="edit-settings"
+            >
               <v-btn
                 class="text-capitalize"
                 color="error"
@@ -46,9 +52,9 @@
         <div>
           <h3>Hostname</h3>
           <span>
-            Iris is using the hostname "iris.local". This will be the camera name sent to the robot
-            and
-            you can access this dashboard at "http://iris.local"
+            Iris is using the hostname "iris.local". This will be the camera
+            name sent to the robot and you can access this dashboard at
+            "http://iris.local"
           </span>
         </div>
         <v-btn
@@ -59,11 +65,7 @@
           @click="hostnameDialog = true"
         />
       </div>
-      <v-dialog
-        v-model="hostnameDialog"
-        opacity="15%"
-        width="auto"
-      >
+      <v-dialog v-model="hostnameDialog" opacity="15%" width="auto">
         <v-card
           max-width="300"
           min-width="300"
@@ -82,13 +84,21 @@
             />
           </template>
           <template #actions>
-            <v-btn class="text-none" color="error" text="Cancel" @click="hostnameDialog = false" />
+            <v-btn
+              class="text-none"
+              color="error"
+              text="Cancel"
+              @click="hostnameDialog = false"
+            />
             <v-btn
               class="text-none"
               color="primary"
               text="Save"
               variant="flat"
-              @click="hostnameDialog = false; requestHostnameUpdate()"
+              @click="
+                hostnameDialog = false;
+                requestHostnameUpdate();
+              "
             />
           </template>
         </v-card>
@@ -98,9 +108,8 @@
         <div>
           <h3>IP Configuration</h3>
           <span>
-            Iris uses a dynamic IP address by default. However, a static IP address reduces boot time and
-            leads
-            to more stable connections.
+            Iris uses a dynamic IP address by default. However, a static IP
+            address reduces boot time and leads to more stable connections.
           </span>
         </div>
         <v-btn
@@ -111,11 +120,7 @@
           @click="IPDialog = true"
         />
       </div>
-      <v-dialog
-        v-model="IPDialog"
-        opacity="15%"
-        width="auto"
-      >
+      <v-dialog v-model="IPDialog" opacity="15%" width="auto">
         <v-card
           max-width="300"
           min-width="300"
@@ -127,7 +132,11 @@
             <v-select
               v-model="ipAssignmentMethod"
               class="mx-6"
-              :items="[{title: 'DHCP', value: 'dhcp'}, {title: 'Static', value: 'static'}, {title: 'Static (Advanced)', value: 'static-advanced'}]"
+              :items="[
+                { title: 'DHCP', value: 'dhcp' },
+                { title: 'Static', value: 'static' },
+                { title: 'Static (Advanced)', value: 'static-advanced' },
+              ]"
               label="IP Assignment Mode"
               variant="underlined"
             />
@@ -153,7 +162,12 @@
             />
           </template>
           <template #actions>
-            <v-btn class="text-none" color="error" text="Cancel" @click="IPDialog = false" />
+            <v-btn
+              class="text-none"
+              color="error"
+              text="Cancel"
+              @click="IPDialog = false"
+            />
             <v-btn
               class="text-none"
               color="primary"
@@ -169,87 +183,87 @@
 </template>
 
 <script lang="ts" setup>
-  import axios from 'axios'
-  import { computed, onMounted, ref } from 'vue'
-  import { NetworkTablesTopic, NetworkTablesTypeInfos } from 'ntcore-ts-client'
-  import { apiURI, backendConnected, ntcore } from '@/nt-listener'
+import axios from "axios";
+import { computed, onMounted, ref } from "vue";
+import { NetworkTablesTopic, NetworkTablesTypeInfos } from "ntcore-ts-client";
+import { apiURI, backendConnected, ntcore } from "@/nt-listener";
 
-  const robotServerIP = ref('')
-  const robotServerIPRef = ref('')
-  const ipValid = ref(false)
+const robotServerIP = ref("");
+const robotServerIPRef = ref("");
+const ipValid = ref(false);
 
-  const robotServerIPTopic: NetworkTablesTopic<number> = ntcore.createTopic(
-    'teamNumber',
-    NetworkTablesTypeInfos.kInteger,
-  )
+const robotServerIPTopic: NetworkTablesTopic<number> = ntcore.createTopic(
+  "teamNumber",
+  NetworkTablesTypeInfos.kInteger,
+);
 
-  const hostnameDialog = ref(false)
-  const IPDialog = ref(false)
+const hostnameDialog = ref(false);
+const IPDialog = ref(false);
 
-  const hostname = ref('')
+const hostname = ref("");
 
-  const ipAssignmentMethod = ref('dhcp')
+const ipAssignmentMethod = ref("dhcp");
 
-  const ipPrefix = computed<string>(() => {
-    const teamNum = parseInt(robotServerIPRef.value, 10)
-    if (isNaN(teamNum)) {
-      return ''
-    }
-    const p1 = Math.floor(teamNum / 100)
-    const p2 = teamNum % 100
-    return `10.${p1}.${p2}.`
-  })
+const ipPrefix = computed<string>(() => {
+  const teamNum = parseInt(robotServerIPRef.value, 10);
+  if (isNaN(teamNum)) {
+    return "";
+  }
+  const p1 = Math.floor(teamNum / 100);
+  const p2 = teamNum % 100;
+  return `10.${p1}.${p2}.`;
+});
 
-  const updateServerIP = () => {
-    if (backendConnected.value) {
-      robotServerIPTopic.publish()
-      robotServerIPTopic.setValue(parseInt(robotServerIP.value))
+const updateServerIP = () => {
+  if (backendConnected.value) {
+    robotServerIPTopic.publish();
+    robotServerIPTopic.setValue(parseInt(robotServerIP.value));
+  }
+};
+
+const rules = [
+  (v: any) => !!v || "Number is required",
+  (v: any) => (v && !isNaN(v)) || "Must be a number",
+  (v: any) => (v && v >= 1 && v <= 25599) || "Team must be between 1 and 25599",
+];
+
+const validate = () => {
+  for (const rule of rules) {
+    const result = rule(robotServerIP.value);
+    if (result !== true) {
+      ipValid.value = false;
+      return;
     }
   }
+  ipValid.value = true;
+};
 
-  const rules = [
-    (v: any) => !!v || 'Number is required',
-    (v: any) => (v && !isNaN(v)) || 'Must be a number',
-    (v: any) => (v && v >= 1 && v <= 25599) || 'Team must be between 1 and 25599',
-  ]
-
-  const validate = () => {
-    for (const rule of rules) {
-      const result = rule(robotServerIP.value)
-      if (result !== true) {
-        ipValid.value = false
-        return
-      }
-    }
-    ipValid.value = true
-  }
-
-  async function requestHostnameUpdate () {
-    const message: string = hostname.value
-    try {
-      const response = await axios.post(apiURI + '/api/hostname', message)
-      console.log('Success:', response.data)
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          console.error('Error:', error.response.data)
-        } else {
-          console.error('Error:', error.message)
-        }
+async function requestHostnameUpdate() {
+  const message: string = hostname.value;
+  try {
+    const response = await axios.post(apiURI + "/api/hostname", message);
+    console.log("Success:", response.data);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        console.error("Error:", error.response.data);
       } else {
-        console.error('Unexpected error:', error)
+        console.error("Error:", error.message);
       }
+    } else {
+      console.error("Unexpected error:", error);
     }
   }
+}
 
-  onMounted(() => {
-    robotServerIPTopic.subscribe(v => {
-      if (v !== null && robotServerIPRef.value !== v.toString()) {
-        robotServerIP.value = v.toString()
-        robotServerIPRef.value = v.toString()
-      }
-    }, true)
-  })
+onMounted(() => {
+  robotServerIPTopic.subscribe((v) => {
+    if (v !== null && robotServerIPRef.value !== v.toString()) {
+      robotServerIP.value = v.toString();
+      robotServerIPRef.value = v.toString();
+    }
+  }, true);
+});
 </script>
 
 <style scoped>
@@ -261,8 +275,7 @@
 .fade-enter,
 .fade-leave-to
 
-/* .fade-leave-active in <2.1.8 */
-  {
+/* .fade-leave-active in <2.1.8 */ {
   opacity: 0;
 }
 </style>

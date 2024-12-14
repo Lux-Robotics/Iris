@@ -1,6 +1,4 @@
-<script setup lang="ts">
-
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <v-card border min-width="300">
@@ -15,6 +13,4 @@
   </v-card>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

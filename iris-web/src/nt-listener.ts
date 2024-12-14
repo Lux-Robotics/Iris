@@ -8,7 +8,7 @@ const apiURI: string = window.location.origin;
 // const apiPort: number = parseInt(window.location.port)
 const ntcore = NetworkTables.getInstanceByURI(backendURI);
 ntcore.addRobotConnectionListener((v) => {
-	backendConnected.value = v;
+  backendConnected.value = v;
 }, true);
 
 export { ntcore, backendConnected, backendURI, apiURI };

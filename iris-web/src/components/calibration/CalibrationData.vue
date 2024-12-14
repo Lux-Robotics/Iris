@@ -18,10 +18,9 @@
 </template>
 
 <script setup lang="ts">
-  const props = defineProps<{
-    readonly calibrationJson: any
-  }>()
-
+const props = defineProps<{
+  readonly calibrationJson: any;
+}>();
 </script>
 
 <style scoped>

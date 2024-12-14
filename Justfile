@@ -39,7 +39,7 @@ install:
 lint:
     isort .
     black .
-    # cd iris-web && npx @biomejs/biome format --ignore '**/*.d.ts' -write ./src
+    cd iris-web && npm run lint
     flake8 .
 
 test:
