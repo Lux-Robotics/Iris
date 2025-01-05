@@ -72,7 +72,7 @@ protobuf==5.28.2
     # via
     #   foxglove-schemas-protobuf
     #   mcap-protobuf-support
-pyapriltags==3.3.0.3
+pyapriltags==3.4.2.3
     # via -r requirements.txt
 pycodestyle==2.12.1
     # via flake8
