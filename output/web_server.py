@@ -36,6 +36,13 @@ def update_hostname(new_hostname: str):
             )
         except subprocess.CalledProcessError:
             raise HTTPException(status_code=500, detail="Failed to set hostname")
+    elif current_platform == Platform.TEST:
+        try:
+            subprocess.run(
+                ["hostnamectl", "hostname", new_hostname.hostname], check=True
+            )
+        except subprocess.CalledProcessError:
+            raise HTTPException(status_code=500, detail="Failed to set hostname")
     else:
         raise HTTPException(
             status_code=403, detail="Hostname cannot be set in a dev environment"
@@ -255,6 +262,6 @@ app.mount(
 
 def start():
     port = 80
-    if current_platform != Platform.IRIS:
+    if current_platform == Platform.DEV:
         port = settings.dev_server_port
     uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")

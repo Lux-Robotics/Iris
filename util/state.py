@@ -20,6 +20,7 @@ from util.vision_types import TagCoordinates
 class Platform(enum.Enum):
     IRIS = 1
     DEV = 2
+    TEST = 3
 
 
 exec_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

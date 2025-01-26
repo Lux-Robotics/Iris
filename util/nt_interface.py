@@ -34,7 +34,7 @@ class NTInterface:
     # Initiate Connection
     def __init__(self, ip: str) -> None:
         inst = NetworkTableInstance.getDefault()
-        if state.current_platform == Platform.IRIS:
+        if state.current_platform != Platform.DEV:
             inst.setServer(ip)
             inst.startClient4("iris")
         else:

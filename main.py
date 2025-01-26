@@ -65,6 +65,13 @@ def init_camera():
             cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
             cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 800)
             return cap
+        elif state.current_platform == Platform.TEST:
+            cap = cv2.VideoCapture(0)
+            cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc("M", "J", "P", "G"))
+            cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1600)
+            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1200)
+            cap.set(cv2.CAP_PROP_FPS, 50)
+            return cap
         elif state.current_platform == Platform.DEV:
             return cv2.VideoCapture(0)
         else:
