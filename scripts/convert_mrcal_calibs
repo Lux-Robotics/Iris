@@ -41,8 +41,8 @@ x_res, y_res = model.imagersize().tolist()
 
 # TODO: these return as strings?
 intrinsic_matrix_opencv = [
-    [intrinsics_mrcal[0], 0, intrinsics_mrcal[2]],
-    [0, intrinsics_mrcal[1], intrinsics_mrcal[3]],
+    [float(intrinsics_mrcal[0]), 0, float(intrinsics_mrcal[2])],
+    [0, float(intrinsics_mrcal[1]), float(intrinsics_mrcal[3])],
     [0, 0, 1],
 ]
 

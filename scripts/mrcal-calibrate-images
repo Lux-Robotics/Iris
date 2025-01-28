@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Run mrgingham to find corners
-mrgingham --jobs $(nproc) --gridn 13 "$IMAGE_DIR"/"*.png" > "${UUID}_corners.vnl"
+mrgingham --jobs $(nproc) --gridn 18 "$IMAGE_DIR"/"*.png" > "${UUID}_corners.vnl"
 
 # Run camera calibration
-mrcal-calibrate-cameras --corners-cache "${UUID}_corners.vnl" --lensmodel LENSMODEL_OPENCV8 --focal 900 --object-spacing 0.012 --object-width-n 13 "$IMAGE_DIR"/"*.png"
+mrcal-calibrate-cameras --corners-cache "${UUID}_corners.vnl" --lensmodel LENSMODEL_OPENCV8 --focal 900 --object-spacing 0.010 --object-width-n 28 --object-height-n 17 "$IMAGE_DIR"/"*.png"

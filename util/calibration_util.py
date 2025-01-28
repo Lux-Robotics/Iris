@@ -49,7 +49,7 @@ def generate_calibration_images(dir: str):
     )
 
 
-def calibrate_cameras(image_dir: str, object_spacing: float = 0.012, gridn: int = 14):
+def calibrate_cameras(image_dir: str, object_spacing: float = 0.010, gridn: int = 17):
     logger.info("Creating calibration directory")
     try:
         dir_path = "/tmp/calibration"
