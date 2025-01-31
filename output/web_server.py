@@ -1,17 +1,15 @@
 import os
-import shutil
 import subprocess
-import tempfile
-import uuid
 
-import cv2
 import uvicorn
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+import util.snapshot_manager
 from util import state
-from util.calibration_util import calibrate_cameras, get_snapshots
+from util.calibration_util import calibrate_cameras
 from util.state import Platform, current_platform, device_id, exec_dir, settings
 
 
@@ -23,8 +21,7 @@ class IPConfig(BaseModel):
 
 app = FastAPI()
 
-os.makedirs("/tmp/calibration", exist_ok=True)
-os.makedirs("/tmp/snapshots", exist_ok=True)
+os.makedirs(state.snapshots_dir, exist_ok=True)
 
 
 @app.post("/api/hostname")
@@ -95,10 +92,12 @@ def update_ip_config(new_ip_config: IPConfig):
                     check=True,
                 )
         except subprocess.CalledProcessError:
-            raise HTTPException(status_code=500, detail="Failed to set hostname")
+            raise HTTPException(
+                status_code=500, detail="Failed to set ip configuration"
+            )
     else:
         raise HTTPException(
-            status_code=403, detail="Hostname cannot be set in a dev environment"
+            status_code=403, detail="IP cannot be set in a dev environment"
         )
     return {"status": "ok"}
 
@@ -143,88 +142,40 @@ def get_ip_config():
 
 @app.post("/api/take-snapshot")
 def take_snapshot():
-    state.nt_listener.calibration_progress_pub.set(0)
-    try:
-        if not os.path.exists("/tmp/snapshots"):
-            os.makedirs("/tmp/snapshots", exist_ok=True)
-        frame = state.last_frame
-        name = uuid.uuid4()
-        if frame is not None:
-            cv2.imwrite(os.path.join("/tmp/snapshots", str(name) + ".png"), frame)
-        state.nt_listener.snapshots_pub.set(get_snapshots())
-    except Exception:
-        raise HTTPException(status_code=500, detail="Failed to take snapshot")
+    util.snapshot_manager.take_snapshot()
     return {"status": "ok"}
 
 
 @app.post("/api/clear-snapshots")
 def clear_snapshots():
-    state.nt_listener.calibration_progress_pub.set(0)
-    try:
-        if os.path.exists("/tmp/snapshots"):
-            shutil.rmtree("/tmp/snapshots")
-        os.makedirs("/tmp/snapshots", exist_ok=True)
-        state.nt_listener.snapshots_pub.set(get_snapshots())
-    except Exception:
-        raise HTTPException(status_code=500, detail="Failed to clear snapshot")
+    util.snapshot_manager.clear_snapshots()
     return {"status": "ok"}
 
 
-@app.post("/api/calibrate")
-def calibrate():
-    state.nt_listener.calibration_failed_pub.set(False)
-    state.nt_listener.calibration_progress_pub.set(0)
-    if len(get_snapshots()) < 1:
-        state.nt_listener.calibration_failed_pub.set(True)
-        raise HTTPException(status_code=500, detail="Calibration failed")
-    ret = calibrate_cameras("/tmp/snapshots")
-    if not ret:
-        state.nt_listener.calibration_failed_pub.set(True)
-        raise HTTPException(status_code=500, detail="Calibration failed")
-    return {"status": "ok"}
-
-
-@app.post("/api/save-calibration")
-def save_calibration():
-    state.nt_listener.calibration_progress_pub.set(0)
-    src_directory = "/tmp/calibration"
-    dest_directory = os.path.join(state.config_dir, "calibration", "staged")
-    # Check if the source directory is empty
-    if not os.listdir(src_directory):
-        raise HTTPException(status_code=500, detail="Calibration failed")
-
-    # Make sure the destination directory exists
-    if not os.path.exists(dest_directory):
-        os.makedirs(dest_directory)
-
-    # List the files in the source directory and copy .svg and .toml files
-    for item in os.listdir(src_directory):
-        if item.endswith(".svg") or item.endswith(".toml"):
-            src_file = os.path.join(src_directory, item)
-            dest_file = os.path.join(dest_directory, item)
-            shutil.copy2(src_file, dest_file)
-            print(f"Copied {src_file} to {dest_file}")
-    return {"status": "ok"}
+@app.get("/api/calibrate")
+async def calibrate():
+    return StreamingResponse(
+        calibrate_cameras(state.snapshots_dir), media_type="text/event-stream"
+    )
 
 
 @app.post("/api/swap-calibrations")
 def swap_calibrations():
     current = os.path.join(state.config_dir, "calibration", "current")
     staged = os.path.join(state.config_dir, "calibration", "staged")
-    # Ensure both directories exist
-    if not os.path.isdir(current) or not os.path.isdir(staged):
+
+    if not os.path.islink(current) or not os.path.islink(staged):
         raise HTTPException(status_code=500, detail="Swap failed")
 
-    # Create a temporary directory to hold one of the directories during the swap
-    with tempfile.TemporaryDirectory() as temp_dir:
-        # Move the first directory to the temporary directory
-        shutil.move(staged, temp_dir)
+    target1 = os.readlink(current)
+    target2 = os.readlink(staged)
 
-        # Move the second directory to the first directory's location
-        shutil.move(current, staged)
+    os.unlink(current)
+    os.unlink(staged)
 
-        # Move the directory from the temporary location to the second directory's location
-        shutil.move(os.path.join(temp_dir, os.path.basename(staged)), current)
+    os.symlink(target2, current)
+    os.symlink(target1, staged)
+
     state.reload_calibration()
     return {"status": "ok"}
 
@@ -239,13 +190,7 @@ def get_calibrations():
     return {"current": settings.calibration, "staged": staged}
 
 
-app.mount(
-    "/processed-calibration",
-    StaticFiles(directory="/tmp/calibration"),
-    name="processed-calibration",
-)
-
-app.mount("/snapshots", StaticFiles(directory="/tmp/snapshots"), name="snapshots")
+app.mount("/snapshots", StaticFiles(directory=state.snapshots_dir), name="snapshots")
 
 app.mount(
     "/calibrations",

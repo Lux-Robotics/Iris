@@ -25,6 +25,7 @@ class Platform(enum.Enum):
 
 exec_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 config_dir = site_config_dir(appname="iris", appauthor="irisvision")
+snapshots_dir = os.path.join(config_dir, "snapshots")
 
 logging.basicConfig(
     level="INFO",
@@ -94,7 +95,13 @@ def get_git_info():
 
 
 def get_platform():
-    return Platform.IRIS if "rk2312" in platform.release() else Platform.DEV
+    release = platform.release()
+    if "rk2312" in release:
+        return Platform.IRIS
+    if release == "6.1.0-1025-rockchip":
+        return Platform.TEST
+
+    return Platform.DEV
 
 
 def get_device_id():

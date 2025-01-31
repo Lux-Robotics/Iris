@@ -8,12 +8,15 @@ from wpimath.geometry import Pose3d, Translation2d
 
 import util.state as state
 import util.v4l2_ctrls
-from util.calibration_util import get_snapshots
+from util.snapshot_manager import list_snapshots
 from util.state import Platform, save_settings
 from util.vision_types import IrisPoseEstimationResult, IrisTarget, Pose, TagObservation
 
 
 def _add_attribute(topic: Topic, default_value: any) -> tuple[Subscriber, Publisher]:
+    """
+    Util for creating a NetworkTables subscriber and publisher with a default value
+    """
     sub: Subscriber = topic.subscribe(default_value)
     pub: Publisher = topic.publish(
         ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=False)
@@ -22,6 +25,7 @@ def _add_attribute(topic: Topic, default_value: any) -> tuple[Subscriber, Publis
     return sub, pub
 
 
+# TODO: change to REST api
 def update_server_address(event):
     team_number = event.data.value.getInteger()
     state.settings.team_number = team_number
@@ -109,6 +113,8 @@ class NTInterface:
             state.robot_last_enabled = time.time()
 
 
+# TODO: need better name
+# Local NT server
 class NTListener:
     inst = ntcore.NetworkTableInstance.create()
 
@@ -131,9 +137,7 @@ class NTListener:
         _, self.hardware_info = _add_attribute(
             inst.getStringTopic("hardwareInfo"), "Unknown"
         )
-        _, self.uptime_pub = _add_attribute(
-            inst.getIntegerTopic("uptime"), 0
-        )  # TODO: fix
+        _, self.uptime_pub = _add_attribute(inst.getIntegerTopic("uptime"), 0)
 
         # camera settings
         self.brightness_sub, self.brightness_pub = _add_attribute(
@@ -173,15 +177,8 @@ class NTListener:
             inst.getIntegerTopic("threads"), state.settings.apriltag3.threads
         )
 
-        # calibration
-        _, self.calibration_progress_pub = _add_attribute(
-            inst.getIntegerTopic("calibrationProgress"), 0
-        )
-        _, self.calibration_failed_pub = _add_attribute(
-            inst.getBooleanTopic("calibrationFailed"), False
-        )
         _, self.snapshots_pub = _add_attribute(
-            inst.getStringArrayTopic("snapshots"), get_snapshots()
+            inst.getStringArrayTopic("snapshots"), list_snapshots()
         )
 
         # TODO: switch to MultiSubscriber?
