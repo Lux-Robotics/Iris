@@ -146,8 +146,8 @@ def take_snapshot():
     return {"status": "ok"}
 
 
-@app.post("/api/clear-snapshots")
-def clear_snapshots():
+@app.post("/api/delete-snapshots")
+def delete_snapshots():
     util.snapshot_manager.clear_snapshots()
     return {"status": "ok"}
 

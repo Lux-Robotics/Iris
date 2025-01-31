@@ -23,7 +23,7 @@ function takeSnapshot() {
 
 function clearSnapshots() {
   axios
-    .post("/api/clear-snapshots", {})
+    .post("/api/delete-snapshots", {})
     .then((response) => {
       console.log(response.data);
     })
@@ -33,52 +33,40 @@ function clearSnapshots() {
 }
 
 function calibrate() {
-  axios
-    .post("/api/calibrate", {})
-    .then((response) => {
-      console.log(response.data);
-    })
-    .catch((error) => {
-      console.error("Error occurred:", error);
-    });
   page.value += 1;
+
+  const endpoint = new EventSource("/api/calibrate");
+
+  endpoint.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    console.log(data);
+    if (data.progress == -1) {
+      failed.value = true;
+    } else {
+      progress.value = data.progress;
+    }
+
+    if (progress.value == 5) {
+      endpoint.close();
+    }
+  };
+
+  endpoint.onerror = (error) => {
+    console.error("Error:", error);
+  };
 }
 
-function cancelCalibration() {
+function exitCalibration() {
   clearSnapshots();
-  calibrationDialog.value = false;
-}
-
-function saveCalibration() {
-  clearSnapshots();
-  axios.post("/api/save-calibration");
   calibrationDialog.value = false;
 }
 
 onMounted(() => {
-  const progressTopic: NetworkTablesTopic<number> = ntcore.createTopic(
-    "calibrationProgress",
-    NetworkTablesTypeInfos.kInteger,
-  );
-  const failProgressTopic: NetworkTablesTopic<boolean> = ntcore.createTopic(
-    "calibrationFailed",
-    NetworkTablesTypeInfos.kInteger,
-  );
   const snapshotsTopic: NetworkTablesTopic<string[]> = ntcore.createTopic(
     "snapshots",
     NetworkTablesTypeInfos.kStringArray,
   );
 
-  progressTopic.subscribe((v) => {
-    if (v !== null) {
-      progress.value = v;
-    }
-  });
-  failProgressTopic.subscribe((v) => {
-    if (v !== null) {
-      failed.value = v;
-    }
-  });
   snapshotsTopic.subscribe((v) => {
     if (v !== null) {
       numSnapshots.value = v.length;
@@ -104,6 +92,7 @@ onMounted(() => {
     max-width="1200"
     min-width="300"
     opacity="5%"
+    persistent
   >
     <v-card border>
       <template #title>
@@ -116,7 +105,7 @@ onMounted(() => {
           :bg-opacity="0"
           color="primary"
           height="6"
-          :indeterminate="progress !== 4 && !failed"
+          :indeterminate="progress !== 5 && !failed"
         />
         <div class="ma-2">
           <v-window-item :value="1">
@@ -179,6 +168,16 @@ onMounted(() => {
                   title="Generate Graphs"
                   value="4"
                 />
+
+                <v-divider />
+
+                <v-stepper-item
+                  color="primary"
+                  :complete="progress > 4"
+                  :error="progress === 4 && failed"
+                  title="Save Calibration"
+                  value="5"
+                />
               </v-stepper-header>
               <div v-if="$vuetify.display.smAndDown">
                 <v-stepper-item
@@ -218,6 +217,16 @@ onMounted(() => {
                   title="Generate Graphs"
                   value="4"
                 />
+
+                <v-divider />
+
+                <v-stepper-item
+                  color="primary"
+                  :complete="progress > 4"
+                  :error="progress === 4 && failed"
+                  title="Save Calibration"
+                  value="5"
+                />
               </div>
             </v-stepper>
           </v-window-item>
@@ -230,20 +239,13 @@ onMounted(() => {
           class="text-none"
           color="error"
           text="Cancel"
-          @click="cancelCalibration"
-        />
-        <v-btn
-          v-if="page > 1"
-          class="text-none"
-          color="error"
-          :disabled="progress < 4"
-          text="Restart Calibration"
-          @click="page--"
+          @click="exitCalibration"
         />
         <v-btn
           v-if="page === 1"
           class="text-none"
           color="primary"
+          :disabled="numSnapshots < 1"
           text="Calibrate"
           variant="flat"
           @click="calibrate"
@@ -253,9 +255,9 @@ onMounted(() => {
           class="text-none"
           color="primary"
           :disabled="progress < 4"
-          text="Save"
+          text="Done"
           variant="flat"
-          @click="saveCalibration"
+          @click="exitCalibration"
         />
       </template>
     </v-card>
