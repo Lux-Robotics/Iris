@@ -14,39 +14,37 @@ def get_snapshots(directory: str = "/tmp/snapshots"):
 
 
 def generate_calibration_images(dir: str):
-    subprocess.run(
+    commands = [
         [
             "mrcal-show-projection-uncertainty",
             "camera-0.cameramodel",
             "--hardcopy=" + "projection_uncertainty.svg",
         ],
-        cwd=dir,
-    )
-    subprocess.run(
         [
             "mrcal-show-valid-intrinsics-region",
             "camera-0.cameramodel",
             "--hardcopy=" + "valid_intrinsics_region.svg",
         ],
-        cwd=dir,
-    )
-    subprocess.run(
         [
             "mrcal-show-distortion-off-pinhole",
             "camera-0.cameramodel",
             "--hardcopy=" + "distortion.svg",
         ],
-        cwd=dir,
-    )
-    subprocess.run(
         [
             "mrcal-show-residuals",
             "camera-0.cameramodel",
             "--vectorfield",
             "--hardcopy=" + "residuals.svg",
         ],
-        cwd=dir,
-    )
+    ]
+
+    # Run all commands in parallel
+    processes = [subprocess.Popen(cmd, cwd=dir) for cmd in commands]
+
+    for proc in processes:
+        proc.wait()
+        if proc.returncode != 0:
+            raise subprocess.CalledProcessError(proc.returncode, proc.args)
 
 
 def calibrate_cameras(image_dir: str, object_spacing: float = 0.010, gridn: int = 17):
