@@ -42,6 +42,7 @@ function calibrate() {
     console.log(data);
     if (data.progress == -1) {
       failed.value = true;
+      endpoint.close();
     } else {
       progress.value = data.progress;
     }
@@ -235,7 +236,7 @@ onMounted(() => {
       <v-divider />
       <template #actions>
         <v-btn
-          v-if="page === 1"
+          v-if="page === 1 || failed"
           class="text-none"
           color="error"
           text="Cancel"
@@ -254,7 +255,7 @@ onMounted(() => {
           v-if="page === 2"
           class="text-none"
           color="primary"
-          :disabled="progress < 4"
+          :disabled="progress < 5"
           text="Done"
           variant="flat"
           @click="exitCalibration"

@@ -61,9 +61,10 @@ async def calibrate_cameras(
                     check=True,
                 )
                 logger.info("Computed corners cache")
-        except subprocess.CalledProcessError:
-            logger.error("Failed to compute corners cache")
+        except Exception as e:
+            logger.error("Failed to compute corners cache: " + str(e))
             yield f'data: {{"progress": {-1}}}\n\n'
+            return
         yield f'data: {{"progress": {1}}}\n\n'
         try:
             subprocess.run(
@@ -80,9 +81,10 @@ async def calibrate_cameras(
                 cwd=dir_path,
             )
             logger.info("Calibration complete")
-        except subprocess.CalledProcessError:
-            logger.error("Calibration failed")
+        except Exception as e:
+            logger.error("Calibration failed: " + str(e))
             yield f'data: {{"progress": {-1}}}\n\n'
+            return
         yield f'data: {{"progress": {2}}}\n\n'
         logger.info("Converting calibration")
         try:
@@ -95,16 +97,18 @@ async def calibrate_cameras(
                 check=True,
                 cwd=dir_path,
             )
-        except subprocess.CalledProcessError:
-            logger.error("Conversion failed")
+        except Exception as e:
+            logger.error("Conversion failed: " + str(e))
             yield f'data: {{"progress": {-1}}}\n\n'
+            return
         yield f'data: {{"progress": {3}}}\n\n'
         logger.info("Generating graphs")
         try:
             generate_calibration_images(dir_path)
-        except Exception:
-            logger.error("Failed to generate graphs")
+        except Exception as e:
+            logger.error("Failed to generate graphs: " + str(e))
             yield f'data: {{"progress": {-1}}}\n\n'
+            return
         yield f'data: {{"progress": {4}}}\n\n'
 
         try:
@@ -127,9 +131,10 @@ async def calibrate_cameras(
                 os.remove(staged_path)
             os.symlink(dest, staged_path)
             logger.info(f"Successfully created symlink {staged_path} -> {dest}")
-        except Exception:
-            logger.error("Failed to save calibration")
+        except Exception as e:
+            logger.error("Failed to save calibration: " + str(e))
             yield f'data: {{"progress": {-1}}}\n\n'
+            return
 
         yield f'data: {{"progress": {5}}}\n\n'
         logger.info("Calibration complete")

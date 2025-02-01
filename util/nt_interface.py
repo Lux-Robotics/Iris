@@ -58,11 +58,6 @@ class NTInterface:
             self.output_table.getStringTopic("version"), state.version
         )
 
-        self.config_table = inst.getTable("/Iris/config")
-        self.tagignore_sub = self.config_table.getIntegerArrayTopic(
-            "ignored_tags"
-        ).subscribe([])
-
         self.control_data_sub = (
             inst.getTable("/FMSInfo").getIntegerTopic("FMSControlData").subscribe(0)
         )
@@ -97,8 +92,6 @@ class NTInterface:
         self.corner_data_pub.set(corners, math.floor(timestamp * 1000000))
 
     def get_states(self):
-        state.ignored_tags = self.tagignore_sub.get([])
-
         control_data = self.control_data_sub.get(0)
         (
             ds_attached,
@@ -148,6 +141,9 @@ class NTListener:
         )
         self.gain_sub, self.gain_pub = _add_attribute(
             inst.getIntegerTopic("gain"), state.settings.camera.gain
+        )
+        self.enabled_tags_sub, _ = _add_attribute(
+            inst.getIntegerArrayTopic("enabled_apriltag_ids"), []
         )
 
         # apriltag settings
@@ -284,6 +280,10 @@ class NTListener:
             ntcore.EventFlags.kValueAll,
             util.v4l2_ctrls.update_exposure,
         )
+        # inst.addListener(
+        #     self.enabled_tags_sub,
+        #     ntcore.EventFlags.kValueAll,
+        # )
 
     # TODO: add timestamps, latency
     def update_data(self, timestamp: float):
