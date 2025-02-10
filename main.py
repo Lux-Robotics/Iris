@@ -5,6 +5,9 @@ import sys
 import threading
 import time
 
+import cscore
+import numpy as np
+
 # Add parent directory to path for module imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -58,22 +61,28 @@ time.sleep(0.2)
 
 
 # Initialize video capture
+# TODO: fully refactor for cscore
 def init_camera():
     if args.mode == 0:
         if state.current_platform == Platform.IRIS:
-            cap = cv2.VideoCapture(11)
-            cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 800)
-            return cap
+            # TODO: test on actual hardware
+            cap = cscore.UsbCamera("camera", 11)
+            cap.setVideoMode(cscore.VideoMode.PixelFormat.kUYVY, 1280, 800, 120)
+            cvsink = cscore.CvSink("sink")
+            cvsink.setSource(cap)
+            return cvsink, (800, 1280, 3)
         elif state.current_platform == Platform.TEST:
-            cap = cv2.VideoCapture(0)
-            cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc("M", "J", "P", "G"))
-            cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1600)
-            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1200)
-            cap.set(cv2.CAP_PROP_FPS, 50)
-            return cap
+            cap = cscore.UsbCamera("camera", 0)
+            cap.setVideoMode(cscore.VideoMode.PixelFormat.kMJPEG, 1600, 1200, 50)
+            cvsink = cscore.CvSink("sink")
+            cvsink.setSource(cap)
+            return cvsink, (1200, 1600, 3)
         elif state.current_platform == Platform.DEV:
-            return cv2.VideoCapture(0)
+            cap = cscore.UsbCamera("camera", 0)
+            cap.setVideoMode(cscore.VideoMode.PixelFormat.kMJPEG, 1920, 1080, 30)
+            cvsink = cscore.CvSink("sink")
+            cvsink.setSource(cap)
+            return cvsink, (1080, 1920, 3)
         else:
             logger.error("Platform not recognized")
             sys.exit()
@@ -90,7 +99,7 @@ def init_camera():
 
 
 try:
-    camera = init_camera()
+    sink, res = init_camera()
 except Exception as e:
     logger.error("Failed to initialize video capture: " + str(e))
     sys.exit()
@@ -113,13 +122,19 @@ if settings.http_stream.enabled:
     output.http_stream.start()
     web_server_thread.start()
 
+frame = np.zeros(shape=res, dtype=np.uint8)
+
+
 while True:
     # read data from networktables
     if settings.use_networktables:
         nt_instance.get_states()
 
-    ret, frame = camera.read()
     new_frame_time = time.time()
+    # ret, frame = camera.read()
+    ret = True
+    # TODO: use returned time
+    t, frame = sink.grabFrame(frame)
 
     state.frame_times.append(new_frame_time)
     # FPS Calculation
@@ -143,11 +158,11 @@ while True:
                 break
 
             time.sleep(0.1)
-            camera = init_camera()
+            sink, _ = init_camera()
             continue
 
         elif args.mode == 1:
-            camera = init_camera()
+            sink, _ = init_camera()
             continue
 
         else:
@@ -239,7 +254,5 @@ while True:
         settings.logging.enabled = (
             False  # Do not exit since logging does not affect primary function
         )
-
-camera.release()
 
 sys.exit()
