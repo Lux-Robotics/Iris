@@ -2,6 +2,7 @@ import os
 import subprocess
 
 import uvicorn
+# from dynaconf.utils import DynaBox
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -23,6 +24,9 @@ app = FastAPI()
 
 os.makedirs(state.snapshots_dir, exist_ok=True)
 
+# @app.get("/api/config")
+# def read_config():
+#     return DynaBox(state.settings).to_dict()
 
 @app.post("/api/hostname")
 def update_hostname(new_hostname: str):
@@ -176,6 +180,7 @@ def swap_calibrations():
     os.symlink(target2, current)
     os.symlink(target1, staged)
 
+    # apply new calibration
     state.reload_calibration()
     return {"status": "ok"}
 
