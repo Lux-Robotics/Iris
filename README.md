@@ -1,9 +1,11 @@
 <div>
   <h1 align="center">Iris</h1>
   <p align="center">
-    Vision system for FRC
+    High-performance AprilTag vision for FRC
   </p>
 </div>
+
+![](img/web_interface.png)
 
 ## Features
 
@@ -41,7 +43,6 @@ Log files can be viewed with [Foxglove Studio](https://foxglove.dev/):
 
 Iris includes a comprehensive web dashboard for real-time monitoring and tuning. This interface provides live camera streaming alongside configurable camera and detection parameters.
 
-![](img/web_interface.png)
 ![](img/settings_page.png)
 
 ### Offline Operation
