@@ -136,11 +136,12 @@ while True:
     if not ret:
         if args.mode == 0:
             logger.warning("video input not detected")
+            nt_instance.fps_pub.set(-1)
 
             # Attempt to reinitialize camera after 0.1 seconds
-            state.bad_frames += 1
-            if state.bad_frames > 10:
-                break
+            # state.bad_frames += 1
+            # if state.bad_frames > 10:
+            #     break
 
             time.sleep(0.1)
             camera = init_camera()

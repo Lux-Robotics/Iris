@@ -139,6 +139,7 @@
         </template>
       </v-slider>
       <v-text-field
+        v-model="enabledTags"
         color="secondary"
         label="Tag ID Filter"
         variant="outlined"
@@ -188,14 +189,9 @@ const tagFamily = ref();
 const detector = ref();
 const sharpen = ref(0);
 const decisionMargin = ref(0);
+const enabledTags = ref("");
 
-const decimateRef = ref(1.0);
-const blurRef = ref(0.0);
-const nThreadsRef = ref(1);
-const tagFamilyRef = ref();
-const detectorRef = ref();
-const sharpenRef = ref(0);
-const decisionMarginRef = ref(0);
+let enabledTagsRef: number[] = [];
 
 const threadsTopic: NetworkTablesTopic<number> = ntcore.createTopic(
   "threads",
@@ -226,97 +222,152 @@ const detectorTopic: NetworkTablesTopic<string> = ntcore.createTopic(
   NetworkTablesTypeInfos.kString,
 );
 
+const enabledTagsTopic: NetworkTablesTopic<number[]> = ntcore.createTopic(
+  "enabled_apriltag_ids",
+  NetworkTablesTypeInfos.kIntegerArray,
+);
+
+// function parseIDRanges(x: string): number[] {
+//   const result: number[] = [];
+//
+//   const segments = x.split(",").map((segment) => segment.trim());
+//
+//   segments.forEach((segment) => {
+//     if (segment.includes("-")) {
+//       const [startStr, endStr] = segment.split("-").map((part) => part.trim());
+//       const start = parseInt(startStr, 10);
+//       const end = parseInt(endStr, 10);
+//
+//       for (let i = start; i <= end; i++) {
+//         result.push(i);
+//       }
+//     } else {
+//       const number = parseInt(segment, 10);
+//       result.push(number);
+//     }
+//   });
+//
+//   return result;
+// }
+
+function formatRange(numbers: number[]): string {
+  if (numbers.length === 0) return "";
+
+  const sortedNumbers = [...numbers].sort((a, b) => a - b);
+  const result: string[] = [];
+
+  let start = sortedNumbers[0];
+  let end = start;
+
+  for (let i = 1; i < sortedNumbers.length; i++) {
+    const current = sortedNumbers[i];
+
+    if (current === end + 1) {
+      end = current;
+    } else {
+      if (start === end) {
+        result.push(`${start}`);
+      } else {
+        result.push(`${start}-${end}`);
+      }
+      start = current;
+      end = current;
+    }
+  }
+
+  if (start === end) {
+    result.push(`${start}`);
+  } else {
+    result.push(`${start}-${end}`);
+  }
+
+  return result.join(", ");
+}
+
 onMounted(() => {
   watch(detector, async (newDetector) => {
-    detectorRef.value = newDetector;
     detectorTopic.publish();
     detectorTopic.setValue(newDetector);
   });
 
   watch(nThreads, async (newNThreads) => {
-    nThreadsRef.value = newNThreads;
     threadsTopic.publish();
     threadsTopic.setValue(newNThreads);
   });
 
   watch(blur, async (newBlur) => {
-    blurRef.value = newBlur;
     blurTopic.publish();
     blurTopic.setValue(newBlur);
   });
 
   watch(decimate, async (newDecimate) => {
-    decimateRef.value = newDecimate;
     decimateTopic.publish();
     decimateTopic.setValue(newDecimate);
   });
 
   watch(sharpen, async (newSharpen) => {
-    sharpenRef.value = newSharpen;
     sharpenTopic.publish();
     sharpenTopic.setValue(newSharpen);
   });
 
   watch(decisionMargin, async (newDecisionMargin) => {
-    decisionMarginRef.value = newDecisionMargin;
     decisionMarginTopic.publish();
     decisionMarginTopic.setValue(newDecisionMargin);
   });
 
   watch(tagFamily, async (newTagFamily) => {
-    tagFamilyRef.value = newTagFamily;
     apriltagFamilyTopic.publish();
     apriltagFamilyTopic.setValue(newTagFamily);
   });
 
   detectorTopic.subscribe((v) => {
-    if (v !== null && detectorRef.value !== v) {
+    if (v !== null && detector.value !== v) {
       detector.value = v;
-      detectorRef.value = v;
     }
   }, true);
 
   threadsTopic.subscribe((v) => {
-    if (v !== null && nThreadsRef.value !== v) {
+    if (v !== null && nThreads.value !== v) {
       nThreads.value = v;
-      nThreadsRef.value = v;
     }
   }, true);
 
   blurTopic.subscribe((v) => {
-    if (v !== null && blurRef.value !== v) {
+    if (v !== null && blur.value !== v) {
       blur.value = v;
-      blurRef.value = v;
     }
   }, true);
 
   decimateTopic.subscribe((v) => {
-    if (v !== null && decimateRef.value !== v) {
+    if (v !== null && decimate.value !== v) {
       decimate.value = v;
-      decimateRef.value = v;
     }
   }, true);
 
   sharpenTopic.subscribe((v) => {
-    if (v !== null && sharpenRef.value !== v) {
+    if (v !== null && sharpen.value !== v) {
       sharpen.value = v;
-      sharpenRef.value = v;
     }
   });
 
   decisionMarginTopic.subscribe((v) => {
-    if (v !== null && decisionMarginRef.value !== v) {
+    if (v !== null && decisionMargin.value !== v) {
       decisionMargin.value = v;
-      decisionMarginRef.value = v;
     }
   });
 
   apriltagFamilyTopic.subscribe((v) => {
-    if (v !== null && tagFamilyRef.value !== v) {
+    if (v !== null && tagFamily.value !== v) {
       tagFamily.value = v;
-      tagFamilyRef.value = v;
     }
   }, true);
+
+  enabledTagsTopic.subscribe((v) => {
+    if (v !== null && enabledTagsRef != v) {
+      enabledTagsRef = v;
+      enabledTags.value = formatRange(v);
+    }
+  });
 });
 </script>
 

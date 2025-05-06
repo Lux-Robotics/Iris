@@ -8,12 +8,15 @@ from wpimath.geometry import Pose3d, Translation2d
 
 import util.state as state
 import util.v4l2_ctrls
-from util.calibration_util import get_snapshots
+from util.snapshot_manager import list_snapshots
 from util.state import Platform, save_settings
 from util.vision_types import IrisPoseEstimationResult, IrisTarget, Pose, TagObservation
 
 
 def _add_attribute(topic: Topic, default_value: any) -> tuple[Subscriber, Publisher]:
+    """
+    Util for creating a NetworkTables subscriber and publisher with a default value
+    """
     sub: Subscriber = topic.subscribe(default_value)
     pub: Publisher = topic.publish(
         ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=False)
@@ -22,6 +25,7 @@ def _add_attribute(topic: Topic, default_value: any) -> tuple[Subscriber, Publis
     return sub, pub
 
 
+# TODO: change to REST api
 def update_server_address(event):
     team_number = event.data.value.getInteger()
     state.settings.team_number = team_number
@@ -53,11 +57,6 @@ class NTInterface:
         _, self.version_pub = _add_attribute(
             self.output_table.getStringTopic("version"), state.version
         )
-
-        self.config_table = inst.getTable("/Iris/config")
-        self.tagignore_sub = self.config_table.getIntegerArrayTopic(
-            "ignored_tags"
-        ).subscribe([])
 
         self.control_data_sub = (
             inst.getTable("/FMSInfo").getIntegerTopic("FMSControlData").subscribe(0)
@@ -93,8 +92,6 @@ class NTInterface:
         self.corner_data_pub.set(corners, math.floor(timestamp * 1000000))
 
     def get_states(self):
-        state.ignored_tags = self.tagignore_sub.get([])
-
         control_data = self.control_data_sub.get(0)
         (
             ds_attached,
@@ -109,6 +106,8 @@ class NTInterface:
             state.robot_last_enabled = time.time()
 
 
+# TODO: need better name
+# Local NT server
 class NTListener:
     inst = ntcore.NetworkTableInstance.create()
 
@@ -131,9 +130,7 @@ class NTListener:
         _, self.hardware_info = _add_attribute(
             inst.getStringTopic("hardwareInfo"), "Unknown"
         )
-        _, self.uptime_pub = _add_attribute(
-            inst.getIntegerTopic("uptime"), 0
-        )  # TODO: fix
+        _, self.uptime_pub = _add_attribute(inst.getIntegerTopic("uptime"), 0)
 
         # camera settings
         self.brightness_sub, self.brightness_pub = _add_attribute(
@@ -144,6 +141,9 @@ class NTListener:
         )
         self.gain_sub, self.gain_pub = _add_attribute(
             inst.getIntegerTopic("gain"), state.settings.camera.gain
+        )
+        self.enabled_tags_sub, _ = _add_attribute(
+            inst.getIntegerArrayTopic("enabled_apriltag_ids"), []
         )
 
         # apriltag settings
@@ -173,15 +173,8 @@ class NTListener:
             inst.getIntegerTopic("threads"), state.settings.apriltag3.threads
         )
 
-        # calibration
-        _, self.calibration_progress_pub = _add_attribute(
-            inst.getIntegerTopic("calibrationProgress"), 0
-        )
-        _, self.calibration_failed_pub = _add_attribute(
-            inst.getBooleanTopic("calibrationFailed"), False
-        )
         _, self.snapshots_pub = _add_attribute(
-            inst.getStringArrayTopic("snapshots"), get_snapshots()
+            inst.getStringArrayTopic("snapshots"), list_snapshots()
         )
 
         # TODO: switch to MultiSubscriber?
@@ -287,6 +280,10 @@ class NTListener:
             ntcore.EventFlags.kValueAll,
             util.v4l2_ctrls.update_exposure,
         )
+        # inst.addListener(
+        #     self.enabled_tags_sub,
+        #     ntcore.EventFlags.kValueAll,
+        # )
 
     # TODO: add timestamps, latency
     def update_data(self, timestamp: float):

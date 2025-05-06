@@ -71,7 +71,7 @@ onMounted(() => {
   <v-select
     v-model="cameraOrientation"
     color="secondary"
-    :items="['Normal', '90°', '180°', '270°']"
+    :items="['Normal', '180°']"
     label="Display Orientation"
     variant="outlined"
   />
