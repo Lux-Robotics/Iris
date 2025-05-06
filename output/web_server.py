@@ -2,6 +2,7 @@ import os
 import subprocess
 
 import uvicorn
+
 # from dynaconf.utils import DynaBox
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
@@ -27,6 +28,7 @@ os.makedirs(state.snapshots_dir, exist_ok=True)
 # @app.get("/api/config")
 # def read_config():
 #     return DynaBox(state.settings).to_dict()
+
 
 @app.post("/api/hostname")
 def update_hostname(new_hostname: str):
