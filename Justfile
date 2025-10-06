@@ -13,7 +13,7 @@ build-web:
 download-deploy-deps:
     rm -f dist/wheels/*
     pip download -r requirements_lock.txt \
-        --extra-index-url=https://wpilib.jfrog.io/artifactory/api/pypi/wpilib-python-release-2025/simple/ \
+        --extra-index-url=https://wpilib.jfrog.io/artifactory/api/pypi/wpilib-python-release-2024/simple/ \
         --extra-index-url=https://repo.Lux-Robotics.dev/simple/ \
         --platform=manylinux2014_aarch64 \
         --platform=linux_aarch64 \
