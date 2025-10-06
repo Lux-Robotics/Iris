@@ -17,5 +17,10 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
 
+      - name: Check connectivity
+        run: |
+        ping -c 3 wpilib.jfrog.io || echo "Cannot reach wpilib.jfrog.io"
+        curl -I https://repo.lux-robotic.dev/simple/ || echo "Cannot reach lux-robotic.dev"
+
       - name: Build Project
         run: just package
